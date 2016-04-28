@@ -30,14 +30,15 @@ library ieee;
 use ieee.std_logic_1164.all;
 library work;
 use work.MemoryTreePackage.all;
-entity router is
+
+entity routerport is
 	generic(routing_index : natural := 0);
 	port(	clk		: in	std_logic;
 			input	: in	phit_r;
 			output	: out	phit_r);
-end entity router;
+end entity routerport;
 
-architecture rtl of router is
+architecture rtl of routerport is
 	type states is (idle, active);
 	signal state, state_next : states;
 
@@ -53,7 +54,7 @@ begin
 		en <= '0';
 		case state is
 		when idle =>
-			if input.tag = header_tag and input.payload(routin_bit) then
+			if input.tag = header_tag and input.payload(routing_index)='1' then
 				state_next <= active;
 				en <= '1';
 			end if;
@@ -65,6 +66,7 @@ begin
 			end if;
 		when others =>
 			state_next <= idle;
+		end case;
 	end process fsm;
 
 	registers : process(clk)
@@ -77,5 +79,5 @@ begin
 		end if;
 	end process registers;
 
-end architecture rtl;
+end rtl;
 

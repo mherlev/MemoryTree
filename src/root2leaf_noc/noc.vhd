@@ -38,25 +38,45 @@ entity noc is
 end entity noc;
 
 architecture structural of noc is
-	constant number_of_links : integer := (1-(routers_per_level**number_of_levels))/(1-routers_per_level);
+	constant number_of_links : integer := (1-(outputs_per_router**(number_of_levels+1)))/(1-outputs_per_router);
 	
 	type link_arr is array (0 to number_of_links-1) of phit_r;
 	signal links : link_arr;
 
-	constant number_of_out_links : integer := (1-(routers_per_level**(number_of_levels-1)))/(1-routers_per_level);
+	
+	constant nominator : integer := (1-(outputs_per_router**(number_of_levels)));
+	constant denominator : integer := (1-outputs_per_router);
+	constant number_of_out_links : integer := nominator/denominator;
 	type out_link_arr is array(0 to number_of_out_links-1) of router_output;
 	signal outlinks : out_link_arr;
 begin
-	for i in 0 to number_of_levels-1 generate
-		levels: for j in 0 to router_outputs*i-1 generate
-			router_inst : entity work.routerport
+	routers : for i in 0 to number_of_levels-1 generate
+		levels: for j in 0 to outputs_per_router**i-1 generate
+			router_inst : entity work.router
 			generic map(i)
-			port map(clk, links(i*routers_per_level+j),outlinks(i*routers_per_level+j)
+			port map(clk,
+			links((1-outputs_per_router**i)/(1-outputs_per_router)+j),
+			outlinks((1-outputs_per_router**i)/(1-outputs_per_router)+j));
+		end generate;
+	end generate;
 	
-	for i in 0 to number_of_levels-1 generate
-		levels: for j in 0 to router_outputs*i-1 generate
-			links(i*routers_per_level + j + 1) <= outlinks(i+j/router_outputs)(j mod router_outputs)
-
+--	mappings : for i in 1 to number_of_levels generate
+--		maplevels: for j in 0 to outputs_per_router**i-1 generate
+--			links((1-outputs_per_router**(i))/(1-outputs_per_router)+j) <= 
+--			outlinks((1-outputs_per_router**(i-1))/(1-outputs_per_router)+j/(outputs_per_router**i))(j mod outputs_per_router);
+--		end generate;
+--	end generate;
+	mappings : for i in 0 to number_of_levels-1 generate
+		maplevels: for j in 0 to outputs_per_router**i-1 generate
+			kit : for k in 0 to outputs_per_router-1 generate
+				links((1-outputs_per_router**(i+1))/(1-outputs_per_router)+j*outputs_per_router+k) <= 
+				outlinks((1-outputs_per_router**i)/(1-outputs_per_router)+j)(k);
+			end generate;
+		end generate;
+	end generate;
 	
-end architecture structural;
+	leafmappings : for i in 1 to number_of_leafs generate
+		leafs(number_of_leafs - i) <= links((1-outputs_per_router**(number_of_levels+1))/(1-outputs_per_router)-i);
+	end generate;
+end structural;
 

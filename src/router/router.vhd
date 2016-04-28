@@ -30,6 +30,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 library work;
 use work.MemoryTreePackage.all;
+
 entity router is
 	generic(routing_level : natural := 0);
 	port(	clk		: in	std_logic;
@@ -39,11 +40,11 @@ end entity router;
 
 architecture structural of router is
 begin
-		for i in 0 to router_outputs-1 generate
+		ports : for i in 0 to outputs_per_router-1 generate
 			outport : entity work.routerport
-			generic map(routing_level*router_outputs+i)
+			generic map(routing_level*outputs_per_router+i)
 			port map(clk, input, output(i));
 		end generate;
-end architecture rtl;
+end structural;
 
 

@@ -31,10 +31,10 @@ use ieee.std_logic_1164.all;
 
 package MemoryTreePackage is
 	constant tag_width : natural := 2;
-	constant header_tag : std_logic_vector)tag_width-1 downto 0) := "10";
-	constant payload_tag: std_logic_vector)tag_width-1 downto 0) := "11";
-	constant empty_tag: std_logic_vector)tag_width-1 downto 0) := "00";
-	constant tail_tag: std_logic_vector)tag_width-1 downto 0) := "01";
+	constant header_tag : std_logic_vector(tag_width-1 downto 0) := "10";
+	constant payload_tag: std_logic_vector(tag_width-1 downto 0) := "11";
+	constant empty_tag: std_logic_vector(tag_width-1 downto 0) := "00";
+	constant tail_tag: std_logic_vector(tag_width-1 downto 0) := "01";
 
 	constant payload_width : natural := 32;
 	constant mem_index_top : natural := 31;
@@ -44,9 +44,17 @@ package MemoryTreePackage is
 		payload	: std_logic_vector(payload_width-1 downto 0);
 	end record phit_r;
 
-	constant routers_per_level : natural := 2;
-	constant number_of_levels : natural := 2;
+--	constant routers_per_level : natural := 2;
+	constant number_of_levels : natural := 4;
 	
-	constant router_outputs : integer := 2;
-	type router_output is array(0 to router_outputs-1) of phit_r;
+	constant outputs_per_router : integer := 2;
+	type router_output is array(0 to outputs_per_router-1) of phit_r;
 
+	
+	constant number_of_routers : integer := outputs_per_router**number_of_levels;
+	
+	constant number_of_leafs : integer := outputs_per_router**number_of_levels;
+	type phit_arr is array(0 to number_of_leafs-1) of phit_r;
+	
+	
+end;
