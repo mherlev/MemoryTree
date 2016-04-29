@@ -74,7 +74,7 @@ begin
 			end generate;
 		end generate;
 	end generate;
-	
+	links(0)<=root;
 	leafmappings : for i in 1 to number_of_leafs generate
 		leafs(number_of_leafs - i) <= links((1-outputs_per_router**(number_of_levels+1))/(1-outputs_per_router)-i);
 	end generate;
