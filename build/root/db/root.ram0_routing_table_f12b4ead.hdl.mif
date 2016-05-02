@@ -1,0 +1,15 @@
+-- begin_signature
+-- routing_table
+-- end_signature
+WIDTH=4;
+DEPTH=4;
+
+ADDRESS_RADIX=UNS;
+DATA_RADIX=BIN;
+
+CONTENT BEGIN
+	3 :	1010;
+	2 :	0110;
+	1 :	1001;
+	0 :	0101;
+END;

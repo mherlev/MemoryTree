@@ -111,3 +111,49 @@ ref <= ref.DB_MAX_OUTPUT_PORT_TYPE
 postpone_transaction <= postpone_transaction.DB_MAX_OUTPUT_PORT_TYPE
 
 
+|root|schedule_table:sched_tab
+index[0] => scheduletable.RADDR
+index[1] => scheduletable.RADDR1
+index[2] => ~NO_FANOUT~
+index[3] => ~NO_FANOUT~
+index[4] => ~NO_FANOUT~
+index[5] => ~NO_FANOUT~
+index[6] => ~NO_FANOUT~
+index[7] => ~NO_FANOUT~
+index[8] => ~NO_FANOUT~
+index[9] => ~NO_FANOUT~
+index[10] => ~NO_FANOUT~
+index[11] => ~NO_FANOUT~
+index[12] => ~NO_FANOUT~
+index[13] => ~NO_FANOUT~
+index[14] => ~NO_FANOUT~
+index[15] => ~NO_FANOUT~
+index[16] => ~NO_FANOUT~
+index[17] => ~NO_FANOUT~
+index[18] => ~NO_FANOUT~
+index[19] => ~NO_FANOUT~
+index[20] => ~NO_FANOUT~
+index[21] => ~NO_FANOUT~
+index[22] => ~NO_FANOUT~
+index[23] => ~NO_FANOUT~
+index[24] => ~NO_FANOUT~
+index[25] => ~NO_FANOUT~
+index[26] => ~NO_FANOUT~
+index[27] => ~NO_FANOUT~
+index[28] => ~NO_FANOUT~
+index[29] => ~NO_FANOUT~
+index[30] => ~NO_FANOUT~
+index[31] => ~NO_FANOUT~
+core_id[0] <= scheduletable.DATAOUT
+core_id[1] <= scheduletable.DATAOUT1
+
+
+|root|routing_table:route_tab
+core_id[0] => routingtable.RADDR
+core_id[1] => routingtable.RADDR1
+route[0] <= routingtable.DATAOUT
+route[1] <= routingtable.DATAOUT1
+route[2] <= routingtable.DATAOUT2
+route[3] <= routingtable.DATAOUT3
+
+

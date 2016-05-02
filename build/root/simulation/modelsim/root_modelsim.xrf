@@ -1,4 +1,6 @@
 vendor_name = ModelSim
+source_file = 1, /home/mathias/t-crest/MemoryTree/src/root/routing_table.vhd
+source_file = 1, /home/mathias/t-crest/MemoryTree/src/root/schedule_table.vhd
 source_file = 1, /home/mathias/t-crest/MemoryTree/src/root/root_package.vhd
 source_file = 1, /home/mathias/t-crest/MemoryTree/src/root/root.vhd
 source_file = 1, /home/mathias/t-crest/MemoryTree/src/root/refresh_timer.vhd

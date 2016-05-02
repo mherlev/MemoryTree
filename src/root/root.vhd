@@ -47,15 +47,16 @@ architecture rtl of root is
 
 	signal idx : unsigned(31 downto 0);
 	signal core_id : unsigned(1 downto 0);
-	signal route : std_logic_vector(number_of_levels*number_of_outputs-1 downto 0);
+	signal route : std_logic_vector(number_of_levels*outputs_per_router-1 downto 0);
 
 begin
 		ref_timer : entity work.refresh_timer
 		port map(clk,reset,ref,postpone_transaction);
 		
-		sched_tab : entity schedule_table
+		sched_tab : entity work.schedule_table
 		port map (idx,core_id);
 
-		route_tab : entity routing_table
-		port map(core_id, route);	
+		route_tab : entity work.routing_table
+		port map(core_id, 
+		route);	
 end rtl;

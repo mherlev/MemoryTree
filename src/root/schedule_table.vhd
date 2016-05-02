@@ -28,14 +28,16 @@
 --------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
-
+use ieee.numeric_std.all;
+library work;
+use work.root_package.all;
 entity schedule_table is 
 		port (index : in unsigned(31 downto 0);
 		core_id : out unsigned(1 downto 0));
 end schedule_table;
 
 architecture list of schedule_table is
-	type scheduletable_arr is array(0 to routing_table_size-1) of unsigned(1 downto 0);
+	type scheduletable_arr is array(0 to schedule_table_size-1) of unsigned(1 downto 0);
 	signal scheduletable : scheduletable_arr := ("00","01","10","11");
 begin
 	core_id <= scheduletable(to_integer(index));

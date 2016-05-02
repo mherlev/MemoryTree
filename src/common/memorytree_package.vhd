@@ -45,7 +45,7 @@ package MemoryTreePackage is
 	end record phit_r;
 
 --	constant routers_per_level : natural := 2;
-	constant number_of_levels : natural := 4;
+	constant number_of_levels : natural := 2;
 	
 	constant outputs_per_router : integer := 2;
 	type router_output is array(0 to outputs_per_router-1) of phit_r;

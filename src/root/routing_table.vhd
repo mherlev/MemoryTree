@@ -28,21 +28,23 @@
 --------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 library work;
+use work.MemoryTreePackage.all;
 use work.root_package.all;
 
 entity routing_table is
-		port (index : in unsigned(31 downto 0);
-		route : out unsigned(3 downto 0));
+		port (core_id : in unsigned(1 downto 0);
+		route : out std_logic_vector(3 downto 0));
 end routing_table;
 
 
 architecture list of routing_table is
-	type routingtable_arr is array(0 to routing_table_size-1) of unsigned(number_of_levels*number_of_outputs-1 downto 0);
+	type routingtable_arr is array(0 to schedule_table_size-1) of std_logic_vector(number_of_levels*outputs_per_router-1 downto 0);
 	signal routingtable : routingtable_arr := ("0101",
-	"1001"
+	"1001",
 	"0110",
 	"1010");
 begin
-	core_id <= routingtable(to_integer(index));
+	route <= routingtable(to_integer(core_id));
 end list;
