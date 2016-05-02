@@ -41,13 +41,17 @@ entity root is
 end root;
 
 architecture rtl of root is
+	type states is (active, idle);
+	signal state, state_next : states;
+
 	signal counter, counter_next : unsigned(31 downto 0);
 	signal ref : std_logic;
 	signal postpone_transaction : std_logic;
 
-	signal idx : unsigned(31 downto 0);
+	signal idx,idx_next     : unsigned(31 downto 0);
 	signal core_id : unsigned(1 downto 0);
-	signal route : std_logic_vector(number_of_levels*outputs_per_router-1 downto 0);
+	signal route   : std_logic_vector
+	                 (number_of_levels*outputs_per_router-1 downto 0);
 
 begin
 		ref_timer : entity work.refresh_timer
@@ -57,6 +61,46 @@ begin
 		port map (idx,core_id);
 
 		route_tab : entity work.routing_table
-		port map(core_id, 
-		route);	
+		port map(core_id, route);	
+
+		process(state, idx)
+		begin
+			counter_next <= counter;
+			state_next <= state;
+			idx_next <= idx;
+			case state is
+			when active =>
+				if postpone = '0' then
+					if counter = c_transaction-1 then
+						idx_next <= idx+1;
+					else
+						counter_next <= counter + 1;
+					end if;
+				else
+					state_next <= idle;
+				end if;
+			when idle =>
+				if postpone_transaction = '0' then
+					state_next <= active;
+				end if;
+			end case;
+		end process;
+
+		process(clk)
+		begin
+			if rising_edge(clk) then
+				if reset = '1' then
+					state <= active;
+					idx <= (others => '0');
+					counter <= (others => '0');
+				else
+					state <= state_next;
+					idx <= idx_next;
+					counter <= counter_next;
+				end if;
+			end if;
+		end process;
 end rtl;
+
+
+
