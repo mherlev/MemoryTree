@@ -32,7 +32,7 @@ use ieee.std_logic_1164.all;
 package root_package is
 
 constant c_refi : integer := 20;
-constant c_rfc : integer := 1;
+constant c_rfc : integer := 4;
 constant noc_latency : integer := 2;
 constant c_transaction : integer := 5;
 constant schedule_table_size : integer := 4;

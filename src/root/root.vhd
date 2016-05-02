@@ -44,11 +44,11 @@ architecture rtl of root is
 	type states is (active, idle);
 	signal state, state_next : states;
 
-	signal counter, counter_next : unsigned(31 downto 0);
+	signal counter, counter_next : unsigned(31 downto 0) := (others => '0');
 	signal ref : std_logic;
 	signal postpone_transaction : std_logic;
-
-	signal idx,idx_next     : unsigned(31 downto 0);
+	signal send : std_logic := '0';
+	signal idx,idx_next : unsigned(1 downto 0) := (others => '0');
 	signal core_id : unsigned(1 downto 0);
 	signal route   : std_logic_vector
 	                 (number_of_levels*outputs_per_router-1 downto 0);
@@ -63,16 +63,18 @@ begin
 		route_tab : entity work.routing_table
 		port map(core_id, route);	
 
-		process(state, idx)
+		process(state, idx,counter,ref,postpone_transaction)
 		begin
 			counter_next <= counter;
 			state_next <= state;
 			idx_next <= idx;
+			send <= '0';
 			case state is
 			when active =>
-				if postpone = '0' then
+				if postpone_transaction	= '0' then
 					if counter = c_transaction-1 then
 						idx_next <= idx+1;
+						counter_next <= (others => '0');
 					else
 						counter_next <= counter + 1;
 					end if;

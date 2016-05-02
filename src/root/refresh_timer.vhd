@@ -45,12 +45,12 @@ architecture rtl of refresh_timer is
 		type states is (refresh1,refresh2, idle, halt);
 		signal state, state_next : states := refresh1;
 begin
-	fsm : process(state)
+	fsm : process(state,counter)
 	begin
 		ref <= '0';
 		postpone_transaction <= '0';
 		state_next <= state;
-		counter_next <= counter +1;
+		counter_next <= counter + to_unsigned(1,counter'length);
 		case state is
 		when refresh1 =>
 			ref<= '1';
@@ -59,7 +59,7 @@ begin
 		when refresh2 =>
 			ref<= '0';
 			postpone_transaction <= '1';
-			if counter = c_rfc - noc_latency then
+			if counter = (c_rfc - noc_latency) then
 				state_next <= idle;
 			end if;
 		when idle =>
