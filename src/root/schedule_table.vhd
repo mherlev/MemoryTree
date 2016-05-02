@@ -23,26 +23,20 @@
 -- ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 -- POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
--- Title: Routing table
--- Description: Container for routing table
+-- Title: Schedule table
+-- Description: Schedule table for memory tree
 --------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
-library work;
-use work.root_package.all;
 
-entity routing_table is
+entity schedule_table is 
 		port (index : in unsigned(31 downto 0);
-		route : out unsigned(3 downto 0));
-end routing_table;
+		core_id : out unsigned(1 downto 0));
+end schedule_table;
 
-
-architecture list of routing_table is
-	type routingtable_arr is array(0 to routing_table_size-1) of unsigned(number_of_levels*number_of_outputs-1 downto 0);
-	signal routingtable : routingtable_arr := ("0101",
-	"1001"
-	"0110",
-	"1010");
+architecture list of schedule_table is
+	type scheduletable_arr is array(0 to routing_table_size-1) of unsigned(1 downto 0);
+	signal scheduletable : scheduletable_arr := ("00","01","10","11");
 begin
-	core_id <= routingtable(to_integer(index));
+	core_id <= scheduletable(to_integer(index));
 end list;

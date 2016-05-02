@@ -44,9 +44,18 @@ architecture rtl of root is
 	signal counter, counter_next : unsigned(31 downto 0);
 	signal ref : std_logic;
 	signal postpone_transaction : std_logic;
+
+	signal idx : unsigned(31 downto 0);
+	signal core_id : unsigned(1 downto 0);
+	signal route : std_logic_vector(number_of_levels*number_of_outputs-1 downto 0);
+
 begin
 		ref_timer : entity work.refresh_timer
 		port map(clk,reset,ref,postpone_transaction);
 		
+		sched_tab : entity schedule_table
+		port map (idx,core_id);
 
+		route_tab : entity routing_table
+		port map(core_id, route);	
 end rtl;

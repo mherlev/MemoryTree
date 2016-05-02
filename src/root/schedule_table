@@ -23,26 +23,7 @@
 -- ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 -- POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
--- Title: Routing table
--- Description: Container for routing table
+-- Title: Root entity
+-- Description: Root entity for network functioning as frontend for memory 
+--              controller
 --------------------------------------------------------------------------------
-library ieee;
-use ieee.std_logic_1164.all;
-library work;
-use work.root_package.all;
-
-entity routing_table is
-		port (index : in unsigned(31 downto 0);
-		route : out unsigned(3 downto 0));
-end routing_table;
-
-
-architecture list of routing_table is
-	type routingtable_arr is array(0 to routing_table_size-1) of unsigned(number_of_levels*number_of_outputs-1 downto 0);
-	signal routingtable : routingtable_arr := ("0101",
-	"1001"
-	"0110",
-	"1010");
-begin
-	core_id <= routingtable(to_integer(index));
-end list;
