@@ -24,20 +24,20 @@
 -- POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
 -- Title: Router
--- Description: Router for Response NoC
+-- Description: Router for Root to Leaf NoC
 --------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
 library work;
 use work.MemoryTreePackage.all;
 
-entity noc is
+entity r2l_noc is
 	port (clk : in std_logic;
 		root : in phit_r;
 		leafs : out phit_arr);
-end entity noc;
+end entity r2l_noc;
 
-architecture structural of noc is
+architecture structural of r2l_noc is
 	constant number_of_links : integer := (1-(outputs_per_router**(number_of_levels+1)))/(1-outputs_per_router);
 	
 	type link_arr is array (0 to number_of_links-1) of phit_r;
