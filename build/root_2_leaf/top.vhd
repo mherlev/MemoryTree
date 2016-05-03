@@ -43,6 +43,7 @@ architecture testbench of root_2_leaf is
   signal root_port : phit_r;
 	signal leaf_ports : phit_arr;
 	signal ocp_m : ocp_burst_m;
+	signal ocp_s : ocp_burst_s;
  begin
   noc : entity work.r2l_noc
   port map (clk,root_port,leaf_ports);
@@ -55,5 +56,7 @@ architecture testbench of root_2_leaf is
 	port map(clk,reset,leaf_ports(i),ocp_m,open);
   end generate;
   
+  ocpburst : entity work.ocpburst_testbench
+  port map(clk,reset, ocp_m, ocp_s);
 end testbench;
   

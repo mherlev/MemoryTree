@@ -28,6 +28,7 @@
 --------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 library work;
 use work.ocp.all;
 
@@ -39,12 +40,12 @@ ocp_s : in ocp_burst_s);
 end ocpburst_testbench;
 
 architecture rtl of ocpburst_testbench is
-	type states is (write,writing,write_response)
+	type states is (write,writing,write_response);
 	signal state, state_next : states;
 
 	signal counter, counter_next : unsigned(OCP_DATA_WIDTH-1 downto 0);
 begin
-	process(state)
+	process(state,counter)
 	begin
 			state_next <= state;
 		ocp_m.mcmd <= ocp_cmd_idle;
@@ -55,7 +56,7 @@ begin
 		case state is
 		when write =>
 			ocp_m.mcmd <= ocp_cmd_wr;
-			ocp_m.maddr <= std_logic_vector(counter);
+			ocp_m.maddr <= std_logic_vector(counter(ocp_m.maddr'length-1 downto 0));
 			ocp_m.mdata <= std_logic_vector(counter);
 			ocp_m.mdatabyteen <= (others => '0');
 			ocp_m.mdatavalid <= '1';
@@ -68,10 +69,10 @@ begin
 			ocp_m.mdatavalid <= '1';
 			if counter = 3 then
 					state_next <= write_response;
-			end if
+			end if;
 
 		when write_response =>
-				if ocp_s.SResp = OCP_REPS_DVA then
+				if ocp_s.SResp = OCP_RESP_DVA then
 						state_next <= write;
 				end if;
 		when others =>

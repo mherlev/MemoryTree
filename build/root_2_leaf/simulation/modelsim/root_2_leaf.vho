@@ -17,7 +17,7 @@
 -- PROGRAM "Quartus II 64-Bit"
 -- VERSION "Version 15.0.0 Build 145 04/22/2015 SJ Web Edition"
 
--- DATE "05/03/2016 15:57:18"
+-- DATE "05/03/2016 17:49:44"
 
 -- 
 -- Device: Altera 5CGXFC7C7F23C8 Package FBGA484
@@ -42,8 +42,8 @@ ENTITY 	root_2_leaf IS
 END root_2_leaf;
 
 -- Design Ports Information
--- clk	=>  Location: PIN_A18,	 I/O Standard: 2.5 V,	 Current Strength: Default
--- reset	=>  Location: PIN_AB13,	 I/O Standard: 2.5 V,	 Current Strength: Default
+-- reset	=>  Location: PIN_A18,	 I/O Standard: 2.5 V,	 Current Strength: Default
+-- clk	=>  Location: PIN_AB13,	 I/O Standard: 2.5 V,	 Current Strength: Default
 
 
 ARCHITECTURE structure OF root_2_leaf IS
@@ -58,8 +58,8 @@ SIGNAL ww_devclrn : std_logic;
 SIGNAL ww_devpor : std_logic;
 SIGNAL ww_clk : std_logic;
 SIGNAL ww_reset : std_logic;
-SIGNAL \clk~input_o\ : std_logic;
 SIGNAL \reset~input_o\ : std_logic;
+SIGNAL \clk~input_o\ : std_logic;
 SIGNAL \~QUARTUS_CREATED_GND~I_combout\ : std_logic;
 
 BEGIN
@@ -71,17 +71,6 @@ ww_devclrn <= devclrn;
 ww_devpor <= devpor;
 
 -- Location: IOIBUF_X74_Y81_N41
-\clk~input\ : cyclonev_io_ibuf
--- pragma translate_off
-GENERIC MAP (
-	bus_hold => "false",
-	simulate_z_as => "z")
--- pragma translate_on
-PORT MAP (
-	i => ww_clk,
-	o => \clk~input_o\);
-
--- Location: IOIBUF_X50_Y0_N92
 \reset~input\ : cyclonev_io_ibuf
 -- pragma translate_off
 GENERIC MAP (
@@ -91,6 +80,17 @@ GENERIC MAP (
 PORT MAP (
 	i => ww_reset,
 	o => \reset~input_o\);
+
+-- Location: IOIBUF_X50_Y0_N92
+\clk~input\ : cyclonev_io_ibuf
+-- pragma translate_off
+GENERIC MAP (
+	bus_hold => "false",
+	simulate_z_as => "z")
+-- pragma translate_on
+PORT MAP (
+	i => ww_clk,
+	o => \clk~input_o\);
 
 -- Location: LABCELL_X64_Y10_N3
 \~QUARTUS_CREATED_GND~I\ : cyclonev_lcell_comb
