@@ -35,9 +35,9 @@ use work.MemoryTreePackage.all;
 use work.root_package.all;
 
 entity root is
-	port(clk	: std_logic;
-	reset	: std_logic;
-	r2l : phit_r);
+	port(clk	: in std_logic;
+	reset	: in std_logic;
+	r2l : out phit_r);
 end root;
 
 architecture rtl of root is

@@ -23,63 +23,29 @@
 -- ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 -- POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
--- Title: Router
--- Description: Router for Response NoC
+-- Title: Top entity
+-- Description: Top entity for simulating root and r2lnoc
 --------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 library work;
 use work.MemoryTreePackage.all;
+use work.root_package.all;
 
-entity routerport is
-	generic(routing_index : natural := 0);
-	port(	clk		: in	std_logic;
-			input	: in	phit_r;
-			output	: out	phit_r);
-end entity routerport;
+entity top is
+  port(clk : in std_logic;
+    reset : in std_logic);
+end entity top;
 
-architecture rtl of routerport is
-	type states is (idle, active);
-	signal state, state_next : states := idle;
-
-	signal data, data_next : phit_r;
-	signal en : std_logic := '0';
+architecture testbench of top is
+  signal root_port : phit_r;
 begin
-	data_next <= input;
---	output.payload <= data.payload;
---  output.tag <= en & data.tag(0);
-	fsm : process(state, input)
-	begin
-		state_next <= state;
-		en <= '0';
-		case state is
-		when idle =>
-		  output <= (others => (others => '0'));
-			if input.tag = header_tag and input.payload(routing_index)='1' then
-				state_next <= active;
-				en <= '1';
-			end if;
-		when active =>
-			en <= '1';
-			output <= data;
-			if input.tag = empty_tag or input.tag = tail_tag then
-				state_next <= idle;
-				en <= '0';
-			end if;
-		when others =>
-			state_next <= idle;
-		end case;
-	end process fsm;
-
-	registers : process(clk)
-	begin
-		if rising_edge(clk) then
-			state <= state_next;
-			if en = '1' then
-				data <= data_next;
-			end if;
-		end if;
-	end process registers;
-
-end rtl;
-
+  noc : entity work.r2l_noc
+  port map (clk,root_port,open);
+    
+  root_module : entity work.root
+  port map (clk,reset,root_port);
+  
+end testbench;
+  
