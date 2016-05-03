@@ -52,7 +52,8 @@ architecture rtl of root is
 	signal core_id : unsigned(1 downto 0);
 	signal route   : std_logic_vector
 	                 (number_of_levels*outputs_per_router-1 downto 0);
-
+	alias r2l_route is r2l.payload(3 downto 0);
+	
 begin
 		ref_timer : entity work.refresh_timer
 		port map(clk,reset,ref,postpone_transaction);
@@ -69,12 +70,15 @@ begin
 			state_next <= state;
 			idx_next <= idx;
 			send <= '0';
+			r2l.tag <= empty_tag;
 			case state is
 			when active =>
 				if postpone_transaction	= '0' then
 					if counter = c_transaction-1 then
 						idx_next <= idx+1;
 						counter_next <= (others => '0');
+						r2l_route <= route;
+						r2l.tag <= header_tag;
 					else
 						counter_next <= counter + 1;
 					end if;
