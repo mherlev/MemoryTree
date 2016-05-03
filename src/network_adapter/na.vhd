@@ -41,8 +41,39 @@ entity network_adapter is
 end network_adapter;
 
 architecture rtl of network_adapter is
+		type states is (idle, write,write_wait,read_wait, read);
+		signal state, state_next : states;
+
+
 begin
 
+		process(state,ocp_m,r2lnoc)
+		begin
+			state_next <= state;
+			case state is
+			when idle =>
+				if r2lnoc.tag = header_tag then
+					if ocp_m.mcmd = ocp_cmd_wr then
+						state_next <= write;
+					elsif ocp_m.mcmd = ocp_cmd_rd then
+						state_next <= read_wait;
+					end if;
+				end if;
+			when others =>
+				state_next <= idle;
+			end case;
+		end process;
+
+		process (clk,reset)
+		begin
+				if rising_edge(clk) then
+					if reset = '1' then
+						state <= idle;
+					else
+						state <= state_next;
+					end if;
+				end if;
+		end process;
 end rtl;
 
 
