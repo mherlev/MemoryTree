@@ -42,8 +42,10 @@ end entity root_2_leaf;
 architecture testbench of root_2_leaf is
   signal root_port : phit_r;
 	signal leaf_ports : phit_arr;
-	signal ocp_m : ocp_burst_m;
-	signal ocp_s : ocp_burst_s;
+	type ocp_m_array is array (0 to number_of_leafs-1) of ocp_burst_m;
+	signal ocp_m : ocp_m_array;
+	type ocp_s_array is array (0 to number_of_leafs-1) of ocp_burst_s;
+	signal ocp_s : ocp_s_array;
  begin
   noc : entity work.r2l_noc
   port map (clk,root_port,leaf_ports);
@@ -53,10 +55,10 @@ architecture testbench of root_2_leaf is
   
   leafs : for i in 0 to number_of_leafs-1 generate
 	leaf_node : entity work.network_adapter
-	port map(clk,reset,leaf_ports(i),ocp_m,open);
+	port map(clk,reset,leaf_ports(i),ocp_m(i),ocp_s(i));
   end generate;
   
   ocpburst : entity work.ocpburst_testbench
-  port map(clk,reset, ocp_m, ocp_s);
+  port map(clk,reset, ocp_m(0), ocp_s(0));
 end testbench;
   

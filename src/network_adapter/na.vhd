@@ -28,6 +28,7 @@
 --------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 library work;
 use work.MemoryTreePackage.all;
 use work.ocp.all;
@@ -42,14 +43,17 @@ end network_adapter;
 
 architecture rtl of network_adapter is
 		type states is (idle, write,write_wait,read_wait, read);
-		signal state, state_next : states;
-
+		signal state, state_next : states := idle;
+    signal counter, counter_next  : unsigned(31 downto 0) := (others => '0');
 
 begin
 
-		process(state,ocp_m,r2lnoc)
+		process(state,ocp_m,r2lnoc,counter)
 		begin
 			state_next <= state;
+			counter_next <= counter;
+			ocp_s.SCmdAccept <= '0';
+			ocp_s.SResp <= OCP_RESP_NULL;
 			case state is
 			when idle =>
 				if r2lnoc.tag = header_tag then
@@ -59,6 +63,16 @@ begin
 						state_next <= read_wait;
 					end if;
 				end if;
+			when write =>
+        counter_next <= counter+1;
+			  
+			  if counter = 0 then
+			     ocp_s.SCmdAccept <= '1';
+			  elsif counter = ocp_burst_length-1 then
+			     state_next <= write_wait;
+			   counter_next <= (others => '0');
+			  end if;
+			    
 			when others =>
 				state_next <= idle;
 			end case;
@@ -69,8 +83,10 @@ begin
 				if rising_edge(clk) then
 					if rst = '1' then
 						state <= idle;
+						counter <= (others => '0');
 					else
 						state <= state_next;
+						counter <= counter_next;
 					end if;
 				end if;
 		end process;

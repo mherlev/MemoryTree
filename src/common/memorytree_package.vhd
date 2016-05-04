@@ -57,4 +57,6 @@ package MemoryTreePackage is
 	type phit_arr is array(0 to number_of_leafs-1) of phit_r;
 	
 	
+	constant ocp_burst_length : integer := 4;
+	
 end;
