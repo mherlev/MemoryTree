@@ -47,8 +47,8 @@ architecture rtl of ocpburst_testbench is
 begin
 	process(state,counter)
 	begin
-			state_next <= state;
-			counter_next <= counter;
+		state_next <= state;
+		counter_next <= counter;
 		ocp_m.mcmd <= ocp_cmd_idle;
 		ocp_m.maddr <= (others => '0');
 		ocp_m.mdata <= (others => '0');

@@ -43,10 +43,12 @@ entity network_adapter is
 end network_adapter;
 
 architecture rtl of network_adapter is
-		type states is (idle, write,write_wait,read_wait, read);
-		signal state, state_next : states := idle;
+	type states is (idle, writedata,writebyteen,read_wait, read);
+	signal state, state_next : states := idle;
     signal counter, counter_next  : unsigned(31 downto 0) := (others => '0');
 
+	constant ShiftRegLength : integer := ocp_burst_length*OCP_BYTE_WIDTH;
+	signal ByteEnShiftReg,ByteEnShiftReg_next : std_logic_vector(ShiftRegLength-1 downto 0) := (others => '0');
 begin
 	process(state,ocp_m,r2lnoc,counter)
 	begin
@@ -56,6 +58,7 @@ begin
 		counter_next <= counter;
 		ocp_s.SCmdAccept <= '0';
 		ocp_s.SResp <= OCP_RESP_NULL;
+		ByteEnShiftReg_next <= ByteEnShiftReg;
 		case state is
 		when idle =>
 			if r2lnoc.tag = header_tag then
@@ -66,16 +69,31 @@ begin
 					state_next <= read_wait;
 				end if;
 			end if;
-		when write =>
-    	counter_next <= counter+1;
-		l2rnoc.payload <= ocp_m.MData;
-		l2rnoc.tag <= payload_tag;
-		if counter = 0 then
-			ocp_s.SCmdAccept <= '1';
-		elsif counter = ocp_burst_length-1 then
-	    	state_next <= write_wait;
-			counter_next <= (others => '0');
-		end if;
+		when WriteData =>
+	    	counter_next <= counter+1;
+			l2rnoc.payload <= ocp_m.MData;
+			l2rnoc.tag <= payload_tag;
+			ByteEnShiftReg_next <= ByteEnShiftReg(ShiftRegLength-1 downto OCP_BYTE_WIDTH)
+								   & ocp_m.MDataByteEn;
+			if counter = 0 then
+				ocp_s.SCmdAccept <= '1';
+			elsif counter = ocp_burst_length-1 then
+		    	state_next <= writebyteen;
+				counter_next <= (others => '0');
+			end if;
+		when WriteByteEn =>
+	    	counter_next <= counter+1;
+			l2rnoc.payload <= ByteEnShiftReg(ShiftRegLength-1 downto ShiftRegLength-32);
+			l2rnoc.tag <= payload_tag;
+			ByteEnShiftReg_next <= ByteEnShiftReg(ShiftRegLength-1 downto OCP_BYTE_WIDTH)
+								   & std_logic_vector(to_unsigned(0,32));
+			if counter = 0 then
+				ocp_s.SResp <= OCP_RESP_DVA;
+			elsif counter = ocp_burst_length/8-1 then
+		    	state_next <= idle;
+				counter_next <= (others => '0');
+			end if;
+
 		when others =>
 			state_next <= idle;
 		end case;
@@ -87,9 +105,11 @@ begin
 			if rst = '1' then
 				state <= idle;
 				counter <= (others => '0');
+				ByteEnShiftReg <= (others => '0');
 			else
 				state <= state_next;
 				counter <= counter_next;
+				ByteEnShiftReg <= ByteEnShiftReg_next;
 			end if;
 		end if;
 	end process;
