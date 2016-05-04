@@ -24,21 +24,21 @@
 -- POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
 -- Title: Router
--- Description: Router for Response NoC
+-- Description: Router for Leaf 2 Root NoC
 --------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
 library work;
 use work.MemoryTreePackage.all;
 
-entity routerport is
+entity l2r_routerport is
 	generic(routing_index : natural := 0);
 	port(	clk		: in	std_logic;
 			input	: in	phit_r;
 			output	: out	phit_r);
-end entity routerport;
+end entity l2r_routerport;
 
-architecture rtl of routerport is
+architecture rtl of l2r_routerport is
 	type states is (idle, active);
 	signal state, state_next : states := idle;
 

@@ -24,28 +24,28 @@
 -- POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
 -- Title: Router
--- Description: Router for Response NoC
+-- Description: Router for L2R NoC
 --------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
 library work;
 use work.MemoryTreePackage.all;
 
-entity router is
+entity l2r_router is
 	generic(routing_level : natural := 0);
 	port(	clk		: in	std_logic;
 			input	: in	router_output;
 			output	: out	phit_r);
-end entity router;
+end entity l2r_router;
 
-architecture structural of router is
+architecture structural of l2r_router is
 	type or_array is array (0 to outputs_per_router-1) of phit_r;
 
 	signal output_next : phit_r;
 	signal or_arr, o_arr : or_array;
 begin
 	ports : for i in 0 to outputs_per_router-1 generate
-		outport : entity work.routerport
+		outport : entity work.l2r_routerport
 		generic map(routing_level*outputs_per_router+i)
 		port map(clk, input(i), or_arr(i));
 	end generate;

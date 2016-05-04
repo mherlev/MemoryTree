@@ -52,7 +52,7 @@ architecture structural of l2r_noc is
 begin
 	routers : for i in 0 to number_of_levels-1 generate
 		levels: for j in 0 to outputs_per_router**i-1 generate
-			router_inst : entity work.router
+			router_inst : entity work.l2r_router
 			generic map(i)
 			port map(clk,
 			outlinks((1-outputs_per_router**i)/(1-outputs_per_router)+j),

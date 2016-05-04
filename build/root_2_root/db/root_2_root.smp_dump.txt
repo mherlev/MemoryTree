@@ -1,0 +1,45 @@
+
+State Machine - |root_2_root|ocpburst_testbench:ocpburst|state
+Name state.write_response state.writing state.write 
+state.write 0 0 0 
+state.writing 0 1 1 
+state.write_response 1 0 1 
+
+State Machine - |root_2_root|network_adapter:\leafs:3:leaf_node|state
+Name state.read state.read_wait state.write_wait state.write state.idle 
+state.idle 0 0 0 0 0 
+state.write 0 0 0 1 1 
+state.write_wait 0 0 1 0 1 
+state.read_wait 0 1 0 0 1 
+state.read 1 0 0 0 1 
+
+State Machine - |root_2_root|network_adapter:\leafs:2:leaf_node|state
+Name state.read state.read_wait state.write_wait state.write state.idle 
+state.idle 0 0 0 0 0 
+state.write 0 0 0 1 1 
+state.write_wait 0 0 1 0 1 
+state.read_wait 0 1 0 0 1 
+state.read 1 0 0 0 1 
+
+State Machine - |root_2_root|network_adapter:\leafs:1:leaf_node|state
+Name state.read state.read_wait state.write_wait state.write state.idle 
+state.idle 0 0 0 0 0 
+state.write 0 0 0 1 1 
+state.write_wait 0 0 1 0 1 
+state.read_wait 0 1 0 0 1 
+state.read 1 0 0 0 1 
+
+State Machine - |root_2_root|network_adapter:\leafs:0:leaf_node|state
+Name state.read state.read_wait state.write_wait state.write state.idle 
+state.idle 0 0 0 0 0 
+state.write 0 0 0 1 1 
+state.write_wait 0 0 1 0 1 
+state.read_wait 0 1 0 0 1 
+state.read 1 0 0 0 1 
+
+State Machine - |root_2_root|root:root_module|refresh_timer:ref_timer|state
+Name state.halt state.idle state.refresh2 state.refresh1 
+state.refresh1 0 0 0 0 
+state.refresh2 0 0 1 1 
+state.idle 0 1 0 1 
+state.halt 1 0 0 1 

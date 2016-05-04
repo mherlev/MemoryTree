@@ -34,28 +34,32 @@ use work.MemoryTreePackage.all;
 use work.root_package.all;
 use work.ocp.all;
 
-entity root_2_leaf is
+entity root_2_root is
   port(clk : in std_logic;
     reset : in std_logic);
-end entity root_2_leaf;
+end entity root_2_root;
 
-architecture testbench of root_2_leaf is
-  signal root_port : phit_r;
-	signal leaf_ports : phit_arr;
+architecture testbench of root_2_root is
+  signal r2l_root_port : phit_r;
+	signal r2l_leaf_ports : phit_arr;
+	signal l2r_root_port : phit_r;
+	signal l2r_leaf_ports : phit_arr;
 	type ocp_m_array is array (0 to number_of_leafs-1) of ocp_burst_m;
 	signal ocp_m : ocp_m_array;
 	type ocp_s_array is array (0 to number_of_leafs-1) of ocp_burst_s;
 	signal ocp_s : ocp_s_array;
  begin
-  noc : entity work.r2l_noc
-  port map (clk,root_port,leaf_ports);
-    
+  r2lnoc : entity work.r2l_noc
+  port map (clk,r2l_root_port,r2l_leaf_ports);
+  l2rnoc : entity work.l2r_noc
+  port map (clk,l2r_root_port,l2r_leaf_ports);
+  
   root_module : entity work.root
-  port map (clk,reset,root_port);
+  port map (clk,reset,r2l_root_port,l2r_root_port);
   
   leafs : for i in 0 to number_of_leafs-1 generate
 	leaf_node : entity work.network_adapter
-	port map(clk,reset,leaf_ports(i),ocp_m(i),ocp_s(i));
+	port map(clk,reset,r2l_leaf_ports(i),l2r_leaf_ports(i),ocp_m(i),ocp_s(i));
   end generate;
   
   ocpburst : entity work.ocpburst_testbench
