@@ -50,7 +50,7 @@ begin
 --  output.tag <= en & data.tag(0);
 	fsm : process(state, input)
 	begin
-			output <= (others => '0');
+			output <= (others => (others =>'0'));
 			if input.tag = header_tag or input.tag = payload_tag then
 					output <= input;
 			end if;

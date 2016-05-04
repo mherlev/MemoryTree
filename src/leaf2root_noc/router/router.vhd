@@ -34,14 +34,14 @@ use work.MemoryTreePackage.all;
 entity router is
 	generic(routing_level : natural := 0);
 	port(	clk		: in	std_logic;
-			input	: in	router_output);
-			output	: out	phit_r;
+			input	: in	router_output;
+			output	: out	phit_r);
 end entity router;
 
 architecture structural of router is
 	type or_array is array (0 to outputs_per_router-1) of phit_r;
 
-	output_next;
+	signal output_next : phit_r;
 	signal or_arr, o_arr : or_array;
 begin
 	ports : for i in 0 to outputs_per_router-1 generate
@@ -52,11 +52,13 @@ begin
 
 	o_arr(0) <= or_arr(0);
 	ors : for i in 1 to outputs_per_router-1 generate
-		or_arr(i) <= o_arr(i) or or_arr(i-1)
+		o_arr(i).tag <= or_arr(i).tag or o_arr(i-1).tag;
+		o_arr(i).payload <= or_arr(i).payload or o_arr(i-1).payload;
 	end generate;
 
-	output_next <= or_arr(outputs_per_router-1);
+	output_next <= o_arr(outputs_per_router-1);
 	process(clk)
+	begin
 		if rising_edge(clk) then
 			output <= output_next;
 		end if;

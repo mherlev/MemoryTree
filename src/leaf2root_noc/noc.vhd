@@ -31,13 +31,13 @@ use ieee.std_logic_1164.all;
 library work;
 use work.MemoryTreePackage.all;
 
-entity r2l_noc is
+entity l2r_noc is
 	port (clk : in std_logic;
 		root : out phit_r;
 		leafs : in phit_arr);
-end entity r2l_noc;
+end entity l2r_noc;
 
-architecture structural of r2l_noc is
+architecture structural of l2r_noc is
 	constant number_of_links : integer := (1-(outputs_per_router**(number_of_levels+1)))/(1-outputs_per_router);
 	
 	type link_arr is array (0 to number_of_links-1) of phit_r;
@@ -69,14 +69,13 @@ begin
 	mappings : for i in 0 to number_of_levels-1 generate
 		maplevels: for j in 0 to outputs_per_router**i-1 generate
 			kit : for k in 0 to outputs_per_router-1 generate
-				links((1-outputs_per_router**(i+1))/(1-outputs_per_router)+j*outputs_per_router+k) <= 
-				outlinks((1-outputs_per_router**i)/(1-outputs_per_router)+j)(k);
+				outlinks((1-outputs_per_router**i)/(1-outputs_per_router)+j)(k) <= links((1-outputs_per_router**(i+1))/(1-outputs_per_router)+j*outputs_per_router+k);
 			end generate;
 		end generate;
 	end generate;
-	links(0)<=root;
+	root <= links(0);
 	leafmappings : for i in 1 to number_of_leafs generate
-		leafs(number_of_leafs - i) <= links((1-outputs_per_router**(number_of_levels+1))/(1-outputs_per_router)-i);
+		links((1-outputs_per_router**(number_of_levels+1))/(1-outputs_per_router)-i) <= leafs(number_of_leafs - i);
 	end generate;
 end structural;
 
