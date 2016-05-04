@@ -23,75 +23,42 @@
 -- ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 -- POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
--- Title: Network Adapter
--- Description: Type definitions and constants for Memory Tree
+-- Title: Top entity
+-- Description: Top entity for simulating root and r2lnoc and na
 --------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 library work;
 use work.MemoryTreePackage.all;
+use work.root_package.all;
 use work.ocp.all;
 
-entity network_adapter is
-		port (clk : in std_logic;
-		rst : in std_logic;
-		r2lnoc : in phit_r;
-		l2rnoc : out phit_r;
-		ocp_m : in ocp_burst_m;
-		ocp_s : out ocp_burst_s);
-end network_adapter;
+entity root_2_leaf is
+  port(clk : in std_logic;
+    reset : in std_logic);
+end entity root_2_leaf;
 
-architecture rtl of network_adapter is
-		type states is (idle, write,write_wait,read_wait, read);
-		signal state, state_next : states := idle;
-    signal counter, counter_next  : unsigned(31 downto 0) := (others => '0');
-
-begin
-		process(state,ocp_m,r2lnoc,counter)
-		begin
-			l2rnoc.payload <= (others=>'0');
-			l2rnoc.tag <= empty_tag;
-			state_next <= state;
-			counter_next <= counter;
-			ocp_s.SCmdAccept <= '0';
-			ocp_s.SResp <= OCP_RESP_NULL;
-			case state is
-			when idle =>
-				if r2lnoc.tag = header_tag then
-					if ocp_m.mcmd = ocp_cmd_wr then
-						state_next <= write;
-					elsif ocp_m.mcmd = ocp_cmd_rd then
-						state_next <= read_wait;
-					end if;
-				end if;
-			when write =>
-        counter_next <= counter+1;
-			  
-			  if counter = 0 then
-			     ocp_s.SCmdAccept <= '1';
-			  elsif counter = ocp_burst_length-1 then
-			     state_next <= write_wait;
-			   counter_next <= (others => '0');
-			  end if;
-			    
-			when others =>
-				state_next <= idle;
-			end case;
-		end process;
-
-		process (clk,rst)
-		begin
-				if rising_edge(clk) then
-					if rst = '1' then
-						state <= idle;
-						counter <= (others => '0');
-					else
-						state <= state_next;
-						counter <= counter_next;
-					end if;
-				end if;
-		end process;
-end rtl;
-
-
+architecture testbench of root_2_leaf is
+  signal root_port : phit_r;
+	signal leaf_ports : phit_arr;
+	type ocp_m_array is array (0 to number_of_leafs-1) of ocp_burst_m;
+	signal ocp_m : ocp_m_array;
+	type ocp_s_array is array (0 to number_of_leafs-1) of ocp_burst_s;
+	signal ocp_s : ocp_s_array;
+ begin
+  noc : entity work.r2l_noc
+  port map (clk,root_port,leaf_ports);
+    
+  root_module : entity work.root
+  port map (clk,reset,root_port);
+  
+  leafs : for i in 0 to number_of_leafs-1 generate
+	leaf_node : entity work.network_adapter
+	port map(clk,reset,leaf_ports(i),ocp_m(i),ocp_s(i));
+  end generate;
+  
+  ocpburst : entity work.ocpburst_testbench
+  port map(clk,reset, ocp_m(0), ocp_s(0));
+end testbench;
+  
