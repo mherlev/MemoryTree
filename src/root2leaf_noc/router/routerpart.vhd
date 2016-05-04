@@ -31,14 +31,14 @@ use ieee.std_logic_1164.all;
 library work;
 use work.MemoryTreePackage.all;
 
-entity routerport is
+entity r2lrouterport is
 	generic(routing_index : natural := 0);
 	port(	clk		: in	std_logic;
 			input	: in	phit_r;
 			output	: out	phit_r);
-end entity routerport;
+end entity r2lrouterport;
 
-architecture rtl of routerport is
+architecture rtl of r2lrouterport is
 	type states is (idle, active);
 	signal state, state_next : states := idle;
 

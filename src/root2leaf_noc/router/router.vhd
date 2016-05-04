@@ -31,17 +31,17 @@ use ieee.std_logic_1164.all;
 library work;
 use work.MemoryTreePackage.all;
 
-entity router is
+entity r2lrouter is
 	generic(routing_level : natural := 0);
 	port(	clk		: in	std_logic;
 			input	: in	phit_r;
 			output	: out	router_output);
-end entity router;
+end entity r2lrouter;
 
-architecture structural of router is
+architecture structural of r2lrouter is
 begin
 		ports : for i in 0 to outputs_per_router-1 generate
-			outport : entity work.routerport
+			outport : entity work.r2lrouterport
 			generic map(routing_level*outputs_per_router+i)
 			port map(clk, input, output(i));
 		end generate;

@@ -46,7 +46,7 @@ architecture rtl of ocpburst_testbench is
 
 	signal counter, counter_next : unsigned(OCP_DATA_WIDTH-1 downto 0);
 begin
-	process(state,counter)
+	process(state,counter,ocp_s)
 	begin
 		state_next <= state;
 		counter_next <= counter;
@@ -60,13 +60,14 @@ begin
 			ocp_m.mcmd <= ocp_cmd_wr;
 			ocp_m.maddr <= std_logic_vector(counter(ocp_m.maddr'length-1 downto 0));
 			ocp_m.mdata <= std_logic_vector(counter);
-			ocp_m.mdatabyteen <= (others => '0');
+			ocp_m.mdatabyteen <= (others => '1');
 			ocp_m.mdatavalid <= '1';
-			if ocp_s.scmdaccept = '1' then
+			if ocp_s.SCmdAccept = '1' then
 				state_next <= writing;
 				counter_next <= counter + 1;
 			end if;
 		when writing =>
+		  counter_next <= counter+to_unsigned(1,counter'length);
 			ocp_m.mdata <= std_logic_vector(counter);
 			ocp_m.mdatavalid <= '1';
 			if counter = OCP_burst_length-1 then
