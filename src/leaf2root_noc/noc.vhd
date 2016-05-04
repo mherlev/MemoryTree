@@ -23,8 +23,8 @@
 -- ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 -- POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
--- Title: Router
--- Description: Router for Root to Leaf NoC
+-- Title: NoC
+-- Description: Leaf to Root NoC
 --------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
@@ -59,13 +59,7 @@ begin
 			links((1-outputs_per_router**i)/(1-outputs_per_router)+j));
 		end generate;
 	end generate;
-	
---	mappings : for i in 1 to number_of_levels generate
---		maplevels: for j in 0 to outputs_per_router**i-1 generate
---			links((1-outputs_per_router**(i))/(1-outputs_per_router)+j) <= 
---			outlinks((1-outputs_per_router**(i-1))/(1-outputs_per_router)+j/(outputs_per_router**i))(j mod outputs_per_router);
---		end generate;
---	end generate;
+
 	mappings : for i in 0 to number_of_levels-1 generate
 		maplevels: for j in 0 to outputs_per_router**i-1 generate
 			kit : for k in 0 to outputs_per_router-1 generate
@@ -73,7 +67,9 @@ begin
 			end generate;
 		end generate;
 	end generate;
+
 	root <= links(0);
+
 	leafmappings : for i in 1 to number_of_leafs generate
 		links((1-outputs_per_router**(number_of_levels+1))/(1-outputs_per_router)-i) <= leafs(number_of_leafs - i);
 	end generate;

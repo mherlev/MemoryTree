@@ -24,7 +24,7 @@
 -- POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
 -- Title: Router
--- Description: Router for Leaf 2 Root NoC
+-- Description: Router input port for Leaf 2 Root NoC
 --------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
@@ -45,45 +45,12 @@ architecture rtl of l2r_routerport is
 	signal data, data_next : phit_r;
 	signal en : std_logic := '0';
 begin
---	data_next <= input;
---	output.payload <= data.payload;
---  output.tag <= en & data.tag(0);
 	fsm : process(state, input)
 	begin
-			output <= (others => (others =>'0'));
-			if input.tag = header_tag or input.tag = payload_tag then
-					output <= input;
-			end if;
---		state_next <= state;
---		en <= '0';
---		case state is
---		when idle =>
---		  	output <= (others => (others => '0'));
---			if input.tag = header_tag then
---				state_next <= active;
---				en <= '1';
---			end if;
---		when active =>
---			en <= '1';
---			output <= data;
---			if input.tag = empty_tag or input.tag = tail_tag then
---				state_next <= idle;
---				en <= '0';
---			end if;
---		when others =>
---			state_next <= idle;
---		end case;
+		output <= (others => (others =>'0'));
+		if input.tag = header_tag or input.tag = payload_tag then
+			output <= input;
+		end if;
 	end process fsm;
-
---	registers : process(clk)
---	begin
---		if rising_edge(clk) then
---			state <= state_next;
---			if en = '1' then
---				data <= data_next;
---			end if;
---		end if;
---	end process registers;
---
 end rtl;
 

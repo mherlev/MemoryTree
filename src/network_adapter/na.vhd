@@ -24,7 +24,7 @@
 -- POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
 -- Title: Network Adapter
--- Description: Type definitions and constants for Memory Tree
+-- Description: Network adapater for memeory tree
 --------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
@@ -48,50 +48,51 @@ architecture rtl of network_adapter is
     signal counter, counter_next  : unsigned(31 downto 0) := (others => '0');
 
 begin
-		process(state,ocp_m,r2lnoc,counter)
-		begin
-			l2rnoc.payload <= (others=>'0');
-			l2rnoc.tag <= empty_tag;
-			state_next <= state;
-			counter_next <= counter;
-			ocp_s.SCmdAccept <= '0';
-			ocp_s.SResp <= OCP_RESP_NULL;
-			case state is
-			when idle =>
-				if r2lnoc.tag = header_tag then
-					if ocp_m.mcmd = ocp_cmd_wr then
-						state_next <= write;
-					elsif ocp_m.mcmd = ocp_cmd_rd then
-						state_next <= read_wait;
-					end if;
+	process(state,ocp_m,r2lnoc,counter)
+	begin
+		l2rnoc.payload <= (others=>'0');
+		l2rnoc.tag <= empty_tag;
+		state_next <= state;
+		counter_next <= counter;
+		ocp_s.SCmdAccept <= '0';
+		ocp_s.SResp <= OCP_RESP_NULL;
+		case state is
+		when idle =>
+			if r2lnoc.tag = header_tag then
+				if ocp_m.mcmd = ocp_cmd_wr then
+					state_next <= write;
+					l2rnoc.tag <= header_tag;
+				elsif ocp_m.mcmd = ocp_cmd_rd then
+					state_next <= read_wait;
 				end if;
-			when write =>
-        counter_next <= counter+1;
-			  
-			  if counter = 0 then
-			     ocp_s.SCmdAccept <= '1';
-			  elsif counter = ocp_burst_length-1 then
-			     state_next <= write_wait;
-			   counter_next <= (others => '0');
-			  end if;
-			    
-			when others =>
-				state_next <= idle;
-			end case;
-		end process;
+			end if;
+		when write =>
+    	counter_next <= counter+1;
+		l2rnoc.payload <= ocp_m.MData;
+		l2rnoc.tag <= payload_tag;
+		if counter = 0 then
+			ocp_s.SCmdAccept <= '1';
+		elsif counter = ocp_burst_length-1 then
+	    	state_next <= write_wait;
+			counter_next <= (others => '0');
+		end if;
+		when others =>
+			state_next <= idle;
+		end case;
+	end process;
 
-		process (clk,rst)
-		begin
-				if rising_edge(clk) then
-					if rst = '1' then
-						state <= idle;
-						counter <= (others => '0');
-					else
-						state <= state_next;
-						counter <= counter_next;
-					end if;
-				end if;
-		end process;
+	process (clk,rst)
+	begin
+		if rising_edge(clk) then
+			if rst = '1' then
+				state <= idle;
+				counter <= (others => '0');
+			else
+				state <= state_next;
+				counter <= counter_next;
+			end if;
+		end if;
+	end process;
 end rtl;
 
 

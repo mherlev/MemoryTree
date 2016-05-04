@@ -44,18 +44,15 @@ package MemoryTreePackage is
 		payload	: std_logic_vector(payload_width-1 downto 0);
 	end record phit_r;
 
---	constant routers_per_level : natural := 2;
 	constant number_of_levels : natural := 2;
 	
 	constant outputs_per_router : integer := 2;
 	type router_output is array(0 to outputs_per_router-1) of phit_r;
 
-	
 	constant number_of_routers : integer := outputs_per_router**number_of_levels;
 	
 	constant number_of_leafs : integer := outputs_per_router**number_of_levels;
 	type phit_arr is array(0 to number_of_leafs-1) of phit_r;
-	
 	
 	constant ocp_burst_length : integer := 4;
 	
