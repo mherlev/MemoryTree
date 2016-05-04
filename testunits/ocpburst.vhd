@@ -30,6 +30,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 library work;
+use work.memorytreepackage.all;
 use work.ocp.all;
 
 entity ocpburst_testbench is
@@ -68,7 +69,7 @@ begin
 		when writing =>
 			ocp_m.mdata <= std_logic_vector(counter);
 			ocp_m.mdatavalid <= '1';
-			if counter = 3 then
+			if counter = OCP_burst_length-1 then
 					state_next <= write_response;
 			end if;
 

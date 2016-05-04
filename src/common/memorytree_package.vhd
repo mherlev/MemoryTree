@@ -54,6 +54,6 @@ package MemoryTreePackage is
 	constant number_of_leafs : integer := outputs_per_router**number_of_levels;
 	type phit_arr is array(0 to number_of_leafs-1) of phit_r;
 	
-	constant ocp_burst_length : integer := 4;
+	constant ocp_burst_length : integer := 16;
 	
 end;

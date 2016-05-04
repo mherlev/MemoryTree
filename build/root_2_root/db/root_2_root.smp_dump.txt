@@ -6,34 +6,34 @@ state.writing 0 1 1
 state.write_response 1 0 1 
 
 State Machine - |root_2_root|network_adapter:\leafs:3:leaf_node|state
-Name state.read state.read_wait state.write_wait state.write state.idle 
+Name state.read state.read_wait state.writebyteen state.writedata state.idle 
 state.idle 0 0 0 0 0 
-state.write 0 0 0 1 1 
-state.write_wait 0 0 1 0 1 
+state.writedata 0 0 0 1 1 
+state.writebyteen 0 0 1 0 1 
 state.read_wait 0 1 0 0 1 
 state.read 1 0 0 0 1 
 
 State Machine - |root_2_root|network_adapter:\leafs:2:leaf_node|state
-Name state.read state.read_wait state.write_wait state.write state.idle 
+Name state.read state.read_wait state.writebyteen state.writedata state.idle 
 state.idle 0 0 0 0 0 
-state.write 0 0 0 1 1 
-state.write_wait 0 0 1 0 1 
+state.writedata 0 0 0 1 1 
+state.writebyteen 0 0 1 0 1 
 state.read_wait 0 1 0 0 1 
 state.read 1 0 0 0 1 
 
 State Machine - |root_2_root|network_adapter:\leafs:1:leaf_node|state
-Name state.read state.read_wait state.write_wait state.write state.idle 
+Name state.read state.read_wait state.writebyteen state.writedata state.idle 
 state.idle 0 0 0 0 0 
-state.write 0 0 0 1 1 
-state.write_wait 0 0 1 0 1 
+state.writedata 0 0 0 1 1 
+state.writebyteen 0 0 1 0 1 
 state.read_wait 0 1 0 0 1 
 state.read 1 0 0 0 1 
 
 State Machine - |root_2_root|network_adapter:\leafs:0:leaf_node|state
-Name state.read state.read_wait state.write_wait state.write state.idle 
+Name state.read state.read_wait state.writebyteen state.writedata state.idle 
 state.idle 0 0 0 0 0 
-state.write 0 0 0 1 1 
-state.write_wait 0 0 1 0 1 
+state.writedata 0 0 0 1 1 
+state.writebyteen 0 0 1 0 1 
 state.read_wait 0 1 0 0 1 
 state.read 1 0 0 0 1 
 

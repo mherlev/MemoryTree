@@ -63,7 +63,7 @@ begin
 		when idle =>
 			if r2lnoc.tag = header_tag then
 				if ocp_m.mcmd = ocp_cmd_wr then
-					state_next <= write;
+					state_next <= WriteData;
 					l2rnoc.tag <= header_tag;
 				elsif ocp_m.mcmd = ocp_cmd_rd then
 					state_next <= read_wait;
@@ -85,8 +85,8 @@ begin
 	    	counter_next <= counter+1;
 			l2rnoc.payload <= ByteEnShiftReg(ShiftRegLength-1 downto ShiftRegLength-32);
 			l2rnoc.tag <= payload_tag;
-			ByteEnShiftReg_next <= ByteEnShiftReg(ShiftRegLength-1 downto OCP_BYTE_WIDTH)
-								   & std_logic_vector(to_unsigned(0,32));
+			ByteEnShiftReg_next <= ByteEnShiftReg(ShiftRegLength-1 downto OCP_DATA_WIDTH)
+								   & std_logic_vector(to_unsigned(0,OCP_DATA_WIDTH));
 			if counter = 0 then
 				ocp_s.SResp <= OCP_RESP_DVA;
 			elsif counter = ocp_burst_length/8-1 then
