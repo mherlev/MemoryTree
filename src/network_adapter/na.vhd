@@ -67,6 +67,8 @@ begin
 					l2rnoc.tag <= header_tag;
 				elsif ocp_m.mcmd = ocp_cmd_rd then
 					state_next <= read_wait;
+					ocp_s.SCmdAccept <= '1';
+					l2rnoc.tag <= header_tag;
 				end if;
 			end if;
 		when WriteData =>
@@ -94,6 +96,17 @@ begin
 				counter_next <= (others => '0');
 			end if;
 
+		when read_wait =>
+			--TODO
+				state_next <= read;
+		when read =>
+			--TODO Complete this
+			ocp_s.SResp <= OCP_RESP_DVA;
+			counter_next <= counter + to_unsigned(1, counter'length);
+			if counter = ocp_burst_length-1 then
+				state_next <= idle;
+				counter_next <= (others => '0');
+			end if;
 		when others =>
 			state_next <= idle;
 		end case;
