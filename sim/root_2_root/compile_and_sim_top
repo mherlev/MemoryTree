@@ -1,0 +1,17 @@
+vsim -voptargs=+acc work.root_2_root
+
+add wave -position insertpoint  \
+sim:/root_2_root/clk \
+sim:/root_2_root/l2r_leaf_ports \
+sim:/root_2_root/l2r_root_port \
+sim:/root_2_root/ocp_m \
+sim:/root_2_root/ocp_s \
+sim:/root_2_root/r2l_leaf_ports \
+sim:/root_2_root/r2l_root_port \
+sim:/root_2_root/reset
+
+force clk 0 0, 1 1 -repeat 2
+
+force reset 1 0, 0 3
+
+run 900 ns

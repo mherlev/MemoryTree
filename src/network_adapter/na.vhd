@@ -50,7 +50,7 @@ architecture rtl of network_adapter is
 	constant ShiftRegLength : integer := ocp_burst_length*OCP_BYTE_WIDTH;
 	signal ByteEnShiftReg,ByteEnShiftReg_next : std_logic_vector(ShiftRegLength-1 downto 0) := (others => '0');
 begin
-	process(state,ocp_m,r2lnoc,counter)
+	process(state,ocp_m,r2lnoc,counter,ByteEnShiftReg)
 	begin
 		l2rnoc.payload <= (others=>'0');
 		l2rnoc.tag <= empty_tag;
@@ -58,6 +58,8 @@ begin
 		counter_next <= counter;
 		ocp_s.SCmdAccept <= '0';
 		ocp_s.SResp <= OCP_RESP_NULL;
+		ocp_s.SData <= (others => '0');
+		ocp_s.SDataAccept <= '0';
 		ByteEnShiftReg_next <= ByteEnShiftReg;
 		case state is
 		when idle =>
@@ -65,18 +67,23 @@ begin
 				if ocp_m.mcmd = ocp_cmd_wr then
 					state_next <= WriteData;
 					l2rnoc.tag <= header_tag;
+					l2rnoc.payload <= (others => '0');
+					l2rnoc.payload(OCP_DATA_WIDTH-1 downto OCP_DATA_WIDTH-OCP_CMD_WIDTH) <= ocp_m.MCmd;
+					l2rnoc.payload(ocp_m.MAddr'length-1 downto 0) <= ocp_m.MAddr;
 				elsif ocp_m.mcmd = ocp_cmd_rd then
 					state_next <= read_wait;
 					ocp_s.SCmdAccept <= '1';
 					l2rnoc.tag <= header_tag;
+					l2rnoc.payload <= (others => '0');
+					l2rnoc.payload(OCP_DATA_WIDTH-1 downto OCP_DATA_WIDTH-OCP_CMD_WIDTH) <= ocp_m.MCmd;
+					l2rnoc.payload(ocp_m.MAddr'length-1 downto 0) <= ocp_m.MAddr;
 				end if;
 			end if;
 		when WriteData =>
 	    	counter_next <= counter+1;
 			l2rnoc.payload <= ocp_m.MData;
 			l2rnoc.tag <= payload_tag;
-			ByteEnShiftReg_next <= ByteEnShiftReg(ShiftRegLength-1 downto OCP_BYTE_WIDTH)
-								   & ocp_m.MDataByteEn;
+			ByteEnShiftReg_next <= ocp_m.MDataByteEn & ByteEnShiftReg(ShiftRegLength-1 downto OCP_BYTE_WIDTH);
 			if counter = 0 then
 				ocp_s.SCmdAccept <= '1';
 			elsif counter = ocp_burst_length-1 then
@@ -85,10 +92,9 @@ begin
 			end if;
 		when WriteByteEn =>
 	    	counter_next <= counter+1;
-			l2rnoc.payload <= ByteEnShiftReg(ShiftRegLength-1 downto ShiftRegLength-32);
+			l2rnoc.payload <= ByteEnShiftReg(OCP_DATA_WIDTH-1 downto 0);
 			l2rnoc.tag <= payload_tag;
-			ByteEnShiftReg_next <= ByteEnShiftReg(ShiftRegLength-1 downto OCP_DATA_WIDTH)
-								   & std_logic_vector(to_unsigned(0,OCP_DATA_WIDTH));
+			ByteEnShiftReg_next <= std_logic_vector(to_unsigned(0,OCP_DATA_WIDTH)) & ByteEnShiftReg(ShiftRegLength-1 downto OCP_DATA_WIDTH);
 			if counter = 0 then
 				ocp_s.SResp <= OCP_RESP_DVA;
 			elsif counter = ocp_burst_length/8-1 then

@@ -62,7 +62,9 @@ architecture testbench of root_2_root is
 	port map(clk,reset,r2l_leaf_ports(i),l2r_leaf_ports(i),ocp_m(i),ocp_s(i));
   end generate;
   
-  ocpburst : entity work.ocpburst_testbench
-  port map(clk,reset, ocp_m(0), ocp_s(0));
+  burstmodule : for i in 0 to number_of_leafs-1 generate
+	ocpburst : entity work.ocpburst_testbench
+	port map(clk,reset, ocp_m(i), ocp_s(i));
+  end generate;
 end testbench;
   

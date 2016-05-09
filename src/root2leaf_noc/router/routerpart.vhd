@@ -48,7 +48,7 @@ begin
 	data_next <= input;
 --	output.payload <= data.payload;
 --  output.tag <= en & data.tag(0);
-	fsm : process(state, input)
+	fsm : process(state, input,data)
 	begin
 		state_next <= state;
 		en <= '0';

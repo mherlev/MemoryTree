@@ -1,5 +1,32 @@
 
-State Machine - |root_2_root|ocpburst_testbench:ocpburst|state
+State Machine - |root_2_root|ocpburst_testbench:\burstmodule:3:ocpburst|state
+Name state.read state.read_await_resp state.read_await_accept state.write_response state.writing state.write 
+state.write 0 0 0 0 0 0 
+state.writing 0 0 0 0 1 1 
+state.write_response 0 0 0 1 0 1 
+state.read_await_accept 0 0 1 0 0 1 
+state.read_await_resp 0 1 0 0 0 1 
+state.read 1 0 0 0 0 1 
+
+State Machine - |root_2_root|ocpburst_testbench:\burstmodule:2:ocpburst|state
+Name state.read state.read_await_resp state.read_await_accept state.write_response state.writing state.write 
+state.write 0 0 0 0 0 0 
+state.writing 0 0 0 0 1 1 
+state.write_response 0 0 0 1 0 1 
+state.read_await_accept 0 0 1 0 0 1 
+state.read_await_resp 0 1 0 0 0 1 
+state.read 1 0 0 0 0 1 
+
+State Machine - |root_2_root|ocpburst_testbench:\burstmodule:1:ocpburst|state
+Name state.read state.read_await_resp state.read_await_accept state.write_response state.writing state.write 
+state.write 0 0 0 0 0 0 
+state.writing 0 0 0 0 1 1 
+state.write_response 0 0 0 1 0 1 
+state.read_await_accept 0 0 1 0 0 1 
+state.read_await_resp 0 1 0 0 0 1 
+state.read 1 0 0 0 0 1 
+
+State Machine - |root_2_root|ocpburst_testbench:\burstmodule:0:ocpburst|state
 Name state.read state.read_await_resp state.read_await_accept state.write_response state.writing state.write 
 state.write 0 0 0 0 0 0 
 state.writing 0 0 0 0 1 1 
@@ -39,6 +66,12 @@ state.writedata 0 0 0 1 1
 state.writebyteen 0 0 1 0 1 
 state.read_wait 0 1 0 0 1 
 state.read 1 0 0 0 1 
+
+State Machine - |root_2_root|root:root_module|l2r_state
+Name l2r_state.write_en l2r_state.write_data l2r_state.idle 
+l2r_state.idle 0 0 0 
+l2r_state.write_data 0 1 1 
+l2r_state.write_en 1 0 1 
 
 State Machine - |root_2_root|root:root_module|refresh_timer:ref_timer|state
 Name state.halt state.idle state.refresh2 state.refresh1 
