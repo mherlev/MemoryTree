@@ -41,15 +41,16 @@ ocp_s : in ocp_burst_s);
 end ocpburst_testbench;
 
 architecture rtl of ocpburst_testbench is
-	type states is (write,writing,write_response);
+	type states is (write,writing,write_response,read_await_accept,read_await_resp);
 	signal state, state_next : states;
-
-	signal counter, counter_next : unsigned(OCP_DATA_WIDTH-1 downto 0);
+	signal burst_count, burst_count_next : unsigned(OCP_DATA_WIDTH-1 downto 0) := (others => '0');
+	signal addr_count, addr_count_next : unsigned(OCP_DATA_WIDTH-1 downto 0);
 begin
 	process(state,counter,ocp_s)
 	begin
 		state_next <= state;
-		counter_next <= counter;
+		burst_count_next <= burst_count;
+		addr_count_next <= addr_count;
 		ocp_m.mcmd <= ocp_cmd_idle;
 		ocp_m.maddr <= (others => '0');
 		ocp_m.mdata <= (others => '0');
@@ -58,26 +59,49 @@ begin
 		case state is
 		when write =>
 			ocp_m.mcmd <= ocp_cmd_wr;
-			ocp_m.maddr <= std_logic_vector(counter(ocp_m.maddr'length-1 downto 0));
-			ocp_m.mdata <= std_logic_vector(counter);
+			ocp_m.maddr <= std_logic_vector(addr_count(ocp_m.maddr'length-1 downto 0));
+			ocp_m.mdata <= std_logic_vector(burst_count);
 			ocp_m.mdatabyteen <= (others => '1');
 			ocp_m.mdatavalid <= '1';
 			if ocp_s.SCmdAccept = '1' then
 				state_next <= writing;
-				counter_next <= counter + 1;
+				burst_count_next <= burst_count + to_unisgned(1,burst_count'length);
+				addr_count_next <= addr_count + to_unisgned(1,addr_count'length);
 			end if;
 		when writing =>
-		  counter_next <= counter+to_unsigned(1,counter'length);
-			ocp_m.mdata <= std_logic_vector(counter);
+			burst_count_next <= burst_count+to_unsigned(1,burst_count'length);
+			ocp_m.mdata <= std_logic_vector(burst_count);
 			ocp_m.mdatavalid <= '1';
-			if counter = OCP_burst_length-1 then
-					state_next <= write_response;
+			if burst_count = OCP_burst_length-1 then
+				state_next <= write_response;
+				burst_count_next <= (others => '0');
 			end if;
 
 		when write_response =>
+			if ocp_s.SResp = OCP_RESP_DVA then
+				state_next <= write;
+			end if;
+		when read_await_accept =>
+			ocp_m.MCmd <= OCP_CMD_RD;
+			ocp_m.maddr <= std_logic_vector(addr_count(ocp_m.maddr'length-1 downto 0));
+			if ocp_s.SCmdAccept = '1' then
+				state_next <= read_await_resp;
 				if ocp_s.SResp = OCP_RESP_DVA then
-						state_next <= write;
+					state_next <= read;
+					burst_count_next <= burst_count + to_unsigned(1,burst_count'length);
 				end if;
+			end if;
+		when read_await_resp =>
+			if ocp_s.SResp = OCP_RESP_DVA then
+				state_next <= read;
+				burst_count_next <= burst_count + to_unsigned(1,burst_count'length);
+			end if;
+		when read =>
+			if burst_count = OCP_burst_length-1 then
+				burst_count_next <= (others => '0');
+				addr_count_next <= addr_count + to_unsigned(4,addr_count'length);
+				state_next <= write;
+			end if;
 		when others =>
 				state_next <= write;
 		end case;
@@ -87,11 +111,13 @@ begin
 	begin
 		if rising_edge(clk) then
 			if reset = '1' then
-				counter <= (others => '0');
 				state <= write;
+				burst_count <= (others => '0');
+				addr_count <= (others => '0');
 			else
-				counter <= counter_next;
 				state <= state_next;
+				burst_count <= burst_count_next;
+				addr_count <= addr_count_next;
 			end if;
 		end if;
 	end process;
