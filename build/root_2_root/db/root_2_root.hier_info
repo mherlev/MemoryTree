@@ -2848,7 +2848,7 @@ ocp_m.MCmd[1] => Equal2.IN0
 ocp_m.MCmd[2] => Equal1.IN1
 ocp_m.MCmd[2] => Equal2.IN1
 ocp_s.SDataAccept <= <GND>
-ocp_s.SCmdAccept <= ocp_s.DB_MAX_OUTPUT_PORT_TYPE
+ocp_s.SCmdAccept <= Selector39.DB_MAX_OUTPUT_PORT_TYPE
 ocp_s.SData[0] <= <GND>
 ocp_s.SData[1] <= <GND>
 ocp_s.SData[2] <= <GND>
@@ -2881,7 +2881,7 @@ ocp_s.SData[28] <= <GND>
 ocp_s.SData[29] <= <GND>
 ocp_s.SData[30] <= <GND>
 ocp_s.SData[31] <= <GND>
-ocp_s.SResp[0] <= ocp_s.DB_MAX_OUTPUT_PORT_TYPE
+ocp_s.SResp[0] <= Selector38.DB_MAX_OUTPUT_PORT_TYPE
 ocp_s.SResp[1] <= <GND>
 
 
@@ -3153,7 +3153,7 @@ ocp_m.MCmd[1] => Equal2.IN0
 ocp_m.MCmd[2] => Equal1.IN1
 ocp_m.MCmd[2] => Equal2.IN1
 ocp_s.SDataAccept <= <GND>
-ocp_s.SCmdAccept <= ocp_s.DB_MAX_OUTPUT_PORT_TYPE
+ocp_s.SCmdAccept <= Selector39.DB_MAX_OUTPUT_PORT_TYPE
 ocp_s.SData[0] <= <GND>
 ocp_s.SData[1] <= <GND>
 ocp_s.SData[2] <= <GND>
@@ -3186,7 +3186,7 @@ ocp_s.SData[28] <= <GND>
 ocp_s.SData[29] <= <GND>
 ocp_s.SData[30] <= <GND>
 ocp_s.SData[31] <= <GND>
-ocp_s.SResp[0] <= ocp_s.DB_MAX_OUTPUT_PORT_TYPE
+ocp_s.SResp[0] <= Selector38.DB_MAX_OUTPUT_PORT_TYPE
 ocp_s.SResp[1] <= <GND>
 
 
@@ -3458,7 +3458,7 @@ ocp_m.MCmd[1] => Equal2.IN0
 ocp_m.MCmd[2] => Equal1.IN1
 ocp_m.MCmd[2] => Equal2.IN1
 ocp_s.SDataAccept <= <GND>
-ocp_s.SCmdAccept <= ocp_s.DB_MAX_OUTPUT_PORT_TYPE
+ocp_s.SCmdAccept <= Selector39.DB_MAX_OUTPUT_PORT_TYPE
 ocp_s.SData[0] <= <GND>
 ocp_s.SData[1] <= <GND>
 ocp_s.SData[2] <= <GND>
@@ -3491,7 +3491,7 @@ ocp_s.SData[28] <= <GND>
 ocp_s.SData[29] <= <GND>
 ocp_s.SData[30] <= <GND>
 ocp_s.SData[31] <= <GND>
-ocp_s.SResp[0] <= ocp_s.DB_MAX_OUTPUT_PORT_TYPE
+ocp_s.SResp[0] <= Selector38.DB_MAX_OUTPUT_PORT_TYPE
 ocp_s.SResp[1] <= <GND>
 
 
@@ -3763,7 +3763,7 @@ ocp_m.MCmd[1] => Equal2.IN0
 ocp_m.MCmd[2] => Equal1.IN1
 ocp_m.MCmd[2] => Equal2.IN1
 ocp_s.SDataAccept <= <GND>
-ocp_s.SCmdAccept <= ocp_s.DB_MAX_OUTPUT_PORT_TYPE
+ocp_s.SCmdAccept <= Selector39.DB_MAX_OUTPUT_PORT_TYPE
 ocp_s.SData[0] <= <GND>
 ocp_s.SData[1] <= <GND>
 ocp_s.SData[2] <= <GND>
@@ -3796,7 +3796,7 @@ ocp_s.SData[28] <= <GND>
 ocp_s.SData[29] <= <GND>
 ocp_s.SData[30] <= <GND>
 ocp_s.SData[31] <= <GND>
-ocp_s.SResp[0] <= ocp_s.DB_MAX_OUTPUT_PORT_TYPE
+ocp_s.SResp[0] <= Selector38.DB_MAX_OUTPUT_PORT_TYPE
 ocp_s.SResp[1] <= <GND>
 
 

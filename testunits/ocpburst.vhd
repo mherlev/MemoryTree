@@ -97,6 +97,7 @@ begin
 				burst_count_next <= burst_count + to_unsigned(1,burst_count'length);
 			end if;
 		when read =>
+			burst_count_next <= burst_count + to_unsigned(1,burst_count'length);
 			if burst_count = OCP_burst_length-1 then
 				burst_count_next <= (others => '0');
 				addr_count_next <= addr_count + to_unsigned(4,addr_count'length);
