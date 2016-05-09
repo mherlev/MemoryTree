@@ -1,5 +1,5 @@
 Analysis & Synthesis report for root_2_root
-Wed May  4 16:45:15 2016
+Mon May  9 10:48:01 2016
 Quartus II 64-Bit Version 15.0.0 Build 145 04/22/2015 SJ Web Edition
 
 
@@ -22,15 +22,15 @@ Quartus II 64-Bit Version 15.0.0 Build 145 04/22/2015 SJ Web Edition
  14. Removed Registers Triggering Further Register Optimizations
  15. General Register Statistics
  16. Multiplexer Restructuring Statistics (Restructuring Performed)
- 17. Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|router:\routers:0:levels:0:router_inst
- 18. Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|router:\routers:0:levels:0:router_inst|routerport:\ports:0:outport
- 19. Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|router:\routers:0:levels:0:router_inst|routerport:\ports:1:outport
- 20. Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|router:\routers:1:levels:0:router_inst
- 21. Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|router:\routers:1:levels:0:router_inst|routerport:\ports:0:outport
- 22. Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|router:\routers:1:levels:0:router_inst|routerport:\ports:1:outport
- 23. Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|router:\routers:1:levels:1:router_inst
- 24. Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|router:\routers:1:levels:1:router_inst|routerport:\ports:0:outport
- 25. Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|router:\routers:1:levels:1:router_inst|routerport:\ports:1:outport
+ 17. Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|r2lrouter:\routers:0:levels:0:router_inst
+ 18. Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|r2lrouter:\routers:0:levels:0:router_inst|r2lrouterport:\ports:0:outport
+ 19. Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|r2lrouter:\routers:0:levels:0:router_inst|r2lrouterport:\ports:1:outport
+ 20. Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|r2lrouter:\routers:1:levels:0:router_inst
+ 21. Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|r2lrouter:\routers:1:levels:0:router_inst|r2lrouterport:\ports:0:outport
+ 22. Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|r2lrouter:\routers:1:levels:0:router_inst|r2lrouterport:\ports:1:outport
+ 23. Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|r2lrouter:\routers:1:levels:1:router_inst
+ 24. Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|r2lrouter:\routers:1:levels:1:router_inst|r2lrouterport:\ports:0:outport
+ 25. Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|r2lrouter:\routers:1:levels:1:router_inst|r2lrouterport:\ports:1:outport
  26. Parameter Settings for User Entity Instance: l2r_noc:l2rnoc|l2r_router:\routers:0:levels:0:router_inst
  27. Parameter Settings for User Entity Instance: l2r_noc:l2rnoc|l2r_router:\routers:0:levels:0:router_inst|l2r_routerport:\ports:0:outport
  28. Parameter Settings for User Entity Instance: l2r_noc:l2rnoc|l2r_router:\routers:0:levels:0:router_inst|l2r_routerport:\ports:1:outport
@@ -73,7 +73,7 @@ agreement for further details.
 +------------------------------------------------------------------------------+
 ; Analysis & Synthesis Summary                                                 ;
 +---------------------------------+--------------------------------------------+
-; Analysis & Synthesis Status     ; Successful - Wed May  4 16:45:15 2016      ;
+; Analysis & Synthesis Status     ; Successful - Mon May  9 10:48:01 2016      ;
 ; Quartus II 64-Bit Version       ; 15.0.0 Build 145 04/22/2015 SJ Web Edition ;
 ; Revision Name                   ; root_2_root                                ;
 ; Top-level Entity Name           ; root_2_root                                ;
@@ -244,15 +244,18 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 
 
 Encoding Type:  One-Hot
-+---------------------------------------------------------------------------+
-; State Machine - |root_2_root|ocpburst_testbench:ocpburst|state            ;
-+----------------------+----------------------+---------------+-------------+
-; Name                 ; state.write_response ; state.writing ; state.write ;
-+----------------------+----------------------+---------------+-------------+
-; state.write          ; 0                    ; 0             ; 0           ;
-; state.writing        ; 0                    ; 1             ; 1           ;
-; state.write_response ; 1                    ; 0             ; 1           ;
-+----------------------+----------------------+---------------+-------------+
++---------------------------------------------------------------------------------------------------------------------------------------------+
+; State Machine - |root_2_root|ocpburst_testbench:ocpburst|state                                                                              ;
++-------------------------+------------+-----------------------+-------------------------+----------------------+---------------+-------------+
+; Name                    ; state.read ; state.read_await_resp ; state.read_await_accept ; state.write_response ; state.writing ; state.write ;
++-------------------------+------------+-----------------------+-------------------------+----------------------+---------------+-------------+
+; state.write             ; 0          ; 0                     ; 0                       ; 0                    ; 0             ; 0           ;
+; state.writing           ; 0          ; 0                     ; 0                       ; 0                    ; 1             ; 1           ;
+; state.write_response    ; 0          ; 0                     ; 0                       ; 1                    ; 0             ; 1           ;
+; state.read_await_accept ; 0          ; 0                     ; 1                       ; 0                    ; 0             ; 1           ;
+; state.read_await_resp   ; 0          ; 1                     ; 0                       ; 0                    ; 0             ; 1           ;
+; state.read              ; 1          ; 0                     ; 0                       ; 0                    ; 0             ; 1           ;
++-------------------------+------------+-----------------------+-------------------------+----------------------+---------------+-------------+
 
 
 Encoding Type:  One-Hot
@@ -324,274 +327,312 @@ Encoding Type:  One-Hot
 +----------------+------------+------------+----------------+-----------------+
 
 
-+----------------------------------------------------------------------------------------------------------------------------------------------+
-; Registers Removed During Synthesis                                                                                                           ;
-+-----------------------------------------------------------------------------------------------------+----------------------------------------+
-; Register name                                                                                       ; Reason for Removal                     ;
-+-----------------------------------------------------------------------------------------------------+----------------------------------------+
-; r2l_noc:r2lnoc|router:\routers:0:levels:0:router_inst|routerport:\ports:1:outport|data.tag[0]       ; Stuck at GND due to stuck port data_in ;
-; r2l_noc:r2lnoc|router:\routers:0:levels:0:router_inst|routerport:\ports:0:outport|data.tag[0]       ; Stuck at GND due to stuck port data_in ;
-; r2l_noc:r2lnoc|router:\routers:1:levels:1:router_inst|routerport:\ports:1:outport|data.tag[0,1]     ; Lost fanout                            ;
-; r2l_noc:r2lnoc|router:\routers:1:levels:1:router_inst|routerport:\ports:0:outport|data.tag[0,1]     ; Lost fanout                            ;
-; r2l_noc:r2lnoc|router:\routers:1:levels:0:router_inst|routerport:\ports:1:outport|data.tag[0,1]     ; Lost fanout                            ;
-; r2l_noc:r2lnoc|router:\routers:1:levels:0:router_inst|routerport:\ports:0:outport|data.tag[0]       ; Stuck at GND due to stuck port data_in ;
-; r2l_noc:r2lnoc|router:\routers:1:levels:1:router_inst|routerport:\ports:1:outport|state             ; Lost fanout                            ;
-; r2l_noc:r2lnoc|router:\routers:1:levels:1:router_inst|routerport:\ports:0:outport|state             ; Lost fanout                            ;
-; r2l_noc:r2lnoc|router:\routers:1:levels:0:router_inst|routerport:\ports:1:outport|state             ; Lost fanout                            ;
-; r2l_noc:r2lnoc|router:\routers:0:levels:0:router_inst|routerport:\ports:1:outport|data.payload[2,3] ; Lost fanout                            ;
-; r2l_noc:r2lnoc|router:\routers:0:levels:0:router_inst|routerport:\ports:1:outport|data.tag[1]       ; Lost fanout                            ;
-; r2l_noc:r2lnoc|router:\routers:0:levels:0:router_inst|routerport:\ports:1:outport|state             ; Lost fanout                            ;
-; r2l_noc:r2lnoc|router:\routers:0:levels:0:router_inst|routerport:\ports:0:outport|data.payload[3]   ; Lost fanout                            ;
-; r2l_noc:r2lnoc|router:\routers:1:levels:0:router_inst|routerport:\ports:0:outport|data.tag[1]       ; Stuck at VCC due to stuck port data_in ;
-; network_adapter:\leafs:3:leaf_node|state.read_wait                                                  ; Lost fanout                            ;
-; network_adapter:\leafs:3:leaf_node|state.read                                                       ; Lost fanout                            ;
-; network_adapter:\leafs:2:leaf_node|state.read_wait                                                  ; Lost fanout                            ;
-; network_adapter:\leafs:2:leaf_node|state.read                                                       ; Lost fanout                            ;
-; network_adapter:\leafs:1:leaf_node|state.read_wait                                                  ; Lost fanout                            ;
-; network_adapter:\leafs:1:leaf_node|state.read                                                       ; Lost fanout                            ;
-; network_adapter:\leafs:0:leaf_node|state.read_wait                                                  ; Lost fanout                            ;
-; network_adapter:\leafs:0:leaf_node|state.read                                                       ; Lost fanout                            ;
-; network_adapter:\leafs:0:leaf_node|counter[0..31]                                                   ; Lost fanout                            ;
-; ocpburst_testbench:ocpburst|counter[0..31]                                                          ; Lost fanout                            ;
-; network_adapter:\leafs:3:leaf_node|counter[0..31]                                                   ; Lost fanout                            ;
-; network_adapter:\leafs:2:leaf_node|counter[0..31]                                                   ; Lost fanout                            ;
-; network_adapter:\leafs:1:leaf_node|counter[0..31]                                                   ; Lost fanout                            ;
-; r2l_noc:r2lnoc|router:\routers:1:levels:0:router_inst|routerport:\ports:0:outport|state             ; Lost fanout                            ;
-; root:root_module|refresh_timer:ref_timer|counter[0..31]                                             ; Lost fanout                            ;
-; r2l_noc:r2lnoc|router:\routers:0:levels:0:router_inst|routerport:\ports:0:outport|data.tag[1]       ; Lost fanout                            ;
-; r2l_noc:r2lnoc|router:\routers:0:levels:0:router_inst|routerport:\ports:0:outport|state             ; Lost fanout                            ;
-; r2l_noc:r2lnoc|router:\routers:0:levels:0:router_inst|routerport:\ports:0:outport|data.payload[2]   ; Lost fanout                            ;
-; root:root_module|counter[0..31]                                                                     ; Lost fanout                            ;
-; root:root_module|state                                                                              ; Lost fanout                            ;
-; root:root_module|idx[0,1]                                                                           ; Lost fanout                            ;
-; ocpburst_testbench:ocpburst|state.write                                                             ; Lost fanout                            ;
-; ocpburst_testbench:ocpburst|state.writing                                                           ; Lost fanout                            ;
-; ocpburst_testbench:ocpburst|state.write_response                                                    ; Lost fanout                            ;
-; network_adapter:\leafs:3:leaf_node|state.idle                                                       ; Lost fanout                            ;
-; network_adapter:\leafs:3:leaf_node|state.writedata                                                  ; Lost fanout                            ;
-; network_adapter:\leafs:3:leaf_node|state.writebyteen                                                ; Lost fanout                            ;
-; network_adapter:\leafs:2:leaf_node|state.idle                                                       ; Lost fanout                            ;
-; network_adapter:\leafs:2:leaf_node|state.writedata                                                  ; Lost fanout                            ;
-; network_adapter:\leafs:2:leaf_node|state.writebyteen                                                ; Lost fanout                            ;
-; network_adapter:\leafs:1:leaf_node|state.idle                                                       ; Lost fanout                            ;
-; network_adapter:\leafs:1:leaf_node|state.writedata                                                  ; Lost fanout                            ;
-; network_adapter:\leafs:1:leaf_node|state.writebyteen                                                ; Lost fanout                            ;
-; network_adapter:\leafs:0:leaf_node|state.idle                                                       ; Lost fanout                            ;
-; network_adapter:\leafs:0:leaf_node|state.writedata                                                  ; Lost fanout                            ;
-; network_adapter:\leafs:0:leaf_node|state.writebyteen                                                ; Lost fanout                            ;
-; root:root_module|refresh_timer:ref_timer|state.refresh1                                             ; Lost fanout                            ;
-; root:root_module|refresh_timer:ref_timer|state.refresh2                                             ; Lost fanout                            ;
-; root:root_module|refresh_timer:ref_timer|state.idle                                                 ; Lost fanout                            ;
-; root:root_module|refresh_timer:ref_timer|state.halt                                                 ; Lost fanout                            ;
-; Total Number of Removed Registers = 276                                                             ;                                        ;
-+-----------------------------------------------------------------------------------------------------+----------------------------------------+
++----------------------------------------------------------------------------------------------------------------------------------------------------+
+; Registers Removed During Synthesis                                                                                                                 ;
++-----------------------------------------------------------------------------------------------------------+----------------------------------------+
+; Register name                                                                                             ; Reason for Removal                     ;
++-----------------------------------------------------------------------------------------------------------+----------------------------------------+
+; r2l_noc:r2lnoc|r2lrouter:\routers:0:levels:0:router_inst|r2lrouterport:\ports:1:outport|data.tag[0]       ; Stuck at GND due to stuck port data_in ;
+; r2l_noc:r2lnoc|r2lrouter:\routers:0:levels:0:router_inst|r2lrouterport:\ports:0:outport|data.tag[0]       ; Stuck at GND due to stuck port data_in ;
+; r2l_noc:r2lnoc|r2lrouter:\routers:1:levels:1:router_inst|r2lrouterport:\ports:1:outport|data.tag[0,1]     ; Lost fanout                            ;
+; r2l_noc:r2lnoc|r2lrouter:\routers:1:levels:1:router_inst|r2lrouterport:\ports:0:outport|data.tag[0,1]     ; Lost fanout                            ;
+; r2l_noc:r2lnoc|r2lrouter:\routers:1:levels:0:router_inst|r2lrouterport:\ports:1:outport|data.tag[0,1]     ; Lost fanout                            ;
+; r2l_noc:r2lnoc|r2lrouter:\routers:1:levels:0:router_inst|r2lrouterport:\ports:0:outport|data.tag[0]       ; Stuck at GND due to stuck port data_in ;
+; r2l_noc:r2lnoc|r2lrouter:\routers:1:levels:1:router_inst|r2lrouterport:\ports:1:outport|state             ; Lost fanout                            ;
+; r2l_noc:r2lnoc|r2lrouter:\routers:1:levels:1:router_inst|r2lrouterport:\ports:0:outport|state             ; Lost fanout                            ;
+; r2l_noc:r2lnoc|r2lrouter:\routers:1:levels:0:router_inst|r2lrouterport:\ports:1:outport|state             ; Lost fanout                            ;
+; r2l_noc:r2lnoc|r2lrouter:\routers:0:levels:0:router_inst|r2lrouterport:\ports:1:outport|data.payload[2,3] ; Lost fanout                            ;
+; r2l_noc:r2lnoc|r2lrouter:\routers:0:levels:0:router_inst|r2lrouterport:\ports:1:outport|data.tag[1]       ; Lost fanout                            ;
+; r2l_noc:r2lnoc|r2lrouter:\routers:0:levels:0:router_inst|r2lrouterport:\ports:1:outport|state             ; Lost fanout                            ;
+; r2l_noc:r2lnoc|r2lrouter:\routers:0:levels:0:router_inst|r2lrouterport:\ports:0:outport|data.payload[3]   ; Lost fanout                            ;
+; r2l_noc:r2lnoc|r2lrouter:\routers:1:levels:0:router_inst|r2lrouterport:\ports:0:outport|data.tag[1]       ; Stuck at VCC due to stuck port data_in ;
+; network_adapter:\leafs:3:leaf_node|state.read_wait                                                        ; Lost fanout                            ;
+; network_adapter:\leafs:3:leaf_node|state.read                                                             ; Lost fanout                            ;
+; network_adapter:\leafs:2:leaf_node|state.read_wait                                                        ; Lost fanout                            ;
+; network_adapter:\leafs:2:leaf_node|state.read                                                             ; Lost fanout                            ;
+; network_adapter:\leafs:1:leaf_node|state.read_wait                                                        ; Lost fanout                            ;
+; network_adapter:\leafs:1:leaf_node|state.read                                                             ; Lost fanout                            ;
+; network_adapter:\leafs:0:leaf_node|state.read                                                             ; Lost fanout                            ;
+; network_adapter:\leafs:0:leaf_node|counter[0..31]                                                         ; Lost fanout                            ;
+; ocpburst_testbench:ocpburst|burst_count[0..31]                                                            ; Lost fanout                            ;
+; network_adapter:\leafs:3:leaf_node|counter[0..31]                                                         ; Lost fanout                            ;
+; network_adapter:\leafs:2:leaf_node|counter[0..31]                                                         ; Lost fanout                            ;
+; network_adapter:\leafs:1:leaf_node|counter[0..31]                                                         ; Lost fanout                            ;
+; r2l_noc:r2lnoc|r2lrouter:\routers:1:levels:0:router_inst|r2lrouterport:\ports:0:outport|state             ; Lost fanout                            ;
+; root:root_module|refresh_timer:ref_timer|counter[0..31]                                                   ; Lost fanout                            ;
+; r2l_noc:r2lnoc|r2lrouter:\routers:0:levels:0:router_inst|r2lrouterport:\ports:0:outport|data.tag[1]       ; Lost fanout                            ;
+; r2l_noc:r2lnoc|r2lrouter:\routers:0:levels:0:router_inst|r2lrouterport:\ports:0:outport|state             ; Lost fanout                            ;
+; r2l_noc:r2lnoc|r2lrouter:\routers:0:levels:0:router_inst|r2lrouterport:\ports:0:outport|data.payload[2]   ; Lost fanout                            ;
+; root:root_module|counter[0..31]                                                                           ; Lost fanout                            ;
+; root:root_module|state                                                                                    ; Lost fanout                            ;
+; root:root_module|idx[0,1]                                                                                 ; Lost fanout                            ;
+; ocpburst_testbench:ocpburst|state.write                                                                   ; Lost fanout                            ;
+; ocpburst_testbench:ocpburst|state.writing                                                                 ; Lost fanout                            ;
+; ocpburst_testbench:ocpburst|state.write_response                                                          ; Lost fanout                            ;
+; ocpburst_testbench:ocpburst|state.read_await_accept                                                       ; Lost fanout                            ;
+; ocpburst_testbench:ocpburst|state.read_await_resp                                                         ; Lost fanout                            ;
+; ocpburst_testbench:ocpburst|state.read                                                                    ; Lost fanout                            ;
+; network_adapter:\leafs:3:leaf_node|state.idle                                                             ; Lost fanout                            ;
+; network_adapter:\leafs:3:leaf_node|state.writedata                                                        ; Lost fanout                            ;
+; network_adapter:\leafs:3:leaf_node|state.writebyteen                                                      ; Lost fanout                            ;
+; network_adapter:\leafs:2:leaf_node|state.idle                                                             ; Lost fanout                            ;
+; network_adapter:\leafs:2:leaf_node|state.writedata                                                        ; Lost fanout                            ;
+; network_adapter:\leafs:2:leaf_node|state.writebyteen                                                      ; Lost fanout                            ;
+; network_adapter:\leafs:1:leaf_node|state.idle                                                             ; Lost fanout                            ;
+; network_adapter:\leafs:1:leaf_node|state.writedata                                                        ; Lost fanout                            ;
+; network_adapter:\leafs:1:leaf_node|state.writebyteen                                                      ; Lost fanout                            ;
+; network_adapter:\leafs:0:leaf_node|state.idle                                                             ; Lost fanout                            ;
+; network_adapter:\leafs:0:leaf_node|state.writedata                                                        ; Lost fanout                            ;
+; network_adapter:\leafs:0:leaf_node|state.writebyteen                                                      ; Lost fanout                            ;
+; network_adapter:\leafs:0:leaf_node|state.read_wait                                                        ; Lost fanout                            ;
+; root:root_module|refresh_timer:ref_timer|state.refresh1                                                   ; Lost fanout                            ;
+; root:root_module|refresh_timer:ref_timer|state.refresh2                                                   ; Lost fanout                            ;
+; root:root_module|refresh_timer:ref_timer|state.idle                                                       ; Lost fanout                            ;
+; root:root_module|refresh_timer:ref_timer|state.halt                                                       ; Lost fanout                            ;
+; Total Number of Removed Registers = 279                                                                   ;                                        ;
++-----------------------------------------------------------------------------------------------------------+----------------------------------------+
 
 
-+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-; Removed Registers Triggering Further Register Optimizations                                                                                                                                                                    ;
-+-----------------------------------------------------------------------------------------------+---------------------------+----------------------------------------------------------------------------------------------------+
-; Register name                                                                                 ; Reason for Removal        ; Registers Removed due to This Register                                                             ;
-+-----------------------------------------------------------------------------------------------+---------------------------+----------------------------------------------------------------------------------------------------+
-; r2l_noc:r2lnoc|router:\routers:0:levels:0:router_inst|routerport:\ports:0:outport|data.tag[0] ; Stuck at GND              ; r2l_noc:r2lnoc|router:\routers:1:levels:0:router_inst|routerport:\ports:0:outport|data.tag[0],     ;
-;                                                                                               ; due to stuck port data_in ; r2l_noc:r2lnoc|router:\routers:0:levels:0:router_inst|routerport:\ports:0:outport|data.payload[3], ;
-;                                                                                               ;                           ; r2l_noc:r2lnoc|router:\routers:1:levels:0:router_inst|routerport:\ports:0:outport|data.tag[1],     ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|counter[16],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|counter[17],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|counter[18],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|counter[19],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|counter[20],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|counter[21],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|counter[22],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|counter[23],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|counter[24],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|counter[6],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|counter[25],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|counter[26],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|counter[27],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|counter[28],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|counter[29],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|counter[30],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|counter[31],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|counter[14],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|counter[0],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|counter[1],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|counter[2],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|counter[3],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|counter[4],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|counter[5],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|counter[7],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|counter[8],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|counter[9],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|counter[10],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|counter[11],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|counter[12],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|counter[13],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|counter[15],                                                    ;
-;                                                                                               ;                           ; r2l_noc:r2lnoc|router:\routers:1:levels:0:router_inst|routerport:\ports:0:outport|state,           ;
-;                                                                                               ;                           ; r2l_noc:r2lnoc|router:\routers:0:levels:0:router_inst|routerport:\ports:0:outport|data.tag[1],     ;
-;                                                                                               ;                           ; r2l_noc:r2lnoc|router:\routers:0:levels:0:router_inst|routerport:\ports:0:outport|state,           ;
-;                                                                                               ;                           ; r2l_noc:r2lnoc|router:\routers:0:levels:0:router_inst|routerport:\ports:0:outport|data.payload[2], ;
-;                                                                                               ;                           ; root:root_module|counter[24], root:root_module|counter[22],                                        ;
-;                                                                                               ;                           ; root:root_module|counter[21], root:root_module|counter[31],                                        ;
-;                                                                                               ;                           ; root:root_module|counter[25], root:root_module|counter[0],                                         ;
-;                                                                                               ;                           ; root:root_module|counter[1], root:root_module|counter[2],                                          ;
-;                                                                                               ;                           ; root:root_module|counter[3], root:root_module|counter[4],                                          ;
-;                                                                                               ;                           ; root:root_module|counter[5], root:root_module|counter[6],                                          ;
-;                                                                                               ;                           ; root:root_module|counter[7], root:root_module|counter[8],                                          ;
-;                                                                                               ;                           ; root:root_module|counter[9], root:root_module|counter[10],                                         ;
-;                                                                                               ;                           ; root:root_module|counter[11], root:root_module|counter[12],                                        ;
-;                                                                                               ;                           ; root:root_module|counter[14], root:root_module|counter[23],                                        ;
-;                                                                                               ;                           ; root:root_module|counter[30], root:root_module|counter[29],                                        ;
-;                                                                                               ;                           ; root:root_module|counter[28], root:root_module|counter[27],                                        ;
-;                                                                                               ;                           ; root:root_module|counter[26], root:root_module|counter[19],                                        ;
-;                                                                                               ;                           ; root:root_module|counter[18], root:root_module|counter[17],                                        ;
-;                                                                                               ;                           ; root:root_module|counter[16], root:root_module|counter[15],                                        ;
-;                                                                                               ;                           ; root:root_module|counter[13], root:root_module|counter[20], root:root_module|idx[0],               ;
-;                                                                                               ;                           ; root:root_module|idx[1], network_adapter:\leafs:0:leaf_node|state.idle,                            ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|state.writebyteen,                                              ;
-;                                                                                               ;                           ; root:root_module|refresh_timer:ref_timer|state.idle                                                ;
-; network_adapter:\leafs:3:leaf_node|counter[9]                                                 ; Lost Fanouts              ; network_adapter:\leafs:3:leaf_node|counter[10],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:3:leaf_node|counter[8],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:3:leaf_node|counter[7],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:3:leaf_node|counter[5],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:3:leaf_node|counter[4],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:3:leaf_node|counter[3],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:3:leaf_node|counter[2],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:3:leaf_node|counter[1],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:3:leaf_node|counter[0],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:3:leaf_node|counter[6],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:3:leaf_node|counter[12],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:3:leaf_node|counter[30],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:3:leaf_node|counter[29],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:3:leaf_node|counter[28],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:3:leaf_node|counter[27],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:3:leaf_node|counter[26],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:3:leaf_node|counter[25],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:3:leaf_node|counter[24],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:3:leaf_node|counter[23],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:3:leaf_node|counter[22],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:3:leaf_node|counter[21],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:3:leaf_node|counter[20],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:3:leaf_node|counter[19],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:3:leaf_node|counter[18],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:3:leaf_node|counter[17],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:3:leaf_node|counter[16],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:3:leaf_node|counter[15],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:3:leaf_node|counter[31],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:3:leaf_node|counter[14],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:3:leaf_node|counter[13],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:3:leaf_node|counter[11],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:3:leaf_node|state.idle,                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:3:leaf_node|state.writebyteen                                               ;
-; network_adapter:\leafs:2:leaf_node|counter[8]                                                 ; Lost Fanouts              ; network_adapter:\leafs:2:leaf_node|counter[9],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:2:leaf_node|counter[7],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:2:leaf_node|counter[6],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:2:leaf_node|counter[5],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:2:leaf_node|counter[4],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:2:leaf_node|counter[3],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:2:leaf_node|counter[2],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:2:leaf_node|counter[1],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:2:leaf_node|counter[0],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:2:leaf_node|counter[10],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:2:leaf_node|counter[11],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:2:leaf_node|counter[31],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:2:leaf_node|counter[30],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:2:leaf_node|counter[29],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:2:leaf_node|counter[28],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:2:leaf_node|counter[27],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:2:leaf_node|counter[26],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:2:leaf_node|counter[25],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:2:leaf_node|counter[24],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:2:leaf_node|counter[23],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:2:leaf_node|counter[22],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:2:leaf_node|counter[20],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:2:leaf_node|counter[19],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:2:leaf_node|counter[18],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:2:leaf_node|counter[17],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:2:leaf_node|counter[16],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:2:leaf_node|counter[15],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:2:leaf_node|counter[14],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:2:leaf_node|counter[13],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:2:leaf_node|counter[12],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:2:leaf_node|counter[21],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:2:leaf_node|state.idle,                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:2:leaf_node|state.writebyteen                                               ;
-; network_adapter:\leafs:1:leaf_node|counter[8]                                                 ; Lost Fanouts              ; network_adapter:\leafs:1:leaf_node|counter[9],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:1:leaf_node|counter[7],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:1:leaf_node|counter[14],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:1:leaf_node|counter[6],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:1:leaf_node|counter[5],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:1:leaf_node|counter[4],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:1:leaf_node|counter[3],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:1:leaf_node|counter[2],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:1:leaf_node|counter[1],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:1:leaf_node|counter[0],                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:1:leaf_node|counter[11],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:1:leaf_node|counter[10],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:1:leaf_node|counter[31],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:1:leaf_node|counter[30],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:1:leaf_node|counter[29],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:1:leaf_node|counter[28],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:1:leaf_node|counter[27],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:1:leaf_node|counter[26],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:1:leaf_node|counter[25],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:1:leaf_node|counter[24],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:1:leaf_node|counter[23],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:1:leaf_node|counter[21],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:1:leaf_node|counter[22],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:1:leaf_node|counter[12],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:1:leaf_node|counter[13],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:1:leaf_node|counter[15],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:1:leaf_node|counter[16],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:1:leaf_node|counter[17],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:1:leaf_node|counter[18],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:1:leaf_node|counter[19],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:1:leaf_node|counter[20],                                                    ;
-;                                                                                               ;                           ; network_adapter:\leafs:1:leaf_node|state.idle,                                                     ;
-;                                                                                               ;                           ; network_adapter:\leafs:1:leaf_node|state.writebyteen                                               ;
-; root:root_module|refresh_timer:ref_timer|counter[13]                                          ; Lost Fanouts              ; root:root_module|refresh_timer:ref_timer|counter[12],                                              ;
-;                                                                                               ;                           ; root:root_module|refresh_timer:ref_timer|counter[14],                                              ;
-;                                                                                               ;                           ; root:root_module|refresh_timer:ref_timer|counter[15],                                              ;
-;                                                                                               ;                           ; root:root_module|refresh_timer:ref_timer|counter[16],                                              ;
-;                                                                                               ;                           ; root:root_module|refresh_timer:ref_timer|counter[17],                                              ;
-;                                                                                               ;                           ; root:root_module|refresh_timer:ref_timer|counter[18],                                              ;
-;                                                                                               ;                           ; root:root_module|refresh_timer:ref_timer|counter[19],                                              ;
-;                                                                                               ;                           ; root:root_module|refresh_timer:ref_timer|counter[20],                                              ;
-;                                                                                               ;                           ; root:root_module|refresh_timer:ref_timer|counter[21],                                              ;
-;                                                                                               ;                           ; root:root_module|refresh_timer:ref_timer|counter[22],                                              ;
-;                                                                                               ;                           ; root:root_module|refresh_timer:ref_timer|counter[1],                                               ;
-;                                                                                               ;                           ; root:root_module|refresh_timer:ref_timer|counter[23],                                              ;
-;                                                                                               ;                           ; root:root_module|refresh_timer:ref_timer|counter[10],                                              ;
-;                                                                                               ;                           ; root:root_module|refresh_timer:ref_timer|counter[31],                                              ;
-;                                                                                               ;                           ; root:root_module|refresh_timer:ref_timer|counter[30],                                              ;
-;                                                                                               ;                           ; root:root_module|refresh_timer:ref_timer|counter[29],                                              ;
-;                                                                                               ;                           ; root:root_module|refresh_timer:ref_timer|counter[28],                                              ;
-;                                                                                               ;                           ; root:root_module|refresh_timer:ref_timer|counter[27],                                              ;
-;                                                                                               ;                           ; root:root_module|refresh_timer:ref_timer|counter[26],                                              ;
-;                                                                                               ;                           ; root:root_module|refresh_timer:ref_timer|counter[25],                                              ;
-;                                                                                               ;                           ; root:root_module|refresh_timer:ref_timer|counter[24],                                              ;
-;                                                                                               ;                           ; root:root_module|refresh_timer:ref_timer|counter[0],                                               ;
-;                                                                                               ;                           ; root:root_module|refresh_timer:ref_timer|counter[2],                                               ;
-;                                                                                               ;                           ; root:root_module|refresh_timer:ref_timer|counter[3],                                               ;
-;                                                                                               ;                           ; root:root_module|refresh_timer:ref_timer|counter[4],                                               ;
-;                                                                                               ;                           ; root:root_module|refresh_timer:ref_timer|counter[5],                                               ;
-;                                                                                               ;                           ; root:root_module|refresh_timer:ref_timer|counter[6],                                               ;
-;                                                                                               ;                           ; root:root_module|refresh_timer:ref_timer|counter[7],                                               ;
-;                                                                                               ;                           ; root:root_module|refresh_timer:ref_timer|counter[8],                                               ;
-;                                                                                               ;                           ; root:root_module|refresh_timer:ref_timer|counter[9],                                               ;
-;                                                                                               ;                           ; root:root_module|refresh_timer:ref_timer|counter[11],                                              ;
-;                                                                                               ;                           ; root:root_module|refresh_timer:ref_timer|state.halt                                                ;
-; r2l_noc:r2lnoc|router:\routers:0:levels:0:router_inst|routerport:\ports:1:outport|data.tag[0] ; Stuck at GND              ; r2l_noc:r2lnoc|router:\routers:0:levels:0:router_inst|routerport:\ports:1:outport|data.payload[2], ;
-;                                                                                               ; due to stuck port data_in ; r2l_noc:r2lnoc|router:\routers:0:levels:0:router_inst|routerport:\ports:1:outport|data.payload[3], ;
-;                                                                                               ;                           ; r2l_noc:r2lnoc|router:\routers:0:levels:0:router_inst|routerport:\ports:1:outport|data.tag[1],     ;
-;                                                                                               ;                           ; r2l_noc:r2lnoc|router:\routers:0:levels:0:router_inst|routerport:\ports:1:outport|state,           ;
-;                                                                                               ;                           ; root:root_module|state                                                                             ;
-; ocpburst_testbench:ocpburst|counter[11]                                                       ; Lost Fanouts              ; ocpburst_testbench:ocpburst|state.write,                                                           ;
-;                                                                                               ;                           ; network_adapter:\leafs:0:leaf_node|state.writedata                                                 ;
-; r2l_noc:r2lnoc|router:\routers:1:levels:1:router_inst|routerport:\ports:1:outport|data.tag[1] ; Lost Fanouts              ; r2l_noc:r2lnoc|router:\routers:1:levels:1:router_inst|routerport:\ports:1:outport|state            ;
-; r2l_noc:r2lnoc|router:\routers:1:levels:1:router_inst|routerport:\ports:0:outport|data.tag[1] ; Lost Fanouts              ; r2l_noc:r2lnoc|router:\routers:1:levels:1:router_inst|routerport:\ports:0:outport|state            ;
-; r2l_noc:r2lnoc|router:\routers:1:levels:0:router_inst|routerport:\ports:1:outport|data.tag[1] ; Lost Fanouts              ; r2l_noc:r2lnoc|router:\routers:1:levels:0:router_inst|routerport:\ports:1:outport|state            ;
-+-----------------------------------------------------------------------------------------------+---------------------------+----------------------------------------------------------------------------------------------------+
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Removed Registers Triggering Further Register Optimizations                                                                                                                                                                                ;
++-----------------------------------------------------------------------------------------------------+---------------------------+----------------------------------------------------------------------------------------------------------+
+; Register name                                                                                       ; Reason for Removal        ; Registers Removed due to This Register                                                                   ;
++-----------------------------------------------------------------------------------------------------+---------------------------+----------------------------------------------------------------------------------------------------------+
+; r2l_noc:r2lnoc|r2lrouter:\routers:0:levels:0:router_inst|r2lrouterport:\ports:0:outport|data.tag[0] ; Stuck at GND              ; r2l_noc:r2lnoc|r2lrouter:\routers:1:levels:0:router_inst|r2lrouterport:\ports:0:outport|data.tag[0],     ;
+;                                                                                                     ; due to stuck port data_in ; r2l_noc:r2lnoc|r2lrouter:\routers:0:levels:0:router_inst|r2lrouterport:\ports:0:outport|data.payload[3], ;
+;                                                                                                     ;                           ; r2l_noc:r2lnoc|r2lrouter:\routers:1:levels:0:router_inst|r2lrouterport:\ports:0:outport|data.tag[1],     ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|counter[13],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|counter[14],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|counter[31],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|counter[12],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|counter[11],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|counter[10],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|counter[9],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|counter[8],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|counter[7],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|counter[6],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|counter[5],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|counter[4],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|counter[3],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|counter[2],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|counter[1],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|counter[0],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|counter[16],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|counter[30],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|counter[29],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|counter[28],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|counter[27],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|counter[26],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|counter[25],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|counter[24],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|counter[23],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|counter[22],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|counter[21],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|counter[20],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|counter[19],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|counter[18],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|counter[17],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|counter[15],                                                          ;
+;                                                                                                     ;                           ; r2l_noc:r2lnoc|r2lrouter:\routers:1:levels:0:router_inst|r2lrouterport:\ports:0:outport|state,           ;
+;                                                                                                     ;                           ; r2l_noc:r2lnoc|r2lrouter:\routers:0:levels:0:router_inst|r2lrouterport:\ports:0:outport|data.tag[1],     ;
+;                                                                                                     ;                           ; r2l_noc:r2lnoc|r2lrouter:\routers:0:levels:0:router_inst|r2lrouterport:\ports:0:outport|state,           ;
+;                                                                                                     ;                           ; r2l_noc:r2lnoc|r2lrouter:\routers:0:levels:0:router_inst|r2lrouterport:\ports:0:outport|data.payload[2], ;
+;                                                                                                     ;                           ; root:root_module|counter[27], root:root_module|counter[25],                                              ;
+;                                                                                                     ;                           ; root:root_module|counter[24], root:root_module|counter[31],                                              ;
+;                                                                                                     ;                           ; root:root_module|counter[28], root:root_module|counter[0],                                               ;
+;                                                                                                     ;                           ; root:root_module|counter[1], root:root_module|counter[2],                                                ;
+;                                                                                                     ;                           ; root:root_module|counter[3], root:root_module|counter[4],                                                ;
+;                                                                                                     ;                           ; root:root_module|counter[5], root:root_module|counter[6],                                                ;
+;                                                                                                     ;                           ; root:root_module|counter[7], root:root_module|counter[8],                                                ;
+;                                                                                                     ;                           ; root:root_module|counter[9], root:root_module|counter[10],                                               ;
+;                                                                                                     ;                           ; root:root_module|counter[11], root:root_module|counter[12],                                              ;
+;                                                                                                     ;                           ; root:root_module|counter[14], root:root_module|counter[13],                                              ;
+;                                                                                                     ;                           ; root:root_module|counter[26], root:root_module|counter[30],                                              ;
+;                                                                                                     ;                           ; root:root_module|counter[29], root:root_module|counter[23],                                              ;
+;                                                                                                     ;                           ; root:root_module|counter[22], root:root_module|counter[21],                                              ;
+;                                                                                                     ;                           ; root:root_module|counter[20], root:root_module|counter[19],                                              ;
+;                                                                                                     ;                           ; root:root_module|counter[18], root:root_module|counter[17],                                              ;
+;                                                                                                     ;                           ; root:root_module|counter[16], root:root_module|counter[15], root:root_module|idx[0],                     ;
+;                                                                                                     ;                           ; root:root_module|idx[1], network_adapter:\leafs:0:leaf_node|state.idle,                                  ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|state.writebyteen,                                                    ;
+;                                                                                                     ;                           ; network_adapter:\leafs:0:leaf_node|state.read_wait,                                                      ;
+;                                                                                                     ;                           ; root:root_module|refresh_timer:ref_timer|state.idle                                                      ;
+; ocpburst_testbench:ocpburst|burst_count[30]                                                         ; Lost Fanouts              ; ocpburst_testbench:ocpburst|burst_count[29],                                                             ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|burst_count[23],                                                             ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|burst_count[22],                                                             ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|burst_count[21],                                                             ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|burst_count[20],                                                             ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|burst_count[19],                                                             ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|burst_count[18],                                                             ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|burst_count[17],                                                             ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|burst_count[16],                                                             ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|burst_count[15],                                                             ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|burst_count[14],                                                             ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|burst_count[13],                                                             ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|burst_count[12],                                                             ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|burst_count[11],                                                             ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|burst_count[10],                                                             ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|burst_count[9],                                                              ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|burst_count[7],                                                              ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|burst_count[31],                                                             ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|burst_count[28],                                                             ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|burst_count[27],                                                             ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|burst_count[26],                                                             ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|burst_count[25],                                                             ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|burst_count[24],                                                             ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|burst_count[0],                                                              ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|burst_count[1],                                                              ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|burst_count[2],                                                              ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|burst_count[3],                                                              ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|burst_count[4],                                                              ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|burst_count[5],                                                              ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|burst_count[6],                                                              ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|burst_count[8],                                                              ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|state.write, ocpburst_testbench:ocpburst|state.writing,                      ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|state.write_response,                                                        ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|state.read_await_accept,                                                     ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|state.read_await_resp,                                                       ;
+;                                                                                                     ;                           ; ocpburst_testbench:ocpburst|state.read                                                                   ;
+; network_adapter:\leafs:3:leaf_node|counter[14]                                                      ; Lost Fanouts              ; network_adapter:\leafs:3:leaf_node|counter[15],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:3:leaf_node|counter[26],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:3:leaf_node|counter[16],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:3:leaf_node|counter[17],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:3:leaf_node|counter[18],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:3:leaf_node|counter[19],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:3:leaf_node|counter[20],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:3:leaf_node|counter[21],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:3:leaf_node|counter[22],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:3:leaf_node|counter[23],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:3:leaf_node|counter[24],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:3:leaf_node|counter[25],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:3:leaf_node|counter[27],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:3:leaf_node|counter[13],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:3:leaf_node|counter[12],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:3:leaf_node|counter[11],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:3:leaf_node|counter[10],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:3:leaf_node|counter[8],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:3:leaf_node|counter[7],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:3:leaf_node|counter[6],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:3:leaf_node|counter[5],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:3:leaf_node|counter[4],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:3:leaf_node|counter[3],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:3:leaf_node|counter[2],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:3:leaf_node|counter[1],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:3:leaf_node|counter[0],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:3:leaf_node|counter[9],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:3:leaf_node|counter[29],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:3:leaf_node|counter[30],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:3:leaf_node|counter[31],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:3:leaf_node|counter[28],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:3:leaf_node|state.idle,                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:3:leaf_node|state.writebyteen                                                     ;
+; network_adapter:\leafs:2:leaf_node|counter[15]                                                      ; Lost Fanouts              ; network_adapter:\leafs:2:leaf_node|counter[14],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:2:leaf_node|counter[26],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:2:leaf_node|counter[16],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:2:leaf_node|counter[17],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:2:leaf_node|counter[18],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:2:leaf_node|counter[19],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:2:leaf_node|counter[20],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:2:leaf_node|counter[21],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:2:leaf_node|counter[22],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:2:leaf_node|counter[23],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:2:leaf_node|counter[24],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:2:leaf_node|counter[25],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:2:leaf_node|counter[28],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:2:leaf_node|counter[27],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:2:leaf_node|counter[13],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:2:leaf_node|counter[12],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:2:leaf_node|counter[11],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:2:leaf_node|counter[10],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:2:leaf_node|counter[9],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:2:leaf_node|counter[8],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:2:leaf_node|counter[7],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:2:leaf_node|counter[6],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:2:leaf_node|counter[5],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:2:leaf_node|counter[4],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:2:leaf_node|counter[3],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:2:leaf_node|counter[2],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:2:leaf_node|counter[1],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:2:leaf_node|counter[0],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:2:leaf_node|counter[29],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:2:leaf_node|counter[30],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:2:leaf_node|counter[31],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:2:leaf_node|state.idle,                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:2:leaf_node|state.writebyteen                                                     ;
+; network_adapter:\leafs:1:leaf_node|counter[9]                                                       ; Lost Fanouts              ; network_adapter:\leafs:1:leaf_node|counter[10],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:1:leaf_node|counter[26],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:1:leaf_node|counter[8],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:1:leaf_node|counter[7],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:1:leaf_node|counter[6],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:1:leaf_node|counter[5],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:1:leaf_node|counter[4],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:1:leaf_node|counter[3],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:1:leaf_node|counter[2],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:1:leaf_node|counter[1],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:1:leaf_node|counter[0],                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:1:leaf_node|counter[25],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:1:leaf_node|counter[27],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:1:leaf_node|counter[11],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:1:leaf_node|counter[12],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:1:leaf_node|counter[13],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:1:leaf_node|counter[14],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:1:leaf_node|counter[15],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:1:leaf_node|counter[16],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:1:leaf_node|counter[17],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:1:leaf_node|counter[18],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:1:leaf_node|counter[19],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:1:leaf_node|counter[20],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:1:leaf_node|counter[21],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:1:leaf_node|counter[22],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:1:leaf_node|counter[23],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:1:leaf_node|counter[24],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:1:leaf_node|counter[29],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:1:leaf_node|counter[28],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:1:leaf_node|counter[31],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:1:leaf_node|counter[30],                                                          ;
+;                                                                                                     ;                           ; network_adapter:\leafs:1:leaf_node|state.idle,                                                           ;
+;                                                                                                     ;                           ; network_adapter:\leafs:1:leaf_node|state.writebyteen                                                     ;
+; root:root_module|refresh_timer:ref_timer|counter[8]                                                 ; Lost Fanouts              ; root:root_module|refresh_timer:ref_timer|counter[17],                                                    ;
+;                                                                                                     ;                           ; root:root_module|refresh_timer:ref_timer|counter[16],                                                    ;
+;                                                                                                     ;                           ; root:root_module|refresh_timer:ref_timer|counter[15],                                                    ;
+;                                                                                                     ;                           ; root:root_module|refresh_timer:ref_timer|counter[14],                                                    ;
+;                                                                                                     ;                           ; root:root_module|refresh_timer:ref_timer|counter[13],                                                    ;
+;                                                                                                     ;                           ; root:root_module|refresh_timer:ref_timer|counter[12],                                                    ;
+;                                                                                                     ;                           ; root:root_module|refresh_timer:ref_timer|counter[11],                                                    ;
+;                                                                                                     ;                           ; root:root_module|refresh_timer:ref_timer|counter[10],                                                    ;
+;                                                                                                     ;                           ; root:root_module|refresh_timer:ref_timer|counter[9],                                                     ;
+;                                                                                                     ;                           ; root:root_module|refresh_timer:ref_timer|counter[18],                                                    ;
+;                                                                                                     ;                           ; root:root_module|refresh_timer:ref_timer|counter[7],                                                     ;
+;                                                                                                     ;                           ; root:root_module|refresh_timer:ref_timer|counter[6],                                                     ;
+;                                                                                                     ;                           ; root:root_module|refresh_timer:ref_timer|counter[5],                                                     ;
+;                                                                                                     ;                           ; root:root_module|refresh_timer:ref_timer|counter[0],                                                     ;
+;                                                                                                     ;                           ; root:root_module|refresh_timer:ref_timer|counter[1],                                                     ;
+;                                                                                                     ;                           ; root:root_module|refresh_timer:ref_timer|counter[2],                                                     ;
+;                                                                                                     ;                           ; root:root_module|refresh_timer:ref_timer|counter[3],                                                     ;
+;                                                                                                     ;                           ; root:root_module|refresh_timer:ref_timer|counter[4],                                                     ;
+;                                                                                                     ;                           ; root:root_module|refresh_timer:ref_timer|counter[19],                                                    ;
+;                                                                                                     ;                           ; root:root_module|refresh_timer:ref_timer|counter[31],                                                    ;
+;                                                                                                     ;                           ; root:root_module|refresh_timer:ref_timer|counter[30],                                                    ;
+;                                                                                                     ;                           ; root:root_module|refresh_timer:ref_timer|counter[29],                                                    ;
+;                                                                                                     ;                           ; root:root_module|refresh_timer:ref_timer|counter[28],                                                    ;
+;                                                                                                     ;                           ; root:root_module|refresh_timer:ref_timer|counter[27],                                                    ;
+;                                                                                                     ;                           ; root:root_module|refresh_timer:ref_timer|counter[26],                                                    ;
+;                                                                                                     ;                           ; root:root_module|refresh_timer:ref_timer|counter[25],                                                    ;
+;                                                                                                     ;                           ; root:root_module|refresh_timer:ref_timer|counter[24],                                                    ;
+;                                                                                                     ;                           ; root:root_module|refresh_timer:ref_timer|counter[23],                                                    ;
+;                                                                                                     ;                           ; root:root_module|refresh_timer:ref_timer|counter[22],                                                    ;
+;                                                                                                     ;                           ; root:root_module|refresh_timer:ref_timer|counter[21],                                                    ;
+;                                                                                                     ;                           ; root:root_module|refresh_timer:ref_timer|counter[20],                                                    ;
+;                                                                                                     ;                           ; root:root_module|refresh_timer:ref_timer|state.halt                                                      ;
+; r2l_noc:r2lnoc|r2lrouter:\routers:0:levels:0:router_inst|r2lrouterport:\ports:1:outport|data.tag[0] ; Stuck at GND              ; r2l_noc:r2lnoc|r2lrouter:\routers:0:levels:0:router_inst|r2lrouterport:\ports:1:outport|data.payload[2], ;
+;                                                                                                     ; due to stuck port data_in ; r2l_noc:r2lnoc|r2lrouter:\routers:0:levels:0:router_inst|r2lrouterport:\ports:1:outport|data.payload[3], ;
+;                                                                                                     ;                           ; r2l_noc:r2lnoc|r2lrouter:\routers:0:levels:0:router_inst|r2lrouterport:\ports:1:outport|data.tag[1],     ;
+;                                                                                                     ;                           ; r2l_noc:r2lnoc|r2lrouter:\routers:0:levels:0:router_inst|r2lrouterport:\ports:1:outport|state,           ;
+;                                                                                                     ;                           ; root:root_module|state                                                                                   ;
+; r2l_noc:r2lnoc|r2lrouter:\routers:1:levels:1:router_inst|r2lrouterport:\ports:1:outport|data.tag[1] ; Lost Fanouts              ; r2l_noc:r2lnoc|r2lrouter:\routers:1:levels:1:router_inst|r2lrouterport:\ports:1:outport|state            ;
+; r2l_noc:r2lnoc|r2lrouter:\routers:1:levels:1:router_inst|r2lrouterport:\ports:0:outport|data.tag[1] ; Lost Fanouts              ; r2l_noc:r2lnoc|r2lrouter:\routers:1:levels:1:router_inst|r2lrouterport:\ports:0:outport|state            ;
+; r2l_noc:r2lnoc|r2lrouter:\routers:1:levels:0:router_inst|r2lrouterport:\ports:1:outport|data.tag[1] ; Lost Fanouts              ; r2l_noc:r2lnoc|r2lrouter:\routers:1:levels:0:router_inst|r2lrouterport:\ports:1:outport|state            ;
++-----------------------------------------------------------------------------------------------------+---------------------------+----------------------------------------------------------------------------------------------------------+
 
 
 +------------------------------------------------------+
@@ -609,115 +650,114 @@ Encoding Type:  One-Hot
 +----------------------------------------------+-------+
 
 
-+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-; Multiplexer Restructuring Statistics (Restructuring Performed)                                                                                                                  ;
-+--------------------+-----------+---------------+----------------------+------------------------+------------+-------------------------------------------------------------------+
-; Multiplexer Inputs ; Bus Width ; Baseline Area ; Area if Restructured ; Saving if Restructured ; Registered ; Example Multiplexer Output                                        ;
-+--------------------+-----------+---------------+----------------------+------------------------+------------+-------------------------------------------------------------------+
-; 4:1                ; 32 bits   ; 64 LEs        ; 0 LEs                ; 64 LEs                 ; Yes        ; |root_2_root|ocpburst_testbench:ocpburst|counter[11]              ;
-; 4:1                ; 32 bits   ; 64 LEs        ; 0 LEs                ; 64 LEs                 ; Yes        ; |root_2_root|root:root_module|refresh_timer:ref_timer|counter[13] ;
-; 5:1                ; 2 bits    ; 6 LEs         ; 2 LEs                ; 4 LEs                  ; Yes        ; |root_2_root|root:root_module|idx[0]                              ;
-; 5:1                ; 32 bits   ; 96 LEs        ; 0 LEs                ; 96 LEs                 ; Yes        ; |root_2_root|root:root_module|counter[24]                         ;
-; 8:1                ; 32 bits   ; 160 LEs       ; 0 LEs                ; 160 LEs                ; Yes        ; |root_2_root|network_adapter:\leafs:3:leaf_node|counter[9]        ;
-; 8:1                ; 32 bits   ; 160 LEs       ; 0 LEs                ; 160 LEs                ; Yes        ; |root_2_root|network_adapter:\leafs:2:leaf_node|counter[8]        ;
-; 8:1                ; 32 bits   ; 160 LEs       ; 0 LEs                ; 160 LEs                ; Yes        ; |root_2_root|network_adapter:\leafs:1:leaf_node|counter[8]        ;
-; 8:1                ; 32 bits   ; 160 LEs       ; 0 LEs                ; 160 LEs                ; Yes        ; |root_2_root|network_adapter:\leafs:0:leaf_node|counter[16]       ;
-; 7:1                ; 3 bits    ; 12 LEs        ; 9 LEs                ; 3 LEs                  ; No         ; |root_2_root|ocpburst_testbench:ocpburst|state                    ;
-; 8:1                ; 4 bits    ; 20 LEs        ; 16 LEs               ; 4 LEs                  ; No         ; |root_2_root|root:root_module|refresh_timer:ref_timer|state       ;
-; 9:1                ; 5 bits    ; 30 LEs        ; 15 LEs               ; 15 LEs                 ; No         ; |root_2_root|network_adapter:\leafs:3:leaf_node|state             ;
-; 9:1                ; 5 bits    ; 30 LEs        ; 15 LEs               ; 15 LEs                 ; No         ; |root_2_root|network_adapter:\leafs:2:leaf_node|state             ;
-; 9:1                ; 5 bits    ; 30 LEs        ; 15 LEs               ; 15 LEs                 ; No         ; |root_2_root|network_adapter:\leafs:1:leaf_node|state             ;
-; 11:1               ; 5 bits    ; 35 LEs        ; 20 LEs               ; 15 LEs                 ; No         ; |root_2_root|network_adapter:\leafs:0:leaf_node|state             ;
-+--------------------+-----------+---------------+----------------------+------------------------+------------+-------------------------------------------------------------------+
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Multiplexer Restructuring Statistics (Restructuring Performed)                                                                                                                 ;
++--------------------+-----------+---------------+----------------------+------------------------+------------+------------------------------------------------------------------+
+; Multiplexer Inputs ; Bus Width ; Baseline Area ; Area if Restructured ; Saving if Restructured ; Registered ; Example Multiplexer Output                                       ;
++--------------------+-----------+---------------+----------------------+------------------------+------------+------------------------------------------------------------------+
+; 4:1                ; 32 bits   ; 64 LEs        ; 0 LEs                ; 64 LEs                 ; Yes        ; |root_2_root|root:root_module|refresh_timer:ref_timer|counter[8] ;
+; 5:1                ; 2 bits    ; 6 LEs         ; 2 LEs                ; 4 LEs                  ; Yes        ; |root_2_root|root:root_module|idx[0]                             ;
+; 5:1                ; 32 bits   ; 96 LEs        ; 0 LEs                ; 96 LEs                 ; Yes        ; |root_2_root|root:root_module|counter[27]                        ;
+; 8:1                ; 32 bits   ; 160 LEs       ; 0 LEs                ; 160 LEs                ; Yes        ; |root_2_root|network_adapter:\leafs:3:leaf_node|counter[14]      ;
+; 8:1                ; 32 bits   ; 160 LEs       ; 0 LEs                ; 160 LEs                ; Yes        ; |root_2_root|network_adapter:\leafs:2:leaf_node|counter[15]      ;
+; 8:1                ; 32 bits   ; 160 LEs       ; 0 LEs                ; 160 LEs                ; Yes        ; |root_2_root|network_adapter:\leafs:1:leaf_node|counter[9]       ;
+; 8:1                ; 32 bits   ; 160 LEs       ; 0 LEs                ; 160 LEs                ; Yes        ; |root_2_root|network_adapter:\leafs:0:leaf_node|counter[13]      ;
+; 11:1               ; 32 bits   ; 224 LEs       ; 0 LEs                ; 224 LEs                ; Yes        ; |root_2_root|ocpburst_testbench:ocpburst|burst_count[30]         ;
+; 8:1                ; 4 bits    ; 20 LEs        ; 16 LEs               ; 4 LEs                  ; No         ; |root_2_root|root:root_module|refresh_timer:ref_timer|state      ;
+; 9:1                ; 5 bits    ; 30 LEs        ; 15 LEs               ; 15 LEs                 ; No         ; |root_2_root|network_adapter:\leafs:3:leaf_node|state            ;
+; 9:1                ; 5 bits    ; 30 LEs        ; 15 LEs               ; 15 LEs                 ; No         ; |root_2_root|network_adapter:\leafs:2:leaf_node|state            ;
+; 9:1                ; 5 bits    ; 30 LEs        ; 15 LEs               ; 15 LEs                 ; No         ; |root_2_root|network_adapter:\leafs:1:leaf_node|state            ;
+; 12:1               ; 5 bits    ; 40 LEs        ; 20 LEs               ; 20 LEs                 ; No         ; |root_2_root|network_adapter:\leafs:0:leaf_node|state            ;
++--------------------+-----------+---------------+----------------------+------------------------+------------+------------------------------------------------------------------+
 
 
-+----------------------------------------------------------------------------------------------------+
-; Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|router:\routers:0:levels:0:router_inst ;
-+----------------+-------+---------------------------------------------------------------------------+
-; Parameter Name ; Value ; Type                                                                      ;
-+----------------+-------+---------------------------------------------------------------------------+
-; routing_level  ; 0     ; Signed Integer                                                            ;
-+----------------+-------+---------------------------------------------------------------------------+
++-------------------------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|r2lrouter:\routers:0:levels:0:router_inst ;
++----------------+-------+------------------------------------------------------------------------------+
+; Parameter Name ; Value ; Type                                                                         ;
++----------------+-------+------------------------------------------------------------------------------+
+; routing_level  ; 0     ; Signed Integer                                                               ;
++----------------+-------+------------------------------------------------------------------------------+
 Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
 
 
-+--------------------------------------------------------------------------------------------------------------------------------+
-; Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|router:\routers:0:levels:0:router_inst|routerport:\ports:0:outport ;
-+----------------+-------+-------------------------------------------------------------------------------------------------------+
-; Parameter Name ; Value ; Type                                                                                                  ;
-+----------------+-------+-------------------------------------------------------------------------------------------------------+
-; routing_index  ; 0     ; Signed Integer                                                                                        ;
-+----------------+-------+-------------------------------------------------------------------------------------------------------+
++--------------------------------------------------------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|r2lrouter:\routers:0:levels:0:router_inst|r2lrouterport:\ports:0:outport ;
++----------------+-------+-------------------------------------------------------------------------------------------------------------+
+; Parameter Name ; Value ; Type                                                                                                        ;
++----------------+-------+-------------------------------------------------------------------------------------------------------------+
+; routing_index  ; 0     ; Signed Integer                                                                                              ;
++----------------+-------+-------------------------------------------------------------------------------------------------------------+
 Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
 
 
-+--------------------------------------------------------------------------------------------------------------------------------+
-; Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|router:\routers:0:levels:0:router_inst|routerport:\ports:1:outport ;
-+----------------+-------+-------------------------------------------------------------------------------------------------------+
-; Parameter Name ; Value ; Type                                                                                                  ;
-+----------------+-------+-------------------------------------------------------------------------------------------------------+
-; routing_index  ; 1     ; Signed Integer                                                                                        ;
-+----------------+-------+-------------------------------------------------------------------------------------------------------+
++--------------------------------------------------------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|r2lrouter:\routers:0:levels:0:router_inst|r2lrouterport:\ports:1:outport ;
++----------------+-------+-------------------------------------------------------------------------------------------------------------+
+; Parameter Name ; Value ; Type                                                                                                        ;
++----------------+-------+-------------------------------------------------------------------------------------------------------------+
+; routing_index  ; 1     ; Signed Integer                                                                                              ;
++----------------+-------+-------------------------------------------------------------------------------------------------------------+
 Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
 
 
-+----------------------------------------------------------------------------------------------------+
-; Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|router:\routers:1:levels:0:router_inst ;
-+----------------+-------+---------------------------------------------------------------------------+
-; Parameter Name ; Value ; Type                                                                      ;
-+----------------+-------+---------------------------------------------------------------------------+
-; routing_level  ; 1     ; Signed Integer                                                            ;
-+----------------+-------+---------------------------------------------------------------------------+
++-------------------------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|r2lrouter:\routers:1:levels:0:router_inst ;
++----------------+-------+------------------------------------------------------------------------------+
+; Parameter Name ; Value ; Type                                                                         ;
++----------------+-------+------------------------------------------------------------------------------+
+; routing_level  ; 1     ; Signed Integer                                                               ;
++----------------+-------+------------------------------------------------------------------------------+
 Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
 
 
-+--------------------------------------------------------------------------------------------------------------------------------+
-; Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|router:\routers:1:levels:0:router_inst|routerport:\ports:0:outport ;
-+----------------+-------+-------------------------------------------------------------------------------------------------------+
-; Parameter Name ; Value ; Type                                                                                                  ;
-+----------------+-------+-------------------------------------------------------------------------------------------------------+
-; routing_index  ; 2     ; Signed Integer                                                                                        ;
-+----------------+-------+-------------------------------------------------------------------------------------------------------+
++--------------------------------------------------------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|r2lrouter:\routers:1:levels:0:router_inst|r2lrouterport:\ports:0:outport ;
++----------------+-------+-------------------------------------------------------------------------------------------------------------+
+; Parameter Name ; Value ; Type                                                                                                        ;
++----------------+-------+-------------------------------------------------------------------------------------------------------------+
+; routing_index  ; 2     ; Signed Integer                                                                                              ;
++----------------+-------+-------------------------------------------------------------------------------------------------------------+
 Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
 
 
-+--------------------------------------------------------------------------------------------------------------------------------+
-; Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|router:\routers:1:levels:0:router_inst|routerport:\ports:1:outport ;
-+----------------+-------+-------------------------------------------------------------------------------------------------------+
-; Parameter Name ; Value ; Type                                                                                                  ;
-+----------------+-------+-------------------------------------------------------------------------------------------------------+
-; routing_index  ; 3     ; Signed Integer                                                                                        ;
-+----------------+-------+-------------------------------------------------------------------------------------------------------+
++--------------------------------------------------------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|r2lrouter:\routers:1:levels:0:router_inst|r2lrouterport:\ports:1:outport ;
++----------------+-------+-------------------------------------------------------------------------------------------------------------+
+; Parameter Name ; Value ; Type                                                                                                        ;
++----------------+-------+-------------------------------------------------------------------------------------------------------------+
+; routing_index  ; 3     ; Signed Integer                                                                                              ;
++----------------+-------+-------------------------------------------------------------------------------------------------------------+
 Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
 
 
-+----------------------------------------------------------------------------------------------------+
-; Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|router:\routers:1:levels:1:router_inst ;
-+----------------+-------+---------------------------------------------------------------------------+
-; Parameter Name ; Value ; Type                                                                      ;
-+----------------+-------+---------------------------------------------------------------------------+
-; routing_level  ; 1     ; Signed Integer                                                            ;
-+----------------+-------+---------------------------------------------------------------------------+
++-------------------------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|r2lrouter:\routers:1:levels:1:router_inst ;
++----------------+-------+------------------------------------------------------------------------------+
+; Parameter Name ; Value ; Type                                                                         ;
++----------------+-------+------------------------------------------------------------------------------+
+; routing_level  ; 1     ; Signed Integer                                                               ;
++----------------+-------+------------------------------------------------------------------------------+
 Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
 
 
-+--------------------------------------------------------------------------------------------------------------------------------+
-; Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|router:\routers:1:levels:1:router_inst|routerport:\ports:0:outport ;
-+----------------+-------+-------------------------------------------------------------------------------------------------------+
-; Parameter Name ; Value ; Type                                                                                                  ;
-+----------------+-------+-------------------------------------------------------------------------------------------------------+
-; routing_index  ; 2     ; Signed Integer                                                                                        ;
-+----------------+-------+-------------------------------------------------------------------------------------------------------+
++--------------------------------------------------------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|r2lrouter:\routers:1:levels:1:router_inst|r2lrouterport:\ports:0:outport ;
++----------------+-------+-------------------------------------------------------------------------------------------------------------+
+; Parameter Name ; Value ; Type                                                                                                        ;
++----------------+-------+-------------------------------------------------------------------------------------------------------------+
+; routing_index  ; 2     ; Signed Integer                                                                                              ;
++----------------+-------+-------------------------------------------------------------------------------------------------------------+
 Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
 
 
-+--------------------------------------------------------------------------------------------------------------------------------+
-; Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|router:\routers:1:levels:1:router_inst|routerport:\ports:1:outport ;
-+----------------+-------+-------------------------------------------------------------------------------------------------------+
-; Parameter Name ; Value ; Type                                                                                                  ;
-+----------------+-------+-------------------------------------------------------------------------------------------------------+
-; routing_index  ; 3     ; Signed Integer                                                                                        ;
-+----------------+-------+-------------------------------------------------------------------------------------------------------+
++--------------------------------------------------------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: r2l_noc:r2lnoc|r2lrouter:\routers:1:levels:1:router_inst|r2lrouterport:\ports:1:outport ;
++----------------+-------+-------------------------------------------------------------------------------------------------------------+
+; Parameter Name ; Value ; Type                                                                                                        ;
++----------------+-------+-------------------------------------------------------------------------------------------------------------+
+; routing_index  ; 3     ; Signed Integer                                                                                              ;
++----------------+-------+-------------------------------------------------------------------------------------------------------------+
 Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
 
 
@@ -867,7 +907,7 @@ Note: In order to hide this table in the UI and the text report file, please set
 +----------------+--------------+
 ; Partition Name ; Elapsed Time ;
 +----------------+--------------+
-; Top            ; 00:00:00     ;
+; Top            ; 00:00:01     ;
 +----------------+--------------+
 
 
@@ -877,7 +917,7 @@ Note: In order to hide this table in the UI and the text report file, please set
 Info: *******************************************************************
 Info: Running Quartus II 64-Bit Analysis & Synthesis
     Info: Version 15.0.0 Build 145 04/22/2015 SJ Web Edition
-    Info: Processing started: Wed May  4 16:44:41 2016
+    Info: Processing started: Mon May  9 10:47:26 2016
 Info: Command: quartus_map --read_settings_files=on --write_settings_files=off root_2_root -c root_2_root
 Warning (20028): Parallel compilation is not licensed and has been disabled
 Info (12021): Found 2 design units, including 1 entities, in source file /home/mathias/t-crest/MemoryTree/testunits/ocpburst.vhd
@@ -890,11 +930,11 @@ Info (12021): Found 2 design units, including 1 entities, in source file /home/m
     Info (12022): Found design unit 1: r2l_noc-structural
     Info (12023): Found entity 1: r2l_noc
 Info (12021): Found 2 design units, including 1 entities, in source file /home/mathias/t-crest/MemoryTree/src/root2leaf_noc/router/routerpart.vhd
-    Info (12022): Found design unit 1: routerport-rtl
-    Info (12023): Found entity 1: routerport
+    Info (12022): Found design unit 1: r2lrouterport-rtl
+    Info (12023): Found entity 1: r2lrouterport
 Info (12021): Found 2 design units, including 1 entities, in source file /home/mathias/t-crest/MemoryTree/src/root2leaf_noc/router/router.vhd
-    Info (12022): Found design unit 1: router-structural
-    Info (12023): Found entity 1: router
+    Info (12022): Found design unit 1: r2lrouter-structural
+    Info (12023): Found entity 1: r2lrouter
 Info (12021): Found 2 design units, including 1 entities, in source file /home/mathias/t-crest/MemoryTree/src/root/schedule_table.vhd
     Info (12022): Found design unit 1: schedule_table-list
     Info (12023): Found entity 1: schedule_table
@@ -930,15 +970,15 @@ Info (12021): Found 1 design units, including 0 entities, in source file /home/m
 Info (12127): Elaborating entity "root_2_root" for the top level hierarchy
 Warning (10873): Using initial value X (don't care) for net "ocp_m[1..3]" at top.vhd(48)
 Info (12128): Elaborating entity "r2l_noc" for hierarchy "r2l_noc:r2lnoc"
-Info (12128): Elaborating entity "router" for hierarchy "r2l_noc:r2lnoc|router:\routers:0:levels:0:router_inst"
-Info (12128): Elaborating entity "routerport" for hierarchy "r2l_noc:r2lnoc|router:\routers:0:levels:0:router_inst|routerport:\ports:0:outport"
+Info (12128): Elaborating entity "r2lrouter" for hierarchy "r2l_noc:r2lnoc|r2lrouter:\routers:0:levels:0:router_inst"
+Info (12128): Elaborating entity "r2lrouterport" for hierarchy "r2l_noc:r2lnoc|r2lrouter:\routers:0:levels:0:router_inst|r2lrouterport:\ports:0:outport"
 Warning (10492): VHDL Process Statement warning at routerpart.vhd(64): signal "data" is read inside the Process Statement but isn't in the Process Statement's sensitivity list
-Info (12128): Elaborating entity "routerport" for hierarchy "r2l_noc:r2lnoc|router:\routers:0:levels:0:router_inst|routerport:\ports:1:outport"
+Info (12128): Elaborating entity "r2lrouterport" for hierarchy "r2l_noc:r2lnoc|r2lrouter:\routers:0:levels:0:router_inst|r2lrouterport:\ports:1:outport"
 Warning (10492): VHDL Process Statement warning at routerpart.vhd(64): signal "data" is read inside the Process Statement but isn't in the Process Statement's sensitivity list
-Info (12128): Elaborating entity "router" for hierarchy "r2l_noc:r2lnoc|router:\routers:1:levels:0:router_inst"
-Info (12128): Elaborating entity "routerport" for hierarchy "r2l_noc:r2lnoc|router:\routers:1:levels:0:router_inst|routerport:\ports:0:outport"
+Info (12128): Elaborating entity "r2lrouter" for hierarchy "r2l_noc:r2lnoc|r2lrouter:\routers:1:levels:0:router_inst"
+Info (12128): Elaborating entity "r2lrouterport" for hierarchy "r2l_noc:r2lnoc|r2lrouter:\routers:1:levels:0:router_inst|r2lrouterport:\ports:0:outport"
 Warning (10492): VHDL Process Statement warning at routerpart.vhd(64): signal "data" is read inside the Process Statement but isn't in the Process Statement's sensitivity list
-Info (12128): Elaborating entity "routerport" for hierarchy "r2l_noc:r2lnoc|router:\routers:1:levels:0:router_inst|routerport:\ports:1:outport"
+Info (12128): Elaborating entity "r2lrouterport" for hierarchy "r2l_noc:r2lnoc|r2lrouter:\routers:1:levels:0:router_inst|r2lrouterport:\ports:1:outport"
 Warning (10492): VHDL Process Statement warning at routerpart.vhd(64): signal "data" is read inside the Process Statement but isn't in the Process Statement's sensitivity list
 Info (12128): Elaborating entity "l2r_noc" for hierarchy "l2r_noc:l2rnoc"
 Info (12128): Elaborating entity "l2r_router" for hierarchy "l2r_noc:l2rnoc|l2r_router:\routers:0:levels:0:router_inst"
@@ -968,12 +1008,10 @@ Warning (10492): VHDL Process Statement warning at na.vhd(88): signal "ByteEnShi
 Warning (10873): Using initial value X (don't care) for net "ocp_s.SData" at na.vhd(42)
 Warning (10873): Using initial value X (don't care) for net "ocp_s.SDataAccept" at na.vhd(42)
 Info (12128): Elaborating entity "ocpburst_testbench" for hierarchy "ocpburst_testbench:ocpburst"
-Warning (10492): VHDL Process Statement warning at ocpburst.vhd(65): signal "ocp_s" is read inside the Process Statement but isn't in the Process Statement's sensitivity list
-Warning (10492): VHDL Process Statement warning at ocpburst.vhd(77): signal "ocp_s" is read inside the Process Statement but isn't in the Process Statement's sensitivity list
 Info (276014): Found 2 instances of uninferred RAM logic
     Info (276004): RAM logic "root:root_module|routing_table:route_tab|routingtable" is uninferred due to inappropriate RAM size
     Info (276004): RAM logic "root:root_module|schedule_table:sched_tab|scheduletable" is uninferred due to inappropriate RAM size
-Info (17049): 272 registers lost all their fanouts during netlist optimizations.
+Info (17049): 275 registers lost all their fanouts during netlist optimizations.
 Info (16010): Generating hard_block partition "hard_block:auto_generated_inst"
     Info (16011): Adding 0 node(s), including 0 DDIO, 0 PLL, 0 transceiver and 0 LCELL
 Warning (21074): Design contains 2 input pin(s) that do not drive logic
@@ -982,10 +1020,10 @@ Warning (21074): Design contains 2 input pin(s) that do not drive logic
 Info (21057): Implemented 2 device resources after synthesis - the final resource count might be different
     Info (21058): Implemented 2 input pins
     Info (21059): Implemented 0 output pins
-Info: Quartus II 64-Bit Analysis & Synthesis was successful. 0 errors, 22 warnings
-    Info: Peak virtual memory: 1069 megabytes
-    Info: Processing ended: Wed May  4 16:45:15 2016
-    Info: Elapsed time: 00:00:34
-    Info: Total CPU time (on all processors): 00:00:25
+Info: Quartus II 64-Bit Analysis & Synthesis was successful. 0 errors, 20 warnings
+    Info: Peak virtual memory: 1072 megabytes
+    Info: Processing ended: Mon May  9 10:48:01 2016
+    Info: Elapsed time: 00:00:35
+    Info: Total CPU time (on all processors): 00:00:24
 
 

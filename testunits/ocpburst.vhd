@@ -41,12 +41,12 @@ ocp_s : in ocp_burst_s);
 end ocpburst_testbench;
 
 architecture rtl of ocpburst_testbench is
-	type states is (write,writing,write_response,read_await_accept,read_await_resp);
+	type states is (write,writing,write_response,read_await_accept,read_await_resp,read);
 	signal state, state_next : states;
 	signal burst_count, burst_count_next : unsigned(OCP_DATA_WIDTH-1 downto 0) := (others => '0');
 	signal addr_count, addr_count_next : unsigned(OCP_DATA_WIDTH-1 downto 0);
 begin
-	process(state,counter,ocp_s)
+	process(state,burst_count, addr_count,ocp_s)
 	begin
 		state_next <= state;
 		burst_count_next <= burst_count;
@@ -65,8 +65,8 @@ begin
 			ocp_m.mdatavalid <= '1';
 			if ocp_s.SCmdAccept = '1' then
 				state_next <= writing;
-				burst_count_next <= burst_count + to_unisgned(1,burst_count'length);
-				addr_count_next <= addr_count + to_unisgned(1,addr_count'length);
+				burst_count_next <= burst_count + to_unsigned(1,burst_count'length);
+				addr_count_next <= addr_count + to_unsigned(1,addr_count'length);
 			end if;
 		when writing =>
 			burst_count_next <= burst_count+to_unsigned(1,burst_count'length);
@@ -79,7 +79,7 @@ begin
 
 		when write_response =>
 			if ocp_s.SResp = OCP_RESP_DVA then
-				state_next <= write;
+				state_next <= read_await_accept;
 			end if;
 		when read_await_accept =>
 			ocp_m.MCmd <= OCP_CMD_RD;
