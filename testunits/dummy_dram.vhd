@@ -60,6 +60,7 @@ state_next <= state;
 mem_s.SData<= (others => '0');
 mem_s.SResp <= OCP_RESP_NULL;
 mem_s.SCmdAccept <= '0';
+en <= '0';
 case state is
 when idle =>
 if Mem_m.MCmd /= OCP_CMD_IDLE then

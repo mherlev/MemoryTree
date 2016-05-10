@@ -56,7 +56,10 @@ architecture rtl of root is
 	signal outbuffer_en, outbuffer_en_next : outbuffer_en_arr := (others => (others => '0'));
 	signal outbuffer_addr, outbuffer_addr_next : std_logic_vector(OCP_BURST_ADDR_WIDTH-1 downto 0) := (others => '0');
 	signal write_counter, write_counter_next : unsigned(31 downto 0) := (others => '0');
-	
+
+	signal write_buffer_data, write_buffer_data_next : outbuffer_data_arr;
+	signal write_buffer_en, write_buffer_en_next : outbuffer_en_arr;
+	signal write_buffer_addr, write_buffer_addr_next : std_logic_vector(OCP_BURST_ADDR_WIDTH-1 downto 0) := (others => '0');
 	signal counter, counter_next : unsigned(31 downto 0) := (others => '0');
 	signal ref : std_logic := '0';
 	signal postpone_transaction : std_logic := '0';
@@ -65,67 +68,81 @@ architecture rtl of root is
 	signal core_id : unsigned(1 downto 0) := (others => '0');
 	signal route   : std_logic_vector
 	                 (number_of_levels*outputs_per_router-1 downto 0) := (others => '0');
-	alias r2l_route is r2l.payload(3 downto 0);
+	
 	
 	type mem_states is (idle, read_s, write_s);
 	signal mem_state, mem_state_next : mem_states := idle;
 	signal cmd, cmd_next : std_logic_vector(OCP_CMD_WIDTH-1 downto 0) := OCP_CMD_IDLE;
+--	signal cmd_req, cmd_req_next : std_logic := '0';
+	signal cmd_ack, cmd_ack_next : std_logic := '0';
 	signal clr_cmd : std_logic := '0';
+	
+	
+	
+	
+	signal r2l_next : phit_r := (others => (others => '0'));
+	alias r2l_route is r2l_next.payload(3 downto 0);
 begin
-		ref_timer : entity work.refresh_timer
-		port map(clk,reset,ref,postpone_transaction);
-		
-		sched_tab : entity work.schedule_table
-		port map (idx,core_id);
+	ref_timer : entity work.refresh_timer
+	port map(clk,reset,ref,postpone_transaction);
+	
+	sched_tab : entity work.schedule_table
+	port map (idx,core_id);
 
-		route_tab : entity work.routing_table
-		port map(core_id, route);	
+	route_tab : entity work.routing_table
+	port map(core_id, route);	
 
-		process(state, idx,counter,ref,postpone_transaction,route)
-		begin
-			r2l.payload <= (others => '0');
-			counter_next <= counter;
-			state_next <= state;
-			idx_next <= idx;
-			send <= '0';
-			r2l.tag <= empty_tag;
-			case state is
-			when active =>
-				if postpone_transaction	= '0' then
-					if counter = c_transaction-1 then
-						idx_next <= idx+1;
-						counter_next <= (others => '0');
-						r2l_route <= route;
-						r2l.tag <= header_tag;
-					else
-						counter_next <= counter + 1;
-					end if;
+	process(state, idx,counter,ref,postpone_transaction,route)
+	begin
+--		r2l.payload <= (others => '0');
+		counter_next <= counter;
+		state_next <= state;
+		idx_next <= idx;
+		send <= '0';
+		r2l_next <= (others => (others => '0'));	
+	--r2l.tag <= empty_tag;
+		case state is
+		when active =>
+			if postpone_transaction	= '0' then
+				if counter = c_transaction-1 then
+					idx_next <= idx+1;
+					counter_next <= (others => '0');
+					r2l_route <= route;
+					r2l_next.tag <= header_tag;
 				else
---					state_next <= idle;
+					counter_next <= counter + 1;
 				end if;
-			when idle =>
-				if postpone_transaction = '0' then
-					state_next <= active;
-				end if;
-			end case;
-		end process;
+			else
+--				state_next <= idle;
+			end if;
+		when idle =>
+			if postpone_transaction = '0' then
+				state_next <= active;
+			end if;
+		end case;
+	end process;
 
-		process(l2r_state,l2r,write_counter,outbuffer_addr,outbuffer_data,outbuffer_en)
-		begin
+	process(l2r_state,l2r,write_counter,outbuffer_addr,outbuffer_data,outbuffer_en,cmd_ack,cmd)
+	begin
 		outbuffer_addr_next <= outbuffer_addr;
 		outbuffer_data_next <= outbuffer_data;
 		outbuffer_en_next <= outbuffer_en;
 		write_counter_next <= write_counter;
 		l2r_state_next <= l2r_state;
+
+--		cmd_req_next  <= cmd_req;
+		cmd_next <= cmd;
 		case l2r_state is
 			when idle =>
 				if l2r.tag = header_tag then
-					outbuffer_addr_next <= l2r.payload(OCP_BURST_ADDR_WIDTH-1 downto 0);
+					outbuffer_addr_next <= l2r.payload(OCP_BURST_ADDR_WIDTH-1 downto 0);	
 					if l2r.payload(OCP_DATA_WIDTH-1 downto OCP_DATA_WIDTH-OCP_CMD_WIDTH) = OCP_CMD_WR then
 						l2r_state_next <= write_data;
+--						cmd_next <= OCP_CMD_WR;
 					elsif l2r.payload(OCP_DATA_WIDTH-1 downto OCP_DATA_WIDTH-OCP_CMD_WIDTH) = OCP_CMD_RD then
 						l2r_state_next <= read_data;
 						cmd_next <= OCP_CMD_RD;
+--						cmd_req_next <= '1';
 					end if;
 				end if;
 			when write_data =>
@@ -142,28 +159,37 @@ begin
 					l2r_state_next <= idle;
 					write_counter_next <= (others => '0');
 					cmd_next <= OCP_CMD_WR;
+--					cmd_req_next <= '1';
 				end if;
 			when others =>
 				l2r_state_next <= idle;
 			end case;
-		end process;
-		
-		mem_m.MAddr <= outbuffer_addr;
-		process(mem_state, cmd, mem_s)
-		begin
+	end process;
+	
+	mem_m.MAddr <= outbuffer_addr;
+	process(mem_state, cmd, mem_s,write_buffer_data,write_buffer_en,outbuffer_data,outbuffer_en,write_buffer_addr,outbuffer_addr)
+	begin
 		mem_state_next <= mem_state;
 		mem_m.MCmd <= OCP_CMD_IDLE;
 		mem_m.MRespAccept <= '0';
 		clr_cmd <= '0';
+		write_buffer_data_next <= write_buffer_data;
+		write_buffer_en_next <= write_buffer_en;
+		write_buffer_addr_next <= write_buffer_addr;
 		case mem_state is
 		when idle =>
-		if cmd = OCP_CMD_WR then
-			mem_state_next <= write_s;
-			clr_cmd <= '1';
-		elsif cmd = OCP_CMD_RD then
-			mem_state_next <= read_s;
-			clr_cmd <= '1';
-		end if;
+			if cmd = OCP_CMD_WR then
+				write_buffer_data_next <= outbuffer_data;
+				write_buffer_en_next <= outbuffer_en;
+
+				write_buffer_addr_next <= outbuffer_addr;
+				mem_state_next <= write_s;
+				clr_cmd <= '1';
+			elsif cmd = OCP_CMD_RD then
+				write_buffer_addr_next <= outbuffer_addr;
+				mem_state_next <= read_s;
+				clr_cmd <= '1';
+			end if;
 		when write_s =>
 			mem_m.MCmd <= OCP_CMD_WR;
 			if mem_s.SResp /= OCP_RESP_NULL then
@@ -179,58 +205,60 @@ begin
 		when others =>
 			mem_state_next <= idle;
 		end case;
-		end process;
-		
-		
-		
-		
-		
-		process(clk)
-		begin
-			if rising_edge(clk) then
-				if reset = '1' then
-					state <= active;
-					idx <= (others => '0');
-					write_counter <= (others => '0');
-					l2r_state <= idle;
-					
-					mem_state <= idle;
-					cmd <= OCP_CMD_IDLE;
-					
-					outbuffer_data <= (others => (others => '0'));
-					outbuffer_en <= (others => (others => '0'));
-					outbuffer_addr <= (others => '0');
-				else
-					state <= state_next;
-					idx <= idx_next;
-					counter <= counter_next;
-					l2r_state <= l2r_state_next;
-					write_counter <= write_counter_next;
-					outbuffer_data <= outbuffer_data_next;
-					outbuffer_en <= outbuffer_en_next;
-					outbuffer_addr <= outbuffer_addr_next;
-					
-					mem_state <= mem_state_next;
+	end process;
 	
-					cmd <= cmd_next;
-					if clr_cmd = '1' then
-					cmd <= OCP_CMD_IDLE;
-					end if;
+	
+	
+	
+	
+	process(clk)
+	begin
+		if rising_edge(clk) then
+			if reset = '1' then
+				state <= active;
+				idx <= (others => '0');
+				write_counter <= (others => '0');
+				l2r_state <= idle;
+				r2l <= (others => (others => '0'));
+				mem_state <= idle;
+				cmd <= OCP_CMD_IDLE;
+				counter <= to_unsigned(c_transaction-1,counter'length);
+				outbuffer_data <= (others => (others => '0'));
+				outbuffer_en <= (others => (others => '0'));
+				outbuffer_addr <= (others => '0');
+			else
+				state <= state_next;
+				idx <= idx_next;
+				counter <= counter_next;
+				l2r_state <= l2r_state_next;
+				write_counter <= write_counter_next;
+				outbuffer_data <= outbuffer_data_next;
+				outbuffer_en <= outbuffer_en_next;
+				outbuffer_addr <= outbuffer_addr_next;
+				r2l <= r2l_next;
+				mem_state <= mem_state_next;
+				
+				write_buffer_addr <= write_buffer_addr_next;
+				write_buffer_data <= write_buffer_data_next;
+				write_buffer_en <= write_buffer_en_next;
+	
+				cmd <= cmd_next;
+				if clr_cmd = '1' then
+				cmd <= OCP_CMD_IDLE;
 				end if;
 			end if;
-		end process;
-		
-		
-		
-		
-		outdatamap : for i in 0 to ocp_burst_length-1 generate
-			mem_m.MData((i+1)*OCP_DATA_WIDTH-1 downto i*OCP_DATA_WIDTH) <= outbuffer_data(i);
-		end generate;
-		outenmap : for i in 0 to ocp_burst_length*OCP_BYTE_WIDTH/OCP_DATA_WIDTH-1 generate
-			mem_m.MByteEn((i+1)*OCP_DATA_WIDTH-1 downto i*OCP_DATA_WIDTH) <= outbuffer_en(i);
-		end generate;
---mem_en_o(OCP_DATA_WIDTH-1 downto 0) <= outbuffer_en(0);
---mem_en_o(2*OCP_DATA_WIDTH-1 downto OCP_DATA_WIDTH) <= outbuffer_en(1);
+		end if;
+	end process;
+	
+	
+	
+	
+	outdatamap : for i in 0 to ocp_burst_length-1 generate
+		mem_m.MData((i+1)*OCP_DATA_WIDTH-1 downto i*OCP_DATA_WIDTH) <= write_buffer_data(i);
+	end generate;
+	outenmap : for i in 0 to ocp_burst_length*OCP_BYTE_WIDTH/OCP_DATA_WIDTH-1 generate
+		mem_m.MByteEn((i+1)*OCP_DATA_WIDTH-1 downto i*OCP_DATA_WIDTH) <= write_buffer_en(i);
+	end generate;
 
 
 end rtl;

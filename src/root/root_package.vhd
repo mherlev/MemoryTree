@@ -33,7 +33,7 @@ package root_package is
 
 constant c_refi : integer := 120;
 constant c_rfc : integer := 30;
-constant noc_latency : integer := 2;
+constant noc_latency : integer := 20;
 constant c_transaction : integer := 20;
 constant schedule_table_size : integer := 4;
 end root_package;
