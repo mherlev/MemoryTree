@@ -64,6 +64,9 @@ package ocp is
     constant OCP_RESP_FAIL : std_logic_vector(OCP_RESP_WIDTH-1 downto 0) := "10";
     constant OCP_RESP_ERR  : std_logic_vector(OCP_RESP_WIDTH-1 downto 0) := "11";
 
+	 constant OCP_BURST_LENGTH : integer := 16;
+	 
+	 
     type ocp_core_m is record
         MCmd        : std_logic_vector(OCP_CMD_WIDTH-1 downto 0);
         MAddr       : std_logic_vector(OCP_ADDR_WIDTH-1 downto 0);
@@ -105,4 +108,18 @@ package ocp is
         SDataAccept : std_logic;
     end record;
 
+	  type ocp_mem_m is record
+        MCmd        : std_logic_vector(OCP_CMD_WIDTH-1 downto 0);
+        MAddr       : std_logic_vector(OCP_BURST_ADDR_WIDTH-1 downto 0);
+        MData       : std_logic_vector(OCP_DATA_WIDTH*OCP_BURST_LENGTH-1 downto 0);
+        MByteEn     : std_logic_vector(OCP_BURST_LENGTH*OCP_BYTE_WIDTH-1 downto 0);
+        MRespAccept : std_logic;
+    end record;
+
+    type ocp_mem_s is record
+        SResp       : std_logic_vector(OCP_RESP_WIDTH-1 downto 0);
+        SData       : std_logic_vector(OCP_DATA_WIDTH*OCP_BURST_LENGTH-1 downto 0);
+        SCmdAccept  : std_logic;
+    end record;
+	 
 end package ; -- ocp

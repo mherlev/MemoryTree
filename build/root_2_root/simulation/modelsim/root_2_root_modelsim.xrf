@@ -16,6 +16,7 @@ source_file = 1, /home/mathias/t-crest/MemoryTree/src/leaf2root_noc/noc.vhd
 source_file = 1, /home/mathias/t-crest/MemoryTree/src/leaf2root_noc/router/routerpart.vhd
 source_file = 1, /home/mathias/t-crest/MemoryTree/src/leaf2root_noc/router/router.vhd
 source_file = 1, /home/mathias/t-crest/MemoryTree/src/common/memorytree_package.vhd
+source_file = 1, /home/mathias/t-crest/MemoryTree/testunits/dummy_dram.vhd
 source_file = 1, /home/mathias/altera/15.0/quartus/libraries/vhdl/ieee/prmtvs_b.vhd
 source_file = 1, /home/mathias/altera/15.0/quartus/libraries/vhdl/ieee/prmtvs_p.vhd
 source_file = 1, /home/mathias/altera/15.0/quartus/libraries/vhdl/ieee/timing_b.vhd

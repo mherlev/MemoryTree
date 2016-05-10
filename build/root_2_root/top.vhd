@@ -48,6 +48,11 @@ architecture testbench of root_2_root is
 	signal ocp_m : ocp_m_array;
 	type ocp_s_array is array (0 to number_of_leafs-1) of ocp_burst_s;
 	signal ocp_s : ocp_s_array;
+	signal mem_data_i, mem_data_o : std_logic_vector(OCP_BURST_LENGTH*OCP_DATA_WIDTH-1 downto 0);
+	
+	signal mem_m : ocp_mem_m;
+	signal mem_s : ocp_mem_s;
+	
  begin
   r2lnoc : entity work.r2l_noc
   port map (clk,r2l_root_port,r2l_leaf_ports);
@@ -55,7 +60,7 @@ architecture testbench of root_2_root is
   port map (clk,l2r_root_port,l2r_leaf_ports);
   
   root_module : entity work.root
-  port map (clk,reset,r2l_root_port,l2r_root_port);
+  port map (clk,reset,r2l_root_port,l2r_root_port,mem_m,mem_s);
   
   leafs : for i in 0 to number_of_leafs-1 generate
 	leaf_node : entity work.network_adapter
@@ -66,5 +71,9 @@ architecture testbench of root_2_root is
 	ocpburst : entity work.ocpburst_testbench
 	port map(clk,reset, ocp_m(i), ocp_s(i));
   end generate;
+  
+  dram : entity work.dummy_dram
+  port map(clk,reset,mem_m,mem_s);
+  
 end testbench;
   
