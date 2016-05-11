@@ -66,7 +66,7 @@ begin
 			if ocp_s.SCmdAccept = '1' then
 				state_next <= writing;
 				burst_count_next <= burst_count + to_unsigned(1,burst_count'length);
-				addr_count_next <= addr_count + to_unsigned(1,addr_count'length);
+--				addr_count_next <= addr_count + to_unsigned(1,addr_count'length);
 			end if;
 		when writing =>
 			burst_count_next <= burst_count+to_unsigned(1,burst_count'length);
@@ -101,7 +101,7 @@ begin
 			burst_count_next <= burst_count + to_unsigned(1,burst_count'length);
 			if burst_count = OCP_burst_length-1 then
 				burst_count_next <= (others => '0');
-				addr_count_next <= addr_count + to_unsigned(4,addr_count'length);
+				addr_count_next <= addr_count + to_unsigned(OCP_burst_length,addr_count'length);
 				state_next <= write;
 			end if;
 		when others =>

@@ -48,7 +48,6 @@ architecture testbench of root_2_root is
 	signal ocp_m : ocp_m_array;
 	type ocp_s_array is array (0 to number_of_leafs-1) of ocp_burst_s;
 	signal ocp_s : ocp_s_array;
-	signal mem_data_i, mem_data_o : std_logic_vector(OCP_BURST_LENGTH*OCP_DATA_WIDTH-1 downto 0);
 	
 	signal mem_m : ocp_mem_m;
 	signal mem_s : ocp_mem_s;

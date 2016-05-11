@@ -35,14 +35,14 @@ use work.root_package.all;
 entity ping_timer is
 	port(	clk	: in std_logic;
 			rst : in std_logic;
-			postpone_transaction : in std_logic
-			core_id : out std_logic_vector(1 downto 0);
+			postpone_transaction : in std_logic;
+			core_id : out std_logic_vector(1 downto 0)
 	);
 end ping_timer;
 
 architecture rtl of ping_timer is
 	signal counter, counter_next : signed(31 downto 0) := (others => '0');
-	signal idx, idx_next : unsigned(1 downto 0) := (others => '0');
+	signal idx, idx_next : unsigned(1 downto 0) := (others => '1');
 begin
 	sched_tab : entity work.schedule_table
 	port map (idx,core_id);
@@ -51,8 +51,8 @@ begin
 	begin
 		counter_next <= counter;
 		idx_next <= idx;
-		r2l_next <= (others => (others => '0'));	
-		pinged_next <= pinged;
+--		r2l_next <= (others => (others => '0'));	
+--		pinged_next <= pinged;
 		if postpone_transaction	= '0' then
 			if counter = c_transaction-1 then
 				idx_next <= idx+1;
@@ -69,11 +69,12 @@ begin
 		if rising_edge(clk) then
 			if rst = '1' then
 				counter <= (others => '0');
-				idx <= (others => '0');
+				idx <= (others => '1');
 			else
 				counter <= counter_next;
 				idx <= idx_next;
 			end if;
+		end if;
 	end process;
 
 end rtl;

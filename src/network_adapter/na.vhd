@@ -69,14 +69,14 @@ begin
 					l2rnoc.tag <= header_tag;
 					l2rnoc.payload <= (others => '0');
 					l2rnoc.payload(OCP_DATA_WIDTH-1 downto OCP_DATA_WIDTH-OCP_CMD_WIDTH) <= ocp_m.MCmd;
-					l2rnoc.payload(ocp_m.MAddr'length-1 downto 0) <= ocp_m.MAddr;
+					l2rnoc.payload(ocp_m.MAddr'length-1-4 downto 0) <= ocp_m.MAddr(ocp_m.MAddr'length-1 downto 4);
 				elsif ocp_m.mcmd = ocp_cmd_rd then
 					state_next <= read_wait;
 					ocp_s.SCmdAccept <= '1';
 					l2rnoc.tag <= header_tag;
 					l2rnoc.payload <= (others => '0');
 					l2rnoc.payload(OCP_DATA_WIDTH-1 downto OCP_DATA_WIDTH-OCP_CMD_WIDTH) <= ocp_m.MCmd;
-					l2rnoc.payload(ocp_m.MAddr'length-1 downto 0) <= ocp_m.MAddr;
+					l2rnoc.payload(ocp_m.MAddr'length-1-4 downto 0) <= ocp_m.MAddr(ocp_m.MAddr'length-1 downto 4);
 				end if;
 			end if;
 		when WriteData =>
@@ -104,11 +104,15 @@ begin
 
 		when read_wait =>
 			--TODO
+			if r2lnoc.tag = header_tag then
 				state_next <= read;
+			end if;
+				
 		when read =>
 			--TODO Complete this
 			ocp_s.SResp <= OCP_RESP_DVA;
 			counter_next <= counter + to_unsigned(1, counter'length);
+			ocp_s.SData <= r2lnoc.payload;
 			if counter = ocp_burst_length-1 then
 				state_next <= idle;
 				counter_next <= (others => '0');

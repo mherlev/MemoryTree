@@ -14,6 +14,7 @@ vcom -quiet ../../src/root/root_package.vhd
 vcom -quiet ../../src/root/refresh_timer.vhd
 vcom -quiet ../../src/root/routing_table.vhd
 vcom -quiet ../../src/root/schedule_table.vhd
+vcom -quiet ../../src/root/ping_timer.vhd
 vcom -quiet ../../src/root/root.vhd
 #NA
 vcom -quiet ../../src/network_adapter/na.vhd

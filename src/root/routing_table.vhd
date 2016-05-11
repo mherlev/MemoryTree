@@ -34,7 +34,7 @@ use work.MemoryTreePackage.all;
 use work.root_package.all;
 
 entity routing_table is
-		port (core_id : in unsigned(1 downto 0);
+		port (core_id : in std_logic_vector(1 downto 0);
 		route : out std_logic_vector(3 downto 0));
 end routing_table;
 
@@ -46,5 +46,5 @@ architecture list of routing_table is
 	"0110",
 	"1010");
 begin
-	route <= routingtable(to_integer(core_id));
+	route <= routingtable(to_integer(unsigned(core_id)));
 end list;

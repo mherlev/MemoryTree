@@ -54,7 +54,7 @@ begin
 		en <= '0';
 		case state is
 		when idle =>
-		  output <= (others => (others => '0'));
+			output <= (others => (others => '0'));
 			if input.tag = header_tag and input.payload(routing_index)='1' then
 				state_next <= active;
 				en <= '1';
@@ -63,6 +63,9 @@ begin
 			en <= '1';
 			output <= data;
 			if input.tag = empty_tag or input.tag = tail_tag then
+				state_next <= idle;
+				en <= '0';
+			elsif input.tag = header_tag and input.payload(routing_index)='0' then
 				state_next <= idle;
 				en <= '0';
 			end if;

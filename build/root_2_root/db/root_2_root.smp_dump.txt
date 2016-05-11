@@ -87,6 +87,13 @@ l2r_state.write_data 0 0 1 1
 l2r_state.write_en 0 1 0 1 
 l2r_state.read_data 1 0 0 1 
 
+State Machine - |root_2_root|root:root_module|state
+Name state.send_package state.send_package_header state.send_ping state.idle 
+state.idle 0 0 0 0 
+state.send_ping 0 0 1 1 
+state.send_package_header 0 1 0 1 
+state.send_package 1 0 0 1 
+
 State Machine - |root_2_root|root:root_module|refresh_timer:ref_timer|state
 Name state.halt state.idle state.refresh2 state.refresh1 
 state.refresh1 0 0 0 0 
