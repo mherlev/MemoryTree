@@ -60,7 +60,7 @@ architecture rtl of root is
 	signal write_buffer_data, write_buffer_data_next : outbuffer_data_arr;
 	signal write_buffer_en, write_buffer_en_next : outbuffer_en_arr;
 	signal write_buffer_addr, write_buffer_addr_next : std_logic_vector(OCP_BURST_ADDR_WIDTH-1 downto 0) := (others => '0');
-	signal counter, counter_next : unsigned(31 downto 0) := (others => '0');
+	signal counter, counter_next : signed(31 downto 0) := (others => '0');
 	signal ref : std_logic := '0';
 	signal postpone_transaction : std_logic := '0';
 	signal send : std_logic := '0';
@@ -78,6 +78,11 @@ architecture rtl of root is
 	signal clr_cmd : std_logic := '0';
 	
 	
+	signal pinged, pinged_next : unsigned(core_id'length-1 downto 0);
+	signal cmder, cmder_next : unsigned(core_id'length-1 downto 0);
+	signal r2s, r2s_next : unsigned(core_id'length-1 downto 0);
+	
+	signal read_done : std_logic;
 	
 	
 	signal r2l_next : phit_r := (others => (others => '0'));
@@ -101,6 +106,7 @@ begin
 		send <= '0';
 		r2l_next <= (others => (others => '0'));	
 	--r2l.tag <= empty_tag;
+		pinged_next <= pinged;
 		case state is
 		when active =>
 			if postpone_transaction	= '0' then
@@ -109,6 +115,7 @@ begin
 					counter_next <= (others => '0');
 					r2l_route <= route;
 					r2l_next.tag <= header_tag;
+					pinged_next <= core_id;
 				else
 					counter_next <= counter + 1;
 				end if;
@@ -132,9 +139,11 @@ begin
 
 --		cmd_req_next  <= cmd_req;
 		cmd_next <= cmd;
+		cmder_next <= cmder;
 		case l2r_state is
 			when idle =>
 				if l2r.tag = header_tag then
+					cmder_next <= pinged;
 					outbuffer_addr_next <= l2r.payload(OCP_BURST_ADDR_WIDTH-1 downto 0);	
 					if l2r.payload(OCP_DATA_WIDTH-1 downto OCP_DATA_WIDTH-OCP_CMD_WIDTH) = OCP_CMD_WR then
 						l2r_state_next <= write_data;
@@ -176,16 +185,20 @@ begin
 		write_buffer_data_next <= write_buffer_data;
 		write_buffer_en_next <= write_buffer_en;
 		write_buffer_addr_next <= write_buffer_addr;
+		r2s_next <= r2s;
+		read_done <= '0';
 		case mem_state is
 		when idle =>
 			if cmd = OCP_CMD_WR then
+				r2s_next <=cmder;
 				write_buffer_data_next <= outbuffer_data;
 				write_buffer_en_next <= outbuffer_en;
-
+				
 				write_buffer_addr_next <= outbuffer_addr;
 				mem_state_next <= write_s;
 				clr_cmd <= '1';
 			elsif cmd = OCP_CMD_RD then
+				r2s_next <=cmder;
 				write_buffer_addr_next <= outbuffer_addr;
 				mem_state_next <= read_s;
 				clr_cmd <= '1';
@@ -201,6 +214,7 @@ begin
 			if mem_s.SResp /= OCP_RESP_NULL then
 				mem_state_next <= idle;
 				mem_m.MRespAccept <= '1';
+				read_done <= '1';
 			end if;
 		when others =>
 			mem_state_next <= idle;
@@ -222,7 +236,8 @@ begin
 				r2l <= (others => (others => '0'));
 				mem_state <= idle;
 				cmd <= OCP_CMD_IDLE;
-				counter <= to_unsigned(c_transaction-1,counter'length);
+				counter <= (others => '0');
+				--counter <= to_unsigned(c_transaction-1,counter'length);
 				outbuffer_data <= (others => (others => '0'));
 				outbuffer_en <= (others => (others => '0'));
 				outbuffer_addr <= (others => '0');
@@ -246,6 +261,10 @@ begin
 				if clr_cmd = '1' then
 				cmd <= OCP_CMD_IDLE;
 				end if;
+				
+				pinged <= pinged_next;
+				cmder <= cmder_next;
+				r2s <= r2s_next;
 			end if;
 		end if;
 	end process;

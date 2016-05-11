@@ -23,17 +23,58 @@
 -- ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 -- POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
--- Title: Root package
--- Description: Shared type and constant definitions for root
+-- Title: Ping timer
+-- Description: Timer responsible for periodically issuing pings
 --------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+library work;
+use work.root_package.all;
 
-package root_package is
+entity ping_timer is
+	port(	clk	: in std_logic;
+			rst : in std_logic;
+			postpone_transaction : in std_logic
+			core_id : out std_logic_vector(1 downto 0);
+	);
+end ping_timer;
 
-constant c_refi : integer := 180;
-constant c_rfc : integer := 60;
-constant noc_latency : integer := 24;
-constant c_transaction : integer := 30;
-constant schedule_table_size : integer := 4;
-end root_package;
+architecture rtl of ping_timer is
+	signal counter, counter_next : signed(31 downto 0) := (others => '0');
+	signal idx, idx_next : unsigned(1 downto 0) := (others => '0');
+begin
+	sched_tab : entity work.schedule_table
+	port map (idx,core_id);
+
+	process(idx,counter,postpone_transaction)
+	begin
+		counter_next <= counter;
+		idx_next <= idx;
+		r2l_next <= (others => (others => '0'));	
+		pinged_next <= pinged;
+		if postpone_transaction	= '0' then
+			if counter = c_transaction-1 then
+				idx_next <= idx+1;
+				counter_next <= (others => '0');
+			else
+				counter_next <= counter + 1;
+			end if;
+		end if;
+
+	end process;
+	
+	process(clk)
+	begin
+		if rising_edge(clk) then
+			if rst = '1' then
+				counter <= (others => '0');
+				idx <= (others => '0');
+			else
+				counter <= counter_next;
+				idx <= idx_next;
+			end if;
+	end process;
+
+end rtl;
+

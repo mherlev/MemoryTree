@@ -59,11 +59,11 @@ begin
 		when refresh2 =>
 			ref<= '0';
 			postpone_transaction <= '1';
-			if counter = (c_rfc - noc_latency-1) then
+			if counter = (c_rfc - noc_latency - c_transaction - 1) then
 				state_next <= idle;
 			end if;
 		when idle =>
-			if counter = c_refi - noc_latency-1 then
+			if counter = c_refi - noc_latency - c_transaction - 1 then
 				state_next <= halt;
 			end if;
 		when halt =>
