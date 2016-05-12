@@ -31,9 +31,14 @@ use ieee.std_logic_1164.all;
 
 package root_package is
 
-constant c_refi : integer := 180;
-constant c_rfc : integer := 60;
-constant noc_latency : integer := 25;
-constant c_transaction : integer := 30;
+constant c_refi : integer := 272;
+constant c_rfc : integer := 128;
+constant noc_latency : integer := 2+4+5;--25;
+constant c_transaction : integer := 12;
 constant schedule_table_size : integer := 4;
+
+constant nrcd : integer := 11;
+constant nrl : integer := 11;
+constant nread : integer := 7; --nrcd+nrl+4;
+
 end root_package;

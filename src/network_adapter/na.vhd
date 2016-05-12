@@ -81,26 +81,27 @@ begin
 			end if;
 		when WriteData =>
 	    	counter_next <= counter+1;
-			l2rnoc.payload <= ocp_m.MData;
+			l2rnoc.payload <= ocp_m.MDataByteEn & ocp_m.MData;
 			l2rnoc.tag <= payload_tag;
-			ByteEnShiftReg_next <= ocp_m.MDataByteEn & ByteEnShiftReg(ShiftRegLength-1 downto OCP_BYTE_WIDTH);
+--			ByteEnShiftReg_next <= ocp_m.MDataByteEn & ByteEnShiftReg(ShiftRegLength-1 downto OCP_BYTE_WIDTH);
 			if counter = 0 then
 				ocp_s.SCmdAccept <= '1';
 			elsif counter = ocp_burst_length-1 then
-		    	state_next <= writebyteen;
+--		    	state_next <= writebyteen;
 				counter_next <= (others => '0');
-			end if;
-		when WriteByteEn =>
-	    	counter_next <= counter+1;
-			l2rnoc.payload <= ByteEnShiftReg(OCP_DATA_WIDTH-1 downto 0);
-			l2rnoc.tag <= payload_tag;
-			ByteEnShiftReg_next <= std_logic_vector(to_unsigned(0,OCP_DATA_WIDTH)) & ByteEnShiftReg(ShiftRegLength-1 downto OCP_DATA_WIDTH);
-			if counter = 0 then
-				ocp_s.SResp <= OCP_RESP_DVA;
-			elsif counter = ocp_burst_length/8-1 then
-		    	state_next <= idle;
-				counter_next <= (others => '0');
-			end if;
+				state_next <= idle;
+				end if;
+--		when WriteByteEn =>
+--	    	counter_next <= counter+1;
+--			l2rnoc.payload <= ByteEnShiftReg(OCP_DATA_WIDTH-1 downto 0);
+--			l2rnoc.tag <= payload_tag;
+--			ByteEnShiftReg_next <= std_logic_vector(to_unsigned(0,OCP_DATA_WIDTH)) & ByteEnShiftReg(ShiftRegLength-1 downto OCP_DATA_WIDTH);
+--			if counter = 0 then
+--				ocp_s.SResp <= OCP_RESP_DVA;
+--			elsif counter = ocp_burst_length/8-1 then
+--		    	state_next <= idle;
+--				counter_next <= (others => '0');
+--			end if;
 
 		when read_wait =>
 			--TODO
@@ -112,7 +113,7 @@ begin
 			--TODO Complete this
 			ocp_s.SResp <= OCP_RESP_DVA;
 			counter_next <= counter + to_unsigned(1, counter'length);
-			ocp_s.SData <= r2lnoc.payload;
+			ocp_s.SData <= r2lnoc.payload(OCP_DATA_WIDTH-1 downto 0);
 			if counter = ocp_burst_length-1 then
 				state_next <= idle;
 				counter_next <= (others => '0');

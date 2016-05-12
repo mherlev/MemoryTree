@@ -64,7 +64,7 @@ package ocp is
     constant OCP_RESP_FAIL : std_logic_vector(OCP_RESP_WIDTH-1 downto 0) := "10";
     constant OCP_RESP_ERR  : std_logic_vector(OCP_RESP_WIDTH-1 downto 0) := "11";
 
-	 constant OCP_BURST_LENGTH : integer := 16;
+	 constant OCP_BURST_LENGTH : integer := 4;
 	 
 	 
     type ocp_core_m is record

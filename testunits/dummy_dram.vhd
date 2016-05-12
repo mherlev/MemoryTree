@@ -33,6 +33,7 @@ library work;
 use work.MemoryTreePackage.all;
 use work.root_package.all;
 use work.ocp.all;
+use work.root_package.all;
 
 entity dummy_dram is
 port(clk : in std_logic;
@@ -69,7 +70,7 @@ counter_next <= counter + 1;
 end if;
 when opening =>
 counter_next <= counter + 1;
-if counter = 9 then
+if counter = nread-1 then
 state_next <= processing;
 if Mem_m.MCmd = OCP_CMD_WR then
 en <= '1';

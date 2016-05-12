@@ -36,7 +36,7 @@ package MemoryTreePackage is
 	constant empty_tag: std_logic_vector(tag_width-1 downto 0) := "00";
 	constant tail_tag: std_logic_vector(tag_width-1 downto 0) := "01";
 
-	constant payload_width : natural := 32;
+	constant payload_width : natural := 32+4;
 	constant mem_index_top : natural := 31;
 
 	type phit_r is record

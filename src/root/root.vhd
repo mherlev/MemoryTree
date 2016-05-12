@@ -52,7 +52,7 @@ architecture rtl of root is
 	signal l2r_state, l2r_state_next : l2r_states := idle;
 	type outbuffer_data_arr is array (ocp_burst_length-1 downto 0) of std_logic_vector(OCP_DATA_WIDTH-1 downto 0);	
 	signal outbuffer_data, outbuffer_data_next : outbuffer_data_arr := (others => (others => '0'));
-	type outbuffer_en_arr is array (ocp_burst_length*OCP_BYTE_WIDTH/OCP_DATA_WIDTH-1 downto 0) of std_logic_vector(OCP_DATA_WIDTH-1 downto 0);
+	type outbuffer_en_arr is array (ocp_burst_length-1 downto 0) of std_logic_vector(OCP_BYTE_WIDTH-1 downto 0);
 	signal outbuffer_en, outbuffer_en_next : outbuffer_en_arr := (others => (others => '0'));
 	signal outbuffer_addr, outbuffer_addr_next : std_logic_vector(OCP_BURST_ADDR_WIDTH-1 downto 0) := (others => '0');
 	signal write_counter, write_counter_next : unsigned(31 downto 0) := (others => '0');
@@ -137,7 +137,7 @@ begin
 		when send_package =>
 			read_counter_next <= read_counter + 1;
 			r2l_next.tag <= payload_tag;
-			r2l_next.payload <= readbuffer_data(to_integer(read_counter));
+			r2l_next.payload(OCP_DATA_WIDTH-1 downto 0) <= readbuffer_data(to_integer(read_counter));
 			if read_counter = OCP_BURST_LENGTH-1 then
 				read_counter_next <= (others => '0');
 				state_next <= idle;
@@ -174,20 +174,23 @@ begin
 				end if;
 			when write_data =>
 				write_counter_next <= write_counter + to_unsigned(1,write_counter'length);
-				outbuffer_data_next(to_integer(write_counter)) <= l2r.payload;
+				outbuffer_data_next(to_integer(write_counter)) <= l2r.payload(OCP_DATA_WIDTH-1 downto 0);
+				outbuffer_en_next(to_integer(write_counter)) <= l2r.payload(payload_width-1 downto payload_width-OCP_BYTE_WIDTH);
 				if write_counter = OCP_burst_length-1 then
-					l2r_state_next <= write_en;
-					write_counter_next <= (others => '0');
-				end if;
-			when write_en =>
-				write_counter_next <= write_counter + to_unsigned(1,write_counter'length);
-				outbuffer_en_next(to_integer(write_counter)) <= l2r.payload;
-				if write_counter = OCP_burst_length*OCP_BYTE_WIDTH/OCP_DATA_WIDTH-1 then
+--					l2r_state_next <= write_en;
 					l2r_state_next <= idle;
 					write_counter_next <= (others => '0');
 					cmd_next <= OCP_CMD_WR;
---					cmd_req_next <= '1';
 				end if;
+--			when write_en =>
+--				write_counter_next <= write_counter + to_unsigned(1,write_counter'length);
+--				outbuffer_en_next(to_integer(write_counter)) <= l2r.payload;
+--				if write_counter = OCP_burst_length*OCP_BYTE_WIDTH/OCP_DATA_WIDTH-1 then
+--					l2r_state_next <= idle;
+--					write_counter_next <= (others => '0');
+--					cmd_next <= OCP_CMD_WR;
+----					cmd_req_next <= '1';
+--				end if;
 			when others =>
 				l2r_state_next <= idle;
 			end case;
@@ -313,8 +316,8 @@ begin
 	outdatamap : for i in 0 to ocp_burst_length-1 generate
 		mem_m.MData((i+1)*OCP_DATA_WIDTH-1 downto i*OCP_DATA_WIDTH) <= write_buffer_data(i);
 	end generate;
-	outenmap : for i in 0 to ocp_burst_length*OCP_BYTE_WIDTH/OCP_DATA_WIDTH-1 generate
-		mem_m.MByteEn((i+1)*OCP_DATA_WIDTH-1 downto i*OCP_DATA_WIDTH) <= write_buffer_en(i);
+	outenmap : for i in 0 to ocp_burst_length-1 generate
+		mem_m.MByteEn((i+1)*OCP_BYTE_WIDTH-1 downto i*OCP_BYTE_WIDTH) <= write_buffer_en(i);
 	end generate;
 
 
