@@ -34,6 +34,7 @@ use work.MemoryTreePackage.all;
 use work.ocp.all;
 
 entity network_adapter is
+		generic(core_id : integer := 0);
 		port (clk : in std_logic;
 		rst : in std_logic;
 		r2lnoc : in phit_r;
@@ -68,15 +69,17 @@ begin
 					state_next <= WriteData;
 					l2rnoc.tag <= header_tag;
 					l2rnoc.payload <= (others => '0');
-					l2rnoc.payload(OCP_DATA_WIDTH-1 downto OCP_DATA_WIDTH-OCP_CMD_WIDTH) <= ocp_m.MCmd;
-					l2rnoc.payload(ocp_m.MAddr'length-1-4 downto 0) <= ocp_m.MAddr(ocp_m.MAddr'length-1 downto 4);
+					l2rnoc.payload(payload_width-1 downto ocp_m.MAddr'length+OCP_CMD_WIDTH) <= std_logic_vector(to_unsigned(core_id,payload_width-(ocp_m.MAddr'length+OCP_CMD_WIDTH)));
+					l2rnoc.payload(ocp_m.MAddr'length+OCP_CMD_WIDTH-1 downto ocp_m.MAddr'length) <= ocp_m.MCmd;
+					l2rnoc.payload(ocp_m.MAddr'length-1 downto 0) <= ocp_m.MAddr;
 				elsif ocp_m.mcmd = ocp_cmd_rd then
 					state_next <= read_wait;
 					ocp_s.SCmdAccept <= '1';
 					l2rnoc.tag <= header_tag;
 					l2rnoc.payload <= (others => '0');
-					l2rnoc.payload(OCP_DATA_WIDTH-1 downto OCP_DATA_WIDTH-OCP_CMD_WIDTH) <= ocp_m.MCmd;
-					l2rnoc.payload(ocp_m.MAddr'length-1-4 downto 0) <= ocp_m.MAddr(ocp_m.MAddr'length-1 downto 4);
+					l2rnoc.payload(payload_width-1 downto ocp_m.MAddr'length+OCP_CMD_WIDTH) <= std_logic_vector(to_unsigned(core_id,payload_width-(ocp_m.MAddr'length+OCP_CMD_WIDTH)));
+					l2rnoc.payload(ocp_m.MAddr'length+OCP_CMD_WIDTH-1 downto ocp_m.MAddr'length) <= ocp_m.MCmd;
+					l2rnoc.payload(ocp_m.MAddr'length-1 downto 0) <= ocp_m.MAddr;
 				end if;
 			end if;
 		when WriteData =>
@@ -87,26 +90,27 @@ begin
 			if counter = 0 then
 				ocp_s.SCmdAccept <= '1';
 			elsif counter = ocp_burst_length-1 then
---		    	state_next <= writebyteen;
+		    	state_next <= writebyteen;
 				counter_next <= (others => '0');
-				state_next <= idle;
+--				state_next <= idle;
 				end if;
---		when WriteByteEn =>
+		when WriteByteEn =>
 --	    	counter_next <= counter+1;
 --			l2rnoc.payload <= ByteEnShiftReg(OCP_DATA_WIDTH-1 downto 0);
 --			l2rnoc.tag <= payload_tag;
 --			ByteEnShiftReg_next <= std_logic_vector(to_unsigned(0,OCP_DATA_WIDTH)) & ByteEnShiftReg(ShiftRegLength-1 downto OCP_DATA_WIDTH);
 --			if counter = 0 then
---				ocp_s.SResp <= OCP_RESP_DVA;
+				ocp_s.SResp <= OCP_RESP_DVA;
 --			elsif counter = ocp_burst_length/8-1 then
---		    	state_next <= idle;
---				counter_next <= (others => '0');
+		    	state_next <= idle;
+				counter_next <= (others => '0');
 --			end if;
 
 		when read_wait =>
 			--TODO
 			if r2lnoc.tag = header_tag then
 				state_next <= read;
+				counter_next <= (others => '0');
 			end if;
 				
 		when read =>

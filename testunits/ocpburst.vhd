@@ -102,12 +102,12 @@ begin
 			if burst_count = OCP_burst_length-1 then
 				burst_count_next <= (others => '0');
 				addr_count_next <= addr_count + to_unsigned(OCP_burst_length,addr_count'length);
---				state_next <= write;
-state_next <= read_await_accept;
+				state_next <= write;
+--state_next <= read_await_accept;
 			end if;
 		when others =>
-		state_next <= read_await_accept;
-		--		state_next <= write;
+--		state_next <= read_await_accept;
+				state_next <= write;
 		end case;
 	end process;
 
@@ -115,7 +115,7 @@ state_next <= read_await_accept;
 	begin
 		if rising_edge(clk) then
 			if reset = '1' then
-				state <= read_await_accept;--write;
+				state <= write;
 				burst_count <= (others => '0');
 				addr_count <= (others => '0');
 			else

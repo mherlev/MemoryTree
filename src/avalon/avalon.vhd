@@ -31,7 +31,7 @@ use ieee.std_logic_1164.all;
 
 package avalon is
 
-    constant AVL_ADDR_WIDTH : integer := 32;
+    constant AVL_ADDR_WIDTH : integer := 23;
     constant AVL_DATA_WIDTH : integer := 512;
     constant AVL_BYTE_WIDTH : integer := 64;
 	 
@@ -42,7 +42,7 @@ package avalon is
         read_req	: std_logic;
         size		: std_logic;
         wdata		: std_logic_vector(AVL_DATA_WIDTH-1 downto 0);
-        write_req	: std_logic_vector(OCP_CMD_WIDTH-1 downto 0);
+        write_req	: std_logic;
     end record;
 
     type avl_s is record
@@ -51,4 +51,4 @@ package avalon is
         ready		: std_logic;
     end record;
  
-end package ; -- ocp
+end package;
