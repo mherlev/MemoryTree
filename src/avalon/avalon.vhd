@@ -32,8 +32,8 @@ use ieee.std_logic_1164.all;
 package avalon is
 
     constant AVL_ADDR_WIDTH : integer := 23;
-    constant AVL_DATA_WIDTH : integer := 512;
-    constant AVL_BYTE_WIDTH : integer := 64;
+    constant AVL_DATA_WIDTH : integer := 128;
+    constant AVL_BYTE_WIDTH : integer := 16;
 	 
 	type avl_m is record
         addr		: std_logic_vector(AVL_ADDR_WIDTH-1 downto 0);

@@ -54,10 +54,11 @@ architecture behav of dummy_dram_avalon is
 	type states is (idle, opening, processing, closing);
 	signal state, state_next : states;
 	signal en : std_logic;
+	signal rnw, rnw_next : std_logic := '0';
 begin
 
 
-	process(state, counter, rd_data, mem_m,avl_mem_m)
+	process(state, counter, rd_data, mem_m,avl_mem_m,rnw)
 	begin
 		counter_next <= counter;
 		state_next <= state;
@@ -65,32 +66,53 @@ begin
 		mem_s.SResp <= OCP_RESP_NULL;
 		mem_s.SCmdAccept <= '0';
 		en <= '0';
+		avl_mem_s.ready <= '0';
+		avl_mem_s.rdata <= (others => '0');
+		avl_mem_s.rdata_valid <= '0';
+		rnw_next <= rnw;
 		case state is
 		when idle =>
-			if Mem_m.MCmd /= OCP_CMD_IDLE then
+			avl_mem_s.ready <= '1';
+--			if Mem_m.MCmd /= OCP_CMD_IDLE then
+--				state_next <= opening;
+--				counter_next <= counter + 1;
+--			els
+			if avl_mem_m.burstbegin = '1' AND (avl_mem_m.read_req = '1' OR avl_mem_m.write_req = '1') then
+				avl_mem_s.ready <= '0';
 				state_next <= opening;
 				counter_next <= counter + 1;
-			elsif avl_mem_m.read_req = '1' OR avl_mem_m.write_req = '1' then 
-				state_next <= opening;
-				counter_next <= counter + 1;
+				if avl_mem_m.read_req = '1' then
+					rnw_next <= '1';
+				else
+					rnw_next <= '0';
+				end if;
 			end if;
 		when opening =>
 			counter_next <= counter + 1;
-			if counter = nread-1 then
+			if counter = c_transaction-1 then
 				state_next <= processing;
-				if Mem_m.MCmd = OCP_CMD_WR then
-					en <= '1';
-				elsif avl_mem_m.write_req = '1' then
-					en <= '1';
-				end if;
+--				if Mem_m.MCmd = OCP_CMD_WR then
+--					en <= '1';
+--				els
+					Mem_s.SData <= rd_data;		
+
 			end if;
 		when processing =>
+			avl_mem_s.ready <= '1';
 			counter_next <= counter + 1;
 			Mem_s.SData <= rd_data;
-			Mem_s.SResp <= OCP_RESP_DVA;
-			if mem_m.MRespAccept = '1' then
-				state_next <= closing;
+--			Mem_s.SResp <= OCP_RESP_DVA;
+			if rnw = '0' then
+				en <= '1';
+			else
+				avl_mem_s.rdata_valid <= '1';
+				avl_mem_s.rdata <= rd_data;
+
 			end if;
+--			if mem_m.MRespAccept = '1' then
+				state_next <= idle;
+				counter_next <= (others => '0');
+--			end if;
 		when closing =>
 			counter_next <= counter + 1;
 			if counter >= c_transaction-1 then
@@ -109,12 +131,14 @@ begin
 			if reset = '1' then 
 				counter <= (others => '0');
 				state <= idle;
+				rnw <= '0';
 			else
+				rnw <= rnw_next;
 				state <= state_next;
 				counter <= counter_next;
-				rd_data <= ram(to_integer(unsigned(mem_m.MAddr)));
+				rd_data <= ram(to_integer(unsigned(avl_mem_m.addr)));
 				if en = '1' then
-					ram(to_integer(unsigned(mem_m.MAddr))) <= Mem_m.MData;
+					ram(to_integer(unsigned(mem_m.MAddr))) <= avl_Mem_m.wdata;
 				end if;
 			end if;
 		end if;

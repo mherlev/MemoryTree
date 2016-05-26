@@ -114,7 +114,10 @@ begin
 	ping_time : entity work.ping_timer
 	port map(clk,reset,postpone_transaction,ping_id);
 	
-	
+--	avl_mem_m.addr <= (others => '0');
+--	avl_mem_m.be <= (others => '0');
+	avl_mem_m.size <= '1';
+--	avl_mem_m.wdata <= (others => '0');
 
 	r2l_core_fifo : entity work.fifo
 	generic map(2,3)
@@ -131,13 +134,13 @@ begin
 	port map(clk, reset, open, open, cmd_next,mem_cmd,mem_fifo_ren,mem_fifo_wen,open);
 	mem_addr_fifo : entity work.fifo
 	generic map(OCP_BURST_ADDR_WIDTH,4)
-	port map(clk, reset, open, open, outbuffer_addr_next, mem_m.MAddr, mem_fifo_ren,mem_fifo_wen,open);
+	port map(clk, reset, open, open, outbuffer_addr_next, avl_mem_m.addr, mem_fifo_ren,mem_fifo_wen,open);
 	mem_data_fifo : entity work.fifo
 	generic map(OCP_DATA_WIDTH*OCP_BURST_LENGTH,4)
-	port map(clk, reset, open, open, write_dat, mem_m.MData, mem_fifo_ren,mem_fifo_wen,open);
+	port map(clk, reset, open, open, write_dat, avl_mem_m.wdata, mem_fifo_ren,mem_fifo_wen,open);
 	mem_ben_fifo : entity work.fifo
 	generic map(OCP_BYTE_WIDTH*OCP_BURST_LENGTH,4)
-	port map(clk, reset, open, open, write_ben, mem_m.MByteEn, mem_fifo_ren,mem_fifo_wen,open);
+	port map(clk, reset, open, open, write_ben, avl_mem_m.be, mem_fifo_ren,mem_fifo_wen,open);
 	
 	r2l_fsm : process(state, ping_id, route, pinged,core_id, r2s, read_counter, readbuffer_data, r2s_waddr, r2s_raddr)
 	begin
@@ -224,13 +227,14 @@ begin
 	end process;
 	
 
-	mem_fsm : process(mem_state, cmd, mem_s,outbuffer_data,outbuffer_en,outbuffer_addr, read_data_buffer, cmder,r2s,mem_waddr,mem_raddr,mem_cmd)
+	mem_fsm : process(mem_state, cmd, mem_s, avl_mem_s,outbuffer_data,outbuffer_en,outbuffer_addr, read_data_buffer, cmder,r2s,mem_waddr,mem_raddr,mem_cmd)
 	begin
 		mem_state_next <= mem_state;
 		mem_m.MCmd <= OCP_CMD_IDLE;
 		mem_m.MRespAccept <= '0';
 		avl_mem_m.write_req <= '0';
 		avl_mem_m.read_req <= '0';
+		avl_mem_m.burstbegin <= '0';
 
 		r2l_fifo_wen <= '0';
 
@@ -246,17 +250,31 @@ begin
 			end if;
 		end if;
 		when write_s =>
-			mem_m.MCmd <= OCP_CMD_WR;
+--			mem_m.MCmd <= OCP_CMD_WR;
 			avl_mem_m.write_req <= '1';
-			if mem_s.SResp /= OCP_RESP_NULL then
+			avl_mem_m.burstbegin <= '1';
+--			if mem_s.SResp /= OCP_RESP_NULL then
+--				mem_state_next <= idle;
+--				mem_m.MRespAccept <= '1';
+--				mem_fifo_ren <= '1';
+--			els
+				if avl_mem_s.ready = '1' then
 				mem_state_next <= idle;
-				mem_m.MRespAccept <= '1';
+--				mem_m.MRespAccept <= '1';
 				mem_fifo_ren <= '1';
 			end if;
 		when read_s =>
-			mem_m.MCmd <= OCP_CMD_RD;
+--			mem_m.MCmd <= OCP_CMD_RD;
 			avl_mem_m.read_req <= '1';
-			if mem_s.SResp /= OCP_RESP_NULL then
+			avl_mem_m.burstbegin <= '1';
+
+--			if mem_s.SResp /= OCP_RESP_NULL then
+--				mem_state_next <= idle;
+--				mem_m.MRespAccept <= '1';
+--				r2l_fifo_wen <= '1';
+--				mem_fifo_ren <= '1';
+--			els
+			if avl_mem_s.ready = '1' then
 				mem_state_next <= idle;
 				mem_m.MRespAccept <= '1';
 				r2l_fifo_wen <= '1';
@@ -314,8 +332,6 @@ begin
 		readbuffer_data(i)  <= read_data_buffer((i+1)*OCP_DATA_WIDTH-1 downto i*OCP_DATA_WIDTH);
 	end generate;
 	
-	
-
 	outdatamap2 : for i in 0 to ocp_burst_length-1 generate
 		write_dat((i+1)*OCP_DATA_WIDTH-1 downto i*OCP_DATA_WIDTH) <= outbuffer_data(i);
 	end generate;
