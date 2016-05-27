@@ -291,40 +291,39 @@ begin
 	
 	process(clk)
 	begin
-		if rising_edge(clk) then
-			if reset = '1' then
-				state <= idle;
+		if reset = '1' then
+			state <= idle;
 
-				write_counter <= (others => '0');
-				l2r_state <= idle;
-				r2l <= (others => (others => '0'));
-				mem_state <= idle;
-				cmd <= OCP_CMD_IDLE;
+			write_counter <= (others => '0');
+			l2r_state <= idle;
+			r2l <= (others => (others => '0'));
+			mem_state <= idle;
+			cmd <= OCP_CMD_IDLE;
 
-				
-				outbuffer_data <= (others => (others => '0'));
-				outbuffer_en <= (others => (others => '0'));
-				outbuffer_addr <= (others => '0');
-				
-				read_counter <= (others => '0');
-				
-				pinged <= (others => '1');
-				cmder <= (others => '0');
-			else
-				state <= state_next;
-				l2r_state <= l2r_state_next;
-				write_counter <= write_counter_next;
-				outbuffer_data <= outbuffer_data_next;
-				outbuffer_en <= outbuffer_en_next;
-				outbuffer_addr <= outbuffer_addr_next;
-				r2l <= r2l_next;
-				mem_state <= mem_state_next;
-				cmd <= cmd_next;
-				core_id <= core_id_next;
-				pinged <= pinged_next;
-				cmder <= cmder_next;
-				read_counter <= read_counter_next;
-			end if;
+			
+			outbuffer_data <= (others => (others => '0'));
+			outbuffer_en <= (others => (others => '0'));
+			outbuffer_addr <= (others => '0');
+			
+			read_counter <= (others => '0');
+			
+			pinged <= (others => '1');
+			cmder <= (others => '0');
+		elsif rising_edge(clk) then
+
+			state <= state_next;
+			l2r_state <= l2r_state_next;
+			write_counter <= write_counter_next;
+			outbuffer_data <= outbuffer_data_next;
+			outbuffer_en <= outbuffer_en_next;
+			outbuffer_addr <= outbuffer_addr_next;
+			r2l <= r2l_next;
+			mem_state <= mem_state_next;
+			cmd <= cmd_next;
+			core_id <= core_id_next;
+			pinged <= pinged_next;
+			cmder <= cmder_next;
+			read_counter <= read_counter_next;
 		end if;
 	end process;
 	

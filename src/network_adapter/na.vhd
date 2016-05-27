@@ -129,16 +129,14 @@ begin
 
 	process (clk,rst)
 	begin
-		if rising_edge(clk) then
-			if rst = '1' then
-				state <= idle;
-				counter <= (others => '0');
-				ByteEnShiftReg <= (others => '0');
-			else
-				state <= state_next;
-				counter <= counter_next;
-				ByteEnShiftReg <= ByteEnShiftReg_next;
-			end if;
+		if rst = '1' then
+			state <= idle;
+			counter <= (others => '0');
+			ByteEnShiftReg <= (others => '0');
+		elsif rising_edge(clk) then
+			state <= state_next;
+			counter <= counter_next;
+			ByteEnShiftReg <= ByteEnShiftReg_next;
 		end if;
 	end process;
 end rtl;

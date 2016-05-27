@@ -1,0 +1,25 @@
+Fitter Status : Failed - Sun May 22 10:35:37 2016
+Quartus II 64-Bit Version : 14.0.0 Build 200 06/17/2014 SJ Full Version
+Revision Name : mem_if_ddr3_emif_0_example_design_example
+Top-level Entity Name : mem_if_ddr3_emif_0_example_design_example
+Family : Stratix V
+Device : 5SGXEA7H3F35C3
+Timing Models : Final
+Logic utilization (in ALMs) : 9,339 / 234,720 ( 4 % )
+Total registers : 14588
+Total pins : 127 / 664 ( 19 % )
+Total virtual pins : 0
+Total block memory bits : 284,096 / 52,428,800 ( < 1 % )
+Total DSP Blocks : 0 / 256 ( 0 % )
+Total HSSI STD RX PCSs : 0 / 24 ( 0 % )
+Total HSSI 10G RX PCSs : 0 / 24 ( 0 % )
+Total HSSI GEN3 RX PCSs : 0 / 24 ( 0 % )
+Total HSSI PMA RX Deserializers : 0 / 24 ( 0 % )
+Total HSSI STD TX PCSs : 0 / 24 ( 0 % )
+Total HSSI 10G TX PCSs : 0 / 24 ( 0 % )
+Total HSSI GEN3 TX PCSs : 0 / 24 ( 0 % )
+Total HSSI PMA TX Serializers : 0 / 24 ( 0 % )
+Total HSSI PIPE GEN1_2s : 0 / 24 ( 0 % )
+Total HSSI GEN3s : 0 / 24 ( 0 % )
+Total PLLs : 1 / 68 ( 1 % )
+Total DLLs : 1 / 4 ( 25 % )

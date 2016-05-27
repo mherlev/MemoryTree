@@ -44,7 +44,7 @@ architecture rtl of ocpburst_testbench is
 	type states is (write,writing,write_response,read_await_accept,read_await_resp,read);
 	signal state, state_next : states;
 	signal burst_count, burst_count_next : unsigned(OCP_DATA_WIDTH-1 downto 0) := (others => '0');
-	signal addr_count, addr_count_next : unsigned(OCP_DATA_WIDTH-1 downto 0);
+	signal addr_count, addr_count_next : unsigned(OCP_DATA_WIDTH-1 downto 0) := (others => '0');
 begin
 	process(state,burst_count, addr_count,ocp_s)
 	begin
@@ -113,16 +113,14 @@ begin
 
 	process(clk,reset)
 	begin
-		if rising_edge(clk) then
-			if reset = '1' then
-				state <= write;
-				burst_count <= (others => '0');
-				addr_count <= (others => '0');
-			else
-				state <= state_next;
-				burst_count <= burst_count_next;
-				addr_count <= addr_count_next;
-			end if;
+		if reset = '1' then
+			state <= write;
+			burst_count <= (others => '0');
+			addr_count <= (others => '0');
+		elsif rising_edge(clk) then
+			state <= state_next;
+			burst_count <= burst_count_next;
+			addr_count <= addr_count_next;
 		end if;
 	end process;
 end rtl;
