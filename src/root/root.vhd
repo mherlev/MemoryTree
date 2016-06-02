@@ -45,7 +45,11 @@ entity root is
 	mem_m : out ocp_mem_m;
 	mem_s : in ocp_mem_s;
 	avl_mem_m	: out avl_m;
-	avl_mem_s	: in avl_s);
+	avl_mem_s	: in avl_s;
+	calib_done	: in std_logic;
+	calib_success	: in std_logic;
+	refresh : out std_logic;
+	refresh_ack : in std_logic);
 end root;
 
 architecture rtl of root is
@@ -102,17 +106,19 @@ architecture rtl of root is
 
 	signal write_dat : std_logic_vector(OCP_DATA_WIDTH*OCP_BURST_LENGTH-1 downto 0) := (others => '0');	
 	signal write_ben : std_logic_vector(OCP_BYTE_WIDTH*OCP_BURST_LENGTH-1 downto 0) := (others => '0');
+	signal rst : std_logic;
 begin
+	rst <= not calib_done;
 	ref_timer : entity work.refresh_timer
-	port map(clk,reset,ref,postpone_transaction);
+	port map(clk,rst,ref,postpone_transaction, refresh_ack);
 	
-
+	refresh <= ref;
 
 	route_tab : entity work.routing_table
 	port map(core_id, route);	
 
 	ping_time : entity work.ping_timer
-	port map(clk,reset,postpone_transaction,ping_id);
+	port map(clk,rst,postpone_transaction,ping_id);
 	
 --	avl_mem_m.addr <= (others => '0');
 --	avl_mem_m.be <= (others => '0');
@@ -123,8 +129,8 @@ begin
 	generic map(2,3)
 	port map(clk, reset, r2s_raddr, r2s_waddr, r2s_next, r2s, r2l_fifo_ren,r2l_fifo_wen,open);
 	r2l_data_fifo : entity work.fifo
-	generic map(OCP_BURST_LENGTH*OCP_DATA_WIDTH,3)
-	port map(clk, reset, open, open, mem_s.SData,read_data_buffer,r2l_fifo_ren,r2l_fifo_wen,open);
+	generic map(AVL_DATA_WIDTH,3)
+	port map(clk, reset, open, open, avl_mem_s.rdata,read_data_buffer,r2l_fifo_ren,r2l_fifo_wen,open);
 	
 	mem_core_fifo : entity work.fifo
 	generic map(2,4)
@@ -274,9 +280,9 @@ begin
 --				r2l_fifo_wen <= '1';
 --				mem_fifo_ren <= '1';
 --			els
-			if avl_mem_s.ready = '1' then
+			if avl_mem_s.rdata_valid = '1' then
 				mem_state_next <= idle;
-				mem_m.MRespAccept <= '1';
+--				mem_m.MRespAccept <= '1';
 				r2l_fifo_wen <= '1';
 				mem_fifo_ren <= '1';
 			end if;

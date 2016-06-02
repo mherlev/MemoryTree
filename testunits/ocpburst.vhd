@@ -60,8 +60,8 @@ begin
 		when write =>
 			ocp_m.mcmd <= ocp_cmd_wr;
 			ocp_m.maddr <= std_logic_vector(addr_count(ocp_m.maddr'length-1 downto 0));
-			ocp_m.mdata <= std_logic_vector(burst_count);
-			ocp_m.mdatabyteen <= std_logic_vector(burst_count(3 downto 0));--(others => '1');
+			ocp_m.mdata <= std_logic_vector(addr_count+burst_count);
+			ocp_m.mdatabyteen <= (others => '1');
 			ocp_m.mdatavalid <= '1';
 			if ocp_s.SCmdAccept = '1' then
 				state_next <= writing;
@@ -70,8 +70,8 @@ begin
 			end if;
 		when writing =>
 			burst_count_next <= burst_count+to_unsigned(1,burst_count'length);
-			ocp_m.mdata <= std_logic_vector(burst_count);
-			ocp_m.mdatabyteen <= std_logic_vector(burst_count(3 downto 0));--(others => '1');
+			ocp_m.mdata <= std_logic_vector(addr_count+burst_count);
+			ocp_m.mdatabyteen <= (others => '1');
 			ocp_m.mdatavalid <= '1';
 			if burst_count = OCP_burst_length-1 then
 				state_next <= write_response;

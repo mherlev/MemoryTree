@@ -47,7 +47,7 @@ port(clk : in std_logic;
 end dummy_dram_avalon;
 
 architecture behav of dummy_dram_avalon is
-	type ramfile is array(31 downto 0) of std_logic_vector(mem_m.MData'length-1 downto 0);
+	type ramfile is array(63 downto 0) of std_logic_vector(mem_m.MData'length-1 downto 0);
 	signal ram : ramfile := (others => (others => '0'));
 	signal counter, counter_next : unsigned(31 downto 0);
 	signal rd_data, wr_data : std_logic_vector(mem_m.MData'length-1 downto 0);
@@ -127,19 +127,17 @@ begin
 	
 	process(clk)
 	begin
-		if rising_edge(clk) then
-			if reset = '1' then 
-				counter <= (others => '0');
-				state <= idle;
-				rnw <= '0';
-			else
-				rnw <= rnw_next;
-				state <= state_next;
-				counter <= counter_next;
-				rd_data <= ram(to_integer(unsigned(avl_mem_m.addr)));
-				if en = '1' then
-					ram(to_integer(unsigned(mem_m.MAddr))) <= avl_Mem_m.wdata;
-				end if;
+		if reset = '1' then 
+			counter <= (others => '0');
+			state <= idle;
+			rnw <= '0';
+		elsif rising_edge(clk) then
+			rnw <= rnw_next;
+			state <= state_next;
+			counter <= counter_next;
+			rd_data <= ram(to_integer(unsigned(avl_mem_m.addr)));
+			if en = '1' then
+				ram(to_integer(unsigned(mem_m.MAddr))) <= avl_Mem_m.wdata;
 			end if;
 		end if;
 	end process;	

@@ -66,14 +66,12 @@ begin
 	
 	process(clk)
 	begin
-		if rising_edge(clk) then
-			if rst = '1' then
-				counter <= (others => '0');
-				idx <= (others => '1');
-			else
-				counter <= counter_next;
-				idx <= idx_next;
-			end if;
+		if rst = '1' then
+			counter <= (others => '0');
+			idx <= (others => '1');
+		elsif rising_edge(clk) then
+			counter <= counter_next;
+			idx <= idx_next;
 		end if;
 	end process;
 

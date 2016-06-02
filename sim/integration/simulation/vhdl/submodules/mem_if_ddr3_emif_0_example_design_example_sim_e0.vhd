@@ -296,6 +296,8 @@ signal r2l_root_port : phit_r;
 	signal avl_mem_m : avl_m;
 	signal avl_mem_s : avl_s;
 signal clk, reset : std_logic;
+signal cal_done, cal_success : std_logic;
+signal ref, ref_ack : std_logic;
 begin
 clk <= if0_afi_clk_clk;
 reset <= not global_reset_n;
@@ -323,22 +325,22 @@ reset <= not global_reset_n;
 			mem_dqs                   => mem_dqs,                                      --                 .mem_dqs
 			mem_dqs_n                 => mem_dqs_n,                                    --                 .mem_dqs_n
 			mem_odt                   => mem_odt,                                      --                 .mem_odt
-			avl_ready                 => if0_avl_waitrequest,                          --              avl.waitrequest_n
-			avl_burstbegin            => mm_interconnect_0_if0_avl_beginbursttransfer, --                 .beginbursttransfer
-			avl_addr                  => mm_interconnect_0_if0_avl_address,            --                 .address
-			avl_rdata_valid           => mm_interconnect_0_if0_avl_readdatavalid,      --                 .readdatavalid
+			avl_ready                 => avl_mem_s.ready, --if0_avl_waitrequest,                          --              avl.waitrequest_n
+			avl_burstbegin            => avl_mem_m.burstbegin, --mm_interconnect_0_if0_avl_beginbursttransfer, --                 .beginbursttransfer
+			avl_addr                  => avl_mem_m.addr, --mm_interconnect_0_if0_avl_address,            --                 .address
+			avl_rdata_valid           => avl_mem_s.rdata_valid, --mm_interconnect_0_if0_avl_readdatavalid,      --                 .readdatavalid
 			avl_rdata                 => mm_interconnect_0_if0_avl_readdata,           --                 .readdata
 			avl_wdata                 => mm_interconnect_0_if0_avl_writedata,          --                 .writedata
 			avl_be                    => mm_interconnect_0_if0_avl_byteenable,         --                 .byteenable
-			avl_read_req              => mm_interconnect_0_if0_avl_read,               --                 .read
-			avl_write_req             => mm_interconnect_0_if0_avl_write,              --                 .write
-			avl_size                  => mm_interconnect_0_if0_avl_burstcount(0),      --                 .burstcount
-			local_init_done           => local_init_done,                              --           status.local_init_done
-			local_cal_success         => local_cal_success,                            --                 .local_cal_success
+			avl_read_req              => avl_mem_m.read_req, --mm_interconnect_0_if0_avl_read,               --                 .read
+			avl_write_req             => avl_mem_m.write_req, --mm_interconnect_0_if0_avl_write,              --                 .write
+			avl_size                  => avl_mem_m.size, --;mm_interconnect_0_if0_avl_burstcount(0),      --                 .burstcount
+			local_init_done           => cal_done,                              --           status.local_init_done
+			local_cal_success         => cal_success,                            --                 .local_cal_success
 			local_cal_fail            => local_cal_fail,                               --                 .local_cal_fail
-			local_refresh_req         => local_refresh_req,                            --     user_refresh.local_refresh_req
+			local_refresh_req         => ref, --local_refresh_req,                            --     user_refresh.local_refresh_req
 			local_refresh_chip        => local_refresh_chip,                           --                 .local_refresh_chip
-			local_refresh_ack         => local_refresh_ack,                            --                 .local_refresh_ack
+			local_refresh_ack         => ref_ack, --local_refresh_ack,                            --                 .local_refresh_ack
 			oct_rzqin                 => oct_rzqin,                                    --              oct.rzqin
 			pll_mem_clk               => open,                                         --      pll_sharing.pll_mem_clk
 			pll_write_clk             => open,                                         --                 .pll_write_clk
@@ -351,6 +353,13 @@ reset <= not global_reset_n;
 			pll_p2c_read_clk          => open,                                         --                 .pll_p2c_read_clk
 			pll_c2p_write_clk         => open                                          --                 .pll_c2p_write_clk
 		);
+
+	mm_interconnect_0_if0_avl_byteenable(63 downto AVL_BYTE_WIDTH) <= (others => '0');
+	mm_interconnect_0_if0_avl_byteenable(AVL_BYTE_WIDTH-1 downto 0) <= avl_mem_m.be;
+	mm_interconnect_0_if0_avl_writedata(511 downto AVL_DATA_WIDTH) <= (others => '0');
+	mm_interconnect_0_if0_avl_writedata(AVL_DATA_WIDTH-1 downto 0) <= avl_mem_m.wdata; 
+	avl_mem_s.rdata <= mm_interconnect_0_if0_avl_readdata(AVL_DATA_WIDTH-1 downto 0);
+
 
 	d0 : component mem_if_ddr3_emif_0_example_design_example_sim_e0_d0
 		generic map (
@@ -425,10 +434,10 @@ reset <= not global_reset_n;
 			if0_avl_write                                       => mm_interconnect_0_if0_avl_write,              --                                              .write
 			if0_avl_read                                        => mm_interconnect_0_if0_avl_read,               --                                              .read
 			if0_avl_readdata                                    => mm_interconnect_0_if0_avl_readdata,           --                                              .readdata
-			if0_avl_writedata                                   => mm_interconnect_0_if0_avl_writedata,          --                                              .writedata
+			if0_avl_writedata                                   => open, --mm_interconnect_0_if0_avl_writedata,          --                                              .writedata
 			if0_avl_beginbursttransfer                          => mm_interconnect_0_if0_avl_beginbursttransfer, --                                              .beginbursttransfer
 			if0_avl_burstcount                                  => mm_interconnect_0_if0_avl_burstcount,         --                                              .burstcount
-			if0_avl_byteenable                                  => mm_interconnect_0_if0_avl_byteenable,         --                                              .byteenable
+			if0_avl_byteenable                                  => open, --mm_interconnect_0_if0_avl_byteenable,         --                                              .byteenable
 			if0_avl_readdatavalid                               => mm_interconnect_0_if0_avl_readdatavalid,      --                                              .readdatavalid
 			if0_avl_waitrequest                                 => mm_interconnect_0_if0_avl_inv                 --                                              .waitrequest
 		);
@@ -507,13 +516,16 @@ reset <= not global_reset_n;
 	afi_clk <= if0_afi_clk_clk;
 
 	afi_reset_n <= if0_afi_reset_reset;
+
+	local_init_done <= cal_done;
+	local_cal_success <= cal_success;
 r2lnoc : entity work.r2l_noc
   port map (clk,r2l_root_port,r2l_leaf_ports);
   l2rnoc : entity work.l2r_noc
   port map (clk,l2r_root_port,l2r_leaf_ports);
   
   root_module : entity work.root
-  port map (clk,reset,r2l_root_port,l2r_root_port,mem_m,mem_s,avl_mem_m,avl_mem_s);
+  port map (clk,reset,r2l_root_port,l2r_root_port,mem_m,mem_s,avl_mem_m,avl_mem_s,cal_done,cal_success, ref, ref_ack);
   
   leafs : for i in 0 to number_of_leafs-1 generate
 	leaf_node : entity work.network_adapter
@@ -521,13 +533,15 @@ r2lnoc : entity work.r2l_noc
 	port map(clk,reset,r2l_leaf_ports(i),l2r_leaf_ports(i),ocp_m(i),ocp_s(i));
   end generate;
   
---  burstmodule : for i in 0 to number_of_leafs-1 generate
---	ocpburst : entity work.ocpburst_testbench
---	port map(clk,reset, ocp_m(i), ocp_s(i));
---  end generate;
-  ocpburst : entity work.ocpburst_testbench
-	port map(clk,reset, ocp_m(0), ocp_s(0));
-  dram : entity work.dummy_dram_avalon
-  port map(clk,reset,mem_m,mem_s,avl_mem_m,avl_mem_s);
+	burstmodule : for i in 0 to number_of_leafs-1 generate
+		ocpburst : entity work.ocpburst_testbench
+		port map(clk,reset, ocp_m(i), ocp_s(i));
+	end generate;
+--	burstmodule : for i in 0 to 1 generate
+--		ocpburst : entity work.ocpburst_testbench
+--		port map(clk,reset, ocp_m(i), ocp_s(i));
+--	end generate;
+--	dram : entity work.dummy_dram_avalon
+--	port map(clk,reset,mem_m,mem_s,avl_mem_m,avl_mem_s);
   
 end architecture rtl; -- of mem_if_ddr3_emif_0_example_design_example_sim_e0

@@ -62,25 +62,23 @@ begin
 		else
 			empty <= '0';
 		end if;
-		if rising_edge(clk) then
-			if rst = '1' then 
-				write_addr_int <= (others => '0');
-				read_addr_int <= (others => '0');
-			else
-				if dequeue = '1' then
-					if read_addr_int = depth-1 then
-						read_addr_int <= (others => '0');
-					else
-						read_addr_int <= read_addr_int + 1;
-					end if;
+		if rst = '1' then 
+			write_addr_int <= (others => '0');
+			read_addr_int <= (others => '0');
+		elsif rising_edge(clk) then
+			if dequeue = '1' then
+				if read_addr_int = depth-1 then
+					read_addr_int <= (others => '0');
+				else
+					read_addr_int <= read_addr_int + 1;
 				end if;
-				if enqueue = '1' then
-					fifo(to_integer(write_addr_int)) <= data_i;
-					if write_addr_int = depth-1 then
-						write_addr_int <= (others => '0');
-					else
-						write_addr_int <= write_addr_int + 1;
-					end if;
+			end if;
+			if enqueue = '1' then
+				fifo(to_integer(write_addr_int)) <= data_i;
+				if write_addr_int = depth-1 then
+					write_addr_int <= (others => '0');
+				else
+					write_addr_int <= write_addr_int + 1;
 				end if;
 			end if;
 		end if;

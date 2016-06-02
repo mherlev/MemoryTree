@@ -34,7 +34,7 @@ if ![info exists QSYS_SIMDIR] {
 }
 
 if ![info exists TREE_DIR] { 
-  set TREE_DIR "./../../../MemoryTree/"
+  set TREE_DIR "./../../../../../"
 }
 
 if ![info exists QUARTUS_INSTALL_DIR] { 
@@ -323,9 +323,6 @@ alias com {
   vlog -sv                                    "$QSYS_SIMDIR/submodules/mentor/alt_mem_if_ddr3_mem_model_top_ddr3_mem_if_dm_pins_en_mem_if_dqsn_en.sv"                                       
   vlog -sv                                    "$QSYS_SIMDIR/submodules/mentor/alt_mem_if_common_ddr_mem_model_ddr3_mem_if_dm_pins_en_mem_if_dqsn_en.sv"                                     
   vlog -sv                                    "$QSYS_SIMDIR/submodules/mentor/altera_mem_if_checker_no_ifdef_params.sv"                                                                     
-  vcom                                        "$QSYS_SIMDIR/submodules/mem_if_ddr3_emif_0_example_design_example_sim_e0.vhd"                                                                
-  vcom                                        "$QSYS_SIMDIR/submodules/altera_avalon_reset_source.vhd"                                                                                      
-  vcom                                        "$QSYS_SIMDIR/submodules/altera_avalon_clock_source.vhd"                                                                                      
 	vcom -quiet 																"$TREE_DIR/src/common/memorytree_package.vhd"
 	vcom -quiet 																"$TREE_DIR/src/common/fifo.vhd"
 	vcom -quiet 																"$TREE_DIR/src/ocp/ocp_config.vhd"
@@ -352,7 +349,10 @@ alias com {
 	vcom -quiet 																"$TREE_DIR/testunits/ocpburst.vhd"
 	vcom -quiet 																"$TREE_DIR/testunits/dummy_dram_avalon.vhd"
 #	vcom -quiet 																"$TREE_DIR/build/avalon_conversion/top.vhd"
-  vcom                                        "$QSYS_SIMDIR/mem_if_ddr3_emif_0_example_design_example_sim.vhd"                                                                              
+  vcom                                        "$QSYS_SIMDIR/submodules/mem_if_ddr3_emif_0_example_design_example_sim_e0.vhd"
+  vcom                                        "$QSYS_SIMDIR/submodules/altera_avalon_reset_source.vhd"
+  vcom                                        "$QSYS_SIMDIR/submodules/altera_avalon_clock_source.vhd" 
+ vcom                                        "$QSYS_SIMDIR/mem_if_ddr3_emif_0_example_design_example_sim.vhd"                                                                              
 }
 
 # ----------------------------------------

@@ -37,7 +37,8 @@ entity refresh_timer is
 	port(	clk	: in std_logic;
 			rst : in std_logic;
 			ref : out std_logic;
-			postpone_transaction : out std_logic);
+			postpone_transaction : out std_logic;
+			ref_ack : in std_logic);
 end refresh_timer;
 
 architecture rtl of refresh_timer is
@@ -55,7 +56,9 @@ begin
 		when refresh1 =>
 			ref<= '1';
 			postpone_transaction <= '1';
-			state_next <= refresh2;
+--			if ref_ack = '1' then
+				state_next <= refresh2;
+--			end if;
 		when refresh2 =>
 			ref<= '0';
 			postpone_transaction <= '1';
@@ -77,14 +80,12 @@ begin
 
 	registers : process(clk)
 	begin
-		if rising_edge(clk) then
-			if rst = '1' then
-				state <= refresh1;
-				counter <= (others => '0');
-			else
-				counter <= counter_next;
-				state <= state_next;
-			end if;
+		if rst = '1' then
+			state <= refresh1;
+			counter <= (others => '0');
+		elsif rising_edge(clk) then
+			counter <= counter_next;
+			state <= state_next;
 		end if;
 	end process;
 end rtl;
