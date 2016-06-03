@@ -32,7 +32,8 @@ entity noc_wrapper is
 	cal_done	: in std_logic;
 	cal_success : in std_logic;
  	ref	: out std_logic;
-	ref_ack : in std_logic
+	ref_ack : in std_logic;
+	ok : out std_logic;
 );
 end entity noc_wrapper;
 
@@ -52,6 +53,7 @@ architecture rtl of noc_wrapper is
 	signal avl_mem_s : avl_s;
 	signal reset : std_logic;
 --	signal ref, ref_ack : std_logic;
+
 begin
 	reset <= not rst_n;
 	avl_addr <= avl_mem_m.addr;
@@ -90,9 +92,11 @@ begin
 		port map(clk,reset,r2l_leaf_ports(i),l2r_leaf_ports(i),ocp_m(i),ocp_s(i));
 	end generate;
   
-	burstmodule : for i in 0 to number_of_leafs-1 generate
+	burstmodule : for i in 1 to number_of_leafs-1 generate
 		ocpburst : entity work.ocpburst_testbench
-		port map(clk,reset, ocp_m(i), ocp_s(i));
+		port map(clk,reset, ocp_m(i), ocp_s(i),open);
 	end generate;
- 
+ 	ocpburst : entity work.ocpburst_testbench
+	port map(clk,reset, ocp_m(i), ocp_s(i),ok);
+
 end architecture rtl; -- of noc_wrapper

@@ -80,6 +80,8 @@ module mem_if_ddr3_emif_0_example_design_example (
 	wire          ref;      
 	wire          ref_ack;      
 
+	wire 		  ok;
+
 	mem_if_ddr3_emif_0_example_design_example_if0 if0 (
 		.pll_ref_clk               (pll_ref_clk),                                  //      pll_ref_clk.clk
 		.global_reset_n            (global_reset_n),                               //     global_reset.reset_n
@@ -292,7 +294,8 @@ assign	local_refresh_ack = ref_ack;
 			.cal_done (cal_done),
 			.cal_success (cal_success),
 			.ref (ref),
-			.ref_ack (ref_ack)
+			.ref_ack (ref_ack),
+			.ok (ok)
 	);
 
 endmodule

@@ -37,7 +37,8 @@ entity ocpburst_testbench is
 port(clk : in std_logic;
 reset : in std_logic;
 ocp_m : out ocp_burst_m;
-ocp_s : in ocp_burst_s);
+ocp_s : in ocp_burst_s;
+ok : out std_logic);
 end ocpburst_testbench;
 
 architecture rtl of ocpburst_testbench is
@@ -45,8 +46,10 @@ architecture rtl of ocpburst_testbench is
 	signal state, state_next : states;
 	signal burst_count, burst_count_next : unsigned(OCP_DATA_WIDTH-1 downto 0) := (others => '0');
 	signal addr_count, addr_count_next : unsigned(OCP_DATA_WIDTH-1 downto 0) := (others => '0');
+	signal ok_int, ok_next : std_logic := '1';
 begin
-	process(state,burst_count, addr_count,ocp_s)
+	ok <= ok_int;
+	process(state,burst_count, addr_count,ocp_s,ok_int)
 	begin
 		state_next <= state;
 		burst_count_next <= burst_count;
@@ -56,28 +59,27 @@ begin
 		ocp_m.mdata <= (others => '0');
 		ocp_m.mdatabyteen <= (others => '0');
 		ocp_m.mdatavalid <= '0';
+		ok_next <= ok_int;
 		case state is
 		when write =>
 			ocp_m.mcmd <= ocp_cmd_wr;
 			ocp_m.maddr <= std_logic_vector(addr_count(ocp_m.maddr'length-1 downto 0));
-			ocp_m.mdata <= std_logic_vector(addr_count+burst_count);
+			ocp_m.mdata <= std_logic_vector(addr_count);
 			ocp_m.mdatabyteen <= (others => '1');
 			ocp_m.mdatavalid <= '1';
 			if ocp_s.SCmdAccept = '1' then
 				state_next <= writing;
 				burst_count_next <= burst_count + to_unsigned(1,burst_count'length);
---				addr_count_next <= addr_count + to_unsigned(1,addr_count'length);
 			end if;
 		when writing =>
 			burst_count_next <= burst_count+to_unsigned(1,burst_count'length);
-			ocp_m.mdata <= std_logic_vector(addr_count+burst_count);
+			ocp_m.mdata <= std_logic_vector(addr_count);
 			ocp_m.mdatabyteen <= (others => '1');
 			ocp_m.mdatavalid <= '1';
 			if burst_count = OCP_burst_length-1 then
 				state_next <= write_response;
 				burst_count_next <= (others => '0');
 			end if;
-
 		when write_response =>
 			if ocp_s.SResp = OCP_RESP_DVA then
 				state_next <= read_await_accept;
@@ -90,24 +92,31 @@ begin
 				if ocp_s.SResp = OCP_RESP_DVA then
 					state_next <= read;
 					burst_count_next <= burst_count + to_unsigned(1,burst_count'length);
+					if std_logic_vector(addr_count) /= ocp_m.MData then
+						ok_next <= '0';
+					end if;
 				end if;
 			end if;
 		when read_await_resp =>
 			if ocp_s.SResp = OCP_RESP_DVA then
 				state_next <= read;
 				burst_count_next <= burst_count + to_unsigned(1,burst_count'length);
+				if std_logic_vector(addr_count) /= ocp_m.MData then
+					ok_next <= '0';
+				end if;
 			end if;
 		when read =>
+			if std_logic_vector(addr_count) /= ocp_m.MData then
+				ok_next <= '0';
+			end if;
 			burst_count_next <= burst_count + to_unsigned(1,burst_count'length);
 			if burst_count = OCP_burst_length-1 then
 				burst_count_next <= (others => '0');
 				addr_count_next <= addr_count + to_unsigned(OCP_burst_length,addr_count'length);
 				state_next <= write;
---state_next <= read_await_accept;
 			end if;
 		when others =>
---		state_next <= read_await_accept;
-				state_next <= write;
+			state_next <= write;
 		end case;
 	end process;
 
@@ -117,10 +126,12 @@ begin
 			state <= write;
 			burst_count <= (others => '0');
 			addr_count <= (others => '0');
+			ok_int <= '1';
 		elsif rising_edge(clk) then
 			state <= state_next;
 			burst_count <= burst_count_next;
 			addr_count <= addr_count_next;
+			ok_int <= ok_next;
 		end if;
 	end process;
 end rtl;
