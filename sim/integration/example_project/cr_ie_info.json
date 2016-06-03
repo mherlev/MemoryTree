@@ -1,0 +1,22 @@
+{
+	"system" : {
+		"platform" : "linux64",
+		"os_name" : "Ubuntu 14.04.3",
+		"os_version" : "14"
+	},
+	"error" : {
+		"error_message" : "Segment Violation at (nil)",
+		"source_file" : "unknown",
+		"line" : "0",
+		"stack_trace" : "\t0x7f364fe1b73b: synth_vrfx + 0x1ae73b (_ZNK5Array4ItemEjPPv + 0x5)\n\t0x7f364ffe8855: synth_vrfx + 0x37b855 (_ZN15VhdlIfStatement7ResolveEv + 0xf7)\n\t0x7f364ffe84ef: synth_vrfx + 0x37b4ef (_ZN17VhdlLoopStatement7ResolveEv + 0x73)\n\t0x7f364ffe8819: synth_vrfx + 0x37b819 (_ZN15VhdlIfStatement7ResolveEv + 0xbb)\n\t0x7f364ff5cea9: synth_vrfx + 0x2efea9 (_ZN18VhdlSubprogramBody7ResolveEv + 0xa7)\n\t0x7f364ff84e07: synth_vrfx + 0x317e07 (_ZN15VhdlPackageBody16RecursiveResolveEv + 0x2b)\n\t0x7f364ff8562a: synth_vrfx + 0x31862a (_ZN14VhdlDesignUnit7ResolveEv + 0x110)\n\t0x7f364fdc4513: synth_vrfx + 0x157513 (_ZN18VRFX_ANALYZER_IMPL27analyze_standard_vhdl_filesE17VHDL_DIALECT_ENUM + 0x35b)\n\t0x7f364fdfcb75: synth_vrfx + 0x18fb75 (_ZN18VRFX_ANALYZER_IMPL13vhdl_analyzerEv + 0x99)\n\t0x7f364fdfcf61: synth_vrfx + 0x18ff61 (_ZN18VRFX_ANALYZER_IMPL7analyzeEP18BASEX_ANALYZE_INFO + 0xd7)\n\t0x7f364fdfd31b: synth_vrfx + 0x19031b (_ZN13VRFX_ANALYZER7analyzeEP18BASEX_ANALYZE_INFO + 0xd)\n\t0x7f3651896da2: synth_sgn + 0x144da2 (_ZN12SGN_ANALYZER7analyzeEv + 0xf2)\n\t0x7f365189847d: synth_sgn + 0x14647d (_ZN12SGN_ANALYZER18search_and_analyzeEP17HDB_INSTANCE_NAMEbm + 0x144d)\n\t0x7f36518990eb: synth_sgn + 0x1470eb (_ZNK13SGN_EXTRACTOR18find_target_entityEP17HDB_INSTANCE_NAMEPKcm + 0x18b)\n\t0x7f36518eb9c9: synth_sgn + 0x1999c9 (_ZN13SGN_EXTRACTOR20recursive_extractionEP17HDB_INSTANCE_NAMEP16SGN_WRAPPER_INFOPKc + 0x39)\n\t0x7f36518ec31e: synth_sgn + 0x19a31e (_ZN13SGN_EXTRACTOR24extract_jtag_sharing_hubEv + 0x2ce)\n\t0x7f36518ecb3a: synth_sgn + 0x19ab3a (_ZN13SGN_EXTRACTOR34add_signaltap_and_jtag_sharing_hubEv + 0x56a)\n\t0x7f36518ece00: synth_sgn + 0x19ae00 (_ZN13SGN_EXTRACTOR16add_jtag_sharingEv + 0x130)\n\t0x7f36518fb897: synth_sgn + 0x1a9897 (_ZN13SGN_EXTRACTOR15post_processingEv + 0xe7)\n\t0x7f36518fd3de: synth_sgn + 0x1ab3de (_ZN13SGN_EXTRACTOR7extractEv + 0x16e)\n\t0x7f36518febf1: synth_sgn + 0x1acbf1 (_Z15sgn_elaborationP10CMP_FACADE + 0x141)\n\t   0x4284a0: quartus_map + 0x284a0 (_Z16qsyn_execute_sgnP10CMP_FACADERN11_Dinkum_std6vectorINS1_12basic_stringIcNS1_11char_traitsIcEE17MEM_STL_ALLOCATORIcEEES6_IS8_EEERKS8_P14THR_NAMED_PIPESF_ + 0x2e0)\n\t   0x4396ec: quartus_map + 0x396ec (_ZN14QSYN_FRAMEWORK12execute_coreEP14THR_NAMED_PIPES1_ + 0x23c)\n\t   0x43a286: quartus_map + 0x3a286 (_ZN14QSYN_FRAMEWORK7executeEv + 0x826)\n\t0x7f364085fdf5: comp_qexe + 0x17df5 (_Z18qexe_standard_mainP14QEXE_FRAMEWORKPPK22QEXE_OPTION_DEFINITIONiPPKc + 0x5ef)\n\t   0x420cdd: quartus_map + 0x20cdd (_Z9qsyn_mainiPPKc + 0x6d)\n\t0x7f362310d2c2: ccl_msg + 0x3f2c2 (_Z15msg_main_threadPv + 0x10)\n\t0x7f362039f6fc: ccl_thr + 0x76fc (thr_final_wrapper + 0xc)\n\t0x7f362310def3: ccl_msg + 0x3fef3 (_Z18msg_thread_wrapperPFPvS_ES_ + 0x5b)\n\t   0x459c3e: quartus_map + 0x59c3e (_Z18mem_thread_wrapperPFPvS_ES_ + 0xbe)\n\t0x7f36207f6498: ccl_err + 0xc498 (_Z18err_thread_wrapperPFPvS_ES_ + 0x27)\n\t0x7f362039fadc: ccl_thr + 0x7adc (thr_thread_wrapper + 0x15)\n\t0x7f3623131f1b: ccl_msg + 0x63f1b (_Z12msg_exe_mainiPPKcPFiiS1_E + 0x99)\n\t0x7f361c804ec5: c.so.6 + 0x21ec5 (__libc_start_main + 0xf5)\n\t   0x41a7a9: quartus_map + 0x1a7a9\n",
+		"subsystem" : "unknown",
+		"executable" : "quartus_map",
+		"comment" : "none"
+	},
+	"quartus" : {
+		"quartus_bits" : "64",
+		"version" : "14.0.0",
+		"build" : "200",
+		"edition" : "Full Version"
+	}
+}

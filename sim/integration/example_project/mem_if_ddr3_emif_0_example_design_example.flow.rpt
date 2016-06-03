@@ -1,5 +1,5 @@
 Flow report for mem_if_ddr3_emif_0_example_design_example
-Sun May 22 10:35:38 2016
+Fri Jun  3 08:03:23 2016
 Quartus II 64-Bit Version 14.0.0 Build 200 06/17/2014 SJ Full Version
 
 
@@ -41,31 +41,31 @@ agreement for further details.
 +-------------------------------------------------------------------------------+
 ; Flow Summary                                                                  ;
 +---------------------------------+---------------------------------------------+
-; Flow Status                     ; Flow Failed - Sun May 22 10:35:37 2016      ;
+; Flow Status                     ; Successful - Fri Jun  3 08:03:21 2016       ;
 ; Quartus II 64-Bit Version       ; 14.0.0 Build 200 06/17/2014 SJ Full Version ;
 ; Revision Name                   ; mem_if_ddr3_emif_0_example_design_example   ;
 ; Top-level Entity Name           ; mem_if_ddr3_emif_0_example_design_example   ;
 ; Family                          ; Stratix V                                   ;
 ; Device                          ; 5SGXEA7H3F35C3                              ;
 ; Timing Models                   ; Final                                       ;
-; Logic utilization (in ALMs)     ; 9,339 / 234,720 ( 4 % )                     ;
-; Total registers                 ; 14588                                       ;
-; Total pins                      ; 127 / 664 ( 19 % )                          ;
+; Logic utilization (in ALMs)     ; N/A                                         ;
+; Total registers                 ; 11170                                       ;
+; Total pins                      ; 127                                         ;
 ; Total virtual pins              ; 0                                           ;
-; Total block memory bits         ; 284,096 / 52,428,800 ( < 1 % )              ;
-; Total DSP Blocks                ; 0 / 256 ( 0 % )                             ;
-; Total HSSI STD RX PCSs          ; 0 / 24 ( 0 % )                              ;
-; Total HSSI 10G RX PCSs          ; 0 / 24 ( 0 % )                              ;
-; Total HSSI GEN3 RX PCSs         ; 0 / 24 ( 0 % )                              ;
-; Total HSSI PMA RX Deserializers ; 0 / 24 ( 0 % )                              ;
-; Total HSSI STD TX PCSs          ; 0 / 24 ( 0 % )                              ;
-; Total HSSI 10G TX PCSs          ; 0 / 24 ( 0 % )                              ;
-; Total HSSI GEN3 TX PCSs         ; 0 / 24 ( 0 % )                              ;
-; Total HSSI PMA TX Serializers   ; 0 / 24 ( 0 % )                              ;
-; Total HSSI PIPE GEN1_2s         ; 0 / 24 ( 0 % )                              ;
-; Total HSSI GEN3s                ; 0 / 24 ( 0 % )                              ;
-; Total PLLs                      ; 1 / 68 ( 1 % )                              ;
-; Total DLLs                      ; 1 / 4 ( 25 % )                              ;
+; Total block memory bits         ; 261,360                                     ;
+; Total DSP Blocks                ; 0                                           ;
+; Total HSSI STD RX PCSs          ; 0                                           ;
+; Total HSSI 10G RX PCSs          ; 0                                           ;
+; Total HSSI GEN3 RX PCSs         ; 0                                           ;
+; Total HSSI PMA RX Deserializers ; 0                                           ;
+; Total HSSI STD TX PCSs          ; 0                                           ;
+; Total HSSI 10G TX PCSs          ; 0                                           ;
+; Total HSSI GEN3 TX PCSs         ; 0                                           ;
+; Total HSSI PMA TX Serializers   ; 0                                           ;
+; Total HSSI PIPE GEN1_2s         ; 0                                           ;
+; Total HSSI GEN3s                ; 0                                           ;
+; Total PLLs                      ; 1                                           ;
+; Total DLLs                      ; 1                                           ;
 +---------------------------------+---------------------------------------------+
 
 
@@ -74,7 +74,7 @@ agreement for further details.
 +-------------------+-------------------------------------------+
 ; Option            ; Setting                                   ;
 +-------------------+-------------------------------------------+
-; Start date & time ; 05/22/2016 10:33:20                       ;
+; Start date & time ; 06/03/2016 08:02:08                       ;
 ; Main task         ; Compilation                               ;
 ; Revision Name     ; mem_if_ddr3_emif_0_example_design_example ;
 +-------------------+-------------------------------------------+
@@ -85,7 +85,7 @@ agreement for further details.
 +--------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------+-------------------------------------------------------------------+-----------------------+
 ; Assignment Name                      ; Value                                                                                                                                                                                                                                                                                                                                                                                                                            ; Default Value ; Entity Name                                                       ; Section Id            ;
 +--------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------+-------------------------------------------------------------------+-----------------------+
-; COMPILER_SIGNATURE_ID                ; 75361025653969.146390600029309                                                                                                                                                                                                                                                                                                                                                                                                   ; --            ; --                                                                ; --                    ;
+; COMPILER_SIGNATURE_ID                ; 75361025653969.146493372804102                                                                                                                                                                                                                                                                                                                                                                                                   ; --            ; --                                                                ; --                    ;
 ; EDA_DESIGN_INSTANCE_NAME             ; dut                                                                                                                                                                                                                                                                                                                                                                                                                              ; --            ; --                                                                ; uniphy_rtl_simulation ;
 ; EDA_ENABLE_GLITCH_FILTERING          ; On                                                                                                                                                                                                                                                                                                                                                                                                                               ; --            ; --                                                                ; eda_simulation        ;
 ; EDA_MAP_ILLEGAL_CHARACTERS           ; On                                                                                                                                                                                                                                                                                                                                                                                                                               ; --            ; --                                                                ; eda_simulation        ;
@@ -405,9 +405,8 @@ agreement for further details.
 +----------------------+--------------+-------------------------+---------------------+------------------------------------+
 ; Module Name          ; Elapsed Time ; Average Processors Used ; Peak Virtual Memory ; Total CPU Time (on all processors) ;
 +----------------------+--------------+-------------------------+---------------------+------------------------------------+
-; Analysis & Synthesis ; 00:01:35     ; 1.9                     ; 1620 MB             ; 00:02:10                           ;
-; Fitter               ; 00:00:25     ; 1.0                     ; 1309 MB             ; 00:00:25                           ;
-; Total                ; 00:02:00     ; --                      ; --                  ; 00:02:35                           ;
+; Analysis & Synthesis ; 00:01:07     ; 2.4                     ; 1557 MB             ; 00:01:49                           ;
+; Total                ; 00:01:07     ; --                      ; --                  ; 00:01:49                           ;
 +----------------------+--------------+-------------------------+---------------------+------------------------------------+
 
 
@@ -417,7 +416,6 @@ agreement for further details.
 ; Module Name          ; Machine Hostname ; OS Name        ; OS Version ; Processor type ;
 +----------------------+------------------+----------------+------------+----------------+
 ; Analysis & Synthesis ; helena           ; Ubuntu 14.04.3 ; 14         ; x86_64         ;
-; Fitter               ; helena           ; Ubuntu 14.04.3 ; 14         ; x86_64         ;
 +----------------------+------------------+----------------+------------+----------------+
 
 
@@ -425,7 +423,6 @@ agreement for further details.
 ; Flow Log ;
 ------------
 quartus_map --read_settings_files=on --write_settings_files=off mem_if_ddr3_emif_0_example_design_example -c mem_if_ddr3_emif_0_example_design_example
-quartus_fit --read_settings_files=off --write_settings_files=off mem_if_ddr3_emif_0_example_design_example -c mem_if_ddr3_emif_0_example_design_example
 
 
 

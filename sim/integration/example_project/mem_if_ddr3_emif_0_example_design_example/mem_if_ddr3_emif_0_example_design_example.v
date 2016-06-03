@@ -61,6 +61,25 @@ module mem_if_ddr3_emif_0_example_design_example (
 	wire   [63:0] mm_interconnect_0_if0_avl_byteenable;         // mm_interconnect_0:if0_avl_byteenable -> if0:avl_be
 	wire          rst_controller_reset_out_reset;               // rst_controller:reset_out -> [mm_interconnect_0:d0_avl_reset_reset_bridge_in_reset_reset, mm_interconnect_0:d0_avl_translator_reset_reset_bridge_in_reset_reset]
 
+
+
+	wire          avl_size;         
+	wire          avl_ready;        
+	wire  [511:0] avl_wdata;          
+	wire   [29:0] avl_addr;            
+	wire          avl_write_req;              
+	wire          avl_burstbegin; 
+	wire          avl_read_req;               
+	wire  [511:0] avl_rdata;           
+	wire   [63:0] avl_be;         
+	wire          avl_rdata_valid;      
+
+	wire          cal_done;      
+	wire          cal_success;      
+	
+	wire          ref;      
+	wire          ref_ack;      
+
 	mem_if_ddr3_emif_0_example_design_example_if0 if0 (
 		.pll_ref_clk               (pll_ref_clk),                                  //      pll_ref_clk.clk
 		.global_reset_n            (global_reset_n),                               //     global_reset.reset_n
@@ -84,22 +103,22 @@ module mem_if_ddr3_emif_0_example_design_example (
 		.mem_dqs                   (mem_dqs),                                      //                 .mem_dqs
 		.mem_dqs_n                 (mem_dqs_n),                                    //                 .mem_dqs_n
 		.mem_odt                   (mem_odt),                                      //                 .mem_odt
-		.avl_ready                 (mm_interconnect_0_if0_avl_waitrequest),        //              avl.waitrequest_n
-		.avl_burstbegin            (mm_interconnect_0_if0_avl_beginbursttransfer), //                 .beginbursttransfer
-		.avl_addr                  (mm_interconnect_0_if0_avl_address),            //                 .address
-		.avl_rdata_valid           (mm_interconnect_0_if0_avl_readdatavalid),      //                 .readdatavalid
-		.avl_rdata                 (mm_interconnect_0_if0_avl_readdata),           //                 .readdata
-		.avl_wdata                 (mm_interconnect_0_if0_avl_writedata),          //                 .writedata
-		.avl_be                    (mm_interconnect_0_if0_avl_byteenable),         //                 .byteenable
-		.avl_read_req              (mm_interconnect_0_if0_avl_read),               //                 .read
-		.avl_write_req             (mm_interconnect_0_if0_avl_write),              //                 .write
-		.avl_size                  (mm_interconnect_0_if0_avl_burstcount),         //                 .burstcount
-		.local_init_done           (local_init_done),                              //           status.local_init_done
-		.local_cal_success         (local_cal_success),                            //                 .local_cal_success
+		.avl_ready                 (avl_ready),        //              avl.waitrequest_n
+		.avl_burstbegin            (avl_burstbegin), //                 .beginbursttransfer
+		.avl_addr                  (avl_addr),            //                 .address
+		.avl_rdata_valid           (avl_rdata_valid),      //                 .readdatavalid
+		.avl_rdata                 (avl_rdata),           //                 .readdata
+		.avl_wdata                 (avl_wdata),          //                 .writedata
+		.avl_be                    (avl_be),         //                 .byteenable
+		.avl_read_req              (avl_read_req),               //                 .read
+		.avl_write_req             (avl_write_req),              //                 .write
+		.avl_size                  (avl_size),         //                 .burstcount
+		.local_init_done           (cal_done),                              //           status.local_init_done
+		.local_cal_success         (cal_success),                            //                 .local_cal_success
 		.local_cal_fail            (local_cal_fail),                               //                 .local_cal_fail
-		.local_refresh_req         (local_refresh_req),                            //     user_refresh.local_refresh_req
+		.local_refresh_req         (ref),                            //     user_refresh.local_refresh_req
 		.local_refresh_chip        (local_refresh_chip),                           //                 .local_refresh_chip
-		.local_refresh_ack         (local_refresh_ack),                            //                 .local_refresh_ack
+		.local_refresh_ack         (ref_ack),                            //                 .local_refresh_ack
 		.oct_rzqin                 (oct_rzqin),                                    //              oct.rzqin
 		.pll_mem_clk               (),                                             //      pll_sharing.pll_mem_clk
 		.pll_write_clk             (),                                             //                 .pll_write_clk
@@ -113,83 +132,87 @@ module mem_if_ddr3_emif_0_example_design_example (
 		.pll_c2p_write_clk         ()                                              //                 .pll_c2p_write_clk
 	);
 
-	mem_if_ddr3_emif_0_example_design_example_d0 #(
-		.DEVICE_FAMILY                          ("Stratix V"),
-		.TG_AVL_DATA_WIDTH                      (512),
-		.TG_AVL_ADDR_WIDTH                      (30),
-		.TG_AVL_WORD_ADDR_WIDTH                 (24),
-		.TG_AVL_SIZE_WIDTH                      (1),
-		.TG_AVL_BE_WIDTH                        (64),
-		.DRIVER_SIGNATURE                       (1431634060),
-		.TG_GEN_BYTE_ADDR                       (1),
-		.TG_NUM_DRIVER_LOOP                     (1),
-		.TG_ENABLE_UNIX_ID                      (0),
-		.TG_USE_UNIX_ID                         (0),
-		.TG_RANDOM_BYTE_ENABLE                  (1),
-		.TG_ENABLE_READ_COMPARE                 (1),
-		.TG_POWER_OF_TWO_BURSTS_ONLY            (0),
-		.TG_BURST_ON_BURST_BOUNDARY             (0),
-		.TG_DO_NOT_CROSS_4KB_BOUNDARY           (0),
-		.TG_TIMEOUT_COUNTER_WIDTH               (32),
-		.TG_MAX_READ_LATENCY                    (20),
-		.TG_SINGLE_RW_SEQ_ADDR_COUNT            (32),
-		.TG_SINGLE_RW_RAND_ADDR_COUNT           (32),
-		.TG_SINGLE_RW_RAND_SEQ_ADDR_COUNT       (32),
-		.TG_BLOCK_RW_SEQ_ADDR_COUNT             (8),
-		.TG_BLOCK_RW_RAND_ADDR_COUNT            (8),
-		.TG_BLOCK_RW_RAND_SEQ_ADDR_COUNT        (8),
-		.TG_BLOCK_RW_BLOCK_SIZE                 (8),
-		.TG_TEMPLATE_STAGE_COUNT                (4),
-		.TG_SEQ_ADDR_GEN_MIN_BURSTCOUNT         (1),
-		.TG_SEQ_ADDR_GEN_MAX_BURSTCOUNT         (1),
-		.TG_RAND_ADDR_GEN_MIN_BURSTCOUNT        (1),
-		.TG_RAND_ADDR_GEN_MAX_BURSTCOUNT        (1),
-		.TG_RAND_SEQ_ADDR_GEN_MIN_BURSTCOUNT    (1),
-		.TG_RAND_SEQ_ADDR_GEN_MAX_BURSTCOUNT    (1),
-		.TG_RAND_SEQ_ADDR_GEN_RAND_ADDR_PERCENT (50)
-	) d0 (
-		.clk             (if0_afi_clk_clk),           // avl_clock.clk
-		.reset_n         (if0_afi_reset_reset),       // avl_reset.reset_n
-		.pass            (drv_status_pass),           //    status.pass
-		.fail            (drv_status_fail),           //          .fail
-		.test_complete   (drv_status_test_complete),  //          .test_complete
-		.avl_ready       (~d0_avl_waitrequest),       //       avl.waitrequest_n
-		.avl_addr        (d0_avl_address),            //          .address
-		.avl_size        (d0_avl_burstcount),         //          .burstcount
-		.avl_wdata       (d0_avl_writedata),          //          .writedata
-		.avl_rdata       (d0_avl_readdata),           //          .readdata
-		.avl_write_req   (d0_avl_write),              //          .write
-		.avl_read_req    (d0_avl_read),               //          .read
-		.avl_rdata_valid (d0_avl_readdatavalid),      //          .readdatavalid
-		.avl_be          (d0_avl_byteenable),         //          .byteenable
-		.avl_burstbegin  (d0_avl_beginbursttransfer)  //          .beginbursttransfer
-	);
+assign	local_init_done   = cal_done;
+assign	local_cal_success = cal_success;
+assign	local_refresh_ack = ref_ack;
 
-	mem_if_ddr3_emif_0_example_design_example_mm_interconnect_0 mm_interconnect_0 (
-		.if0_afi_clk_clk                                     (if0_afi_clk_clk),                              //                                   if0_afi_clk.clk
-		.d0_avl_reset_reset_bridge_in_reset_reset            (rst_controller_reset_out_reset),               //            d0_avl_reset_reset_bridge_in_reset.reset
-		.d0_avl_translator_reset_reset_bridge_in_reset_reset (rst_controller_reset_out_reset),               // d0_avl_translator_reset_reset_bridge_in_reset.reset
-		.d0_avl_address                                      (d0_avl_address),                               //                                        d0_avl.address
-		.d0_avl_waitrequest                                  (d0_avl_waitrequest),                           //                                              .waitrequest
-		.d0_avl_burstcount                                   (d0_avl_burstcount),                            //                                              .burstcount
-		.d0_avl_byteenable                                   (d0_avl_byteenable),                            //                                              .byteenable
-		.d0_avl_beginbursttransfer                           (d0_avl_beginbursttransfer),                    //                                              .beginbursttransfer
-		.d0_avl_read                                         (d0_avl_read),                                  //                                              .read
-		.d0_avl_readdata                                     (d0_avl_readdata),                              //                                              .readdata
-		.d0_avl_readdatavalid                                (d0_avl_readdatavalid),                         //                                              .readdatavalid
-		.d0_avl_write                                        (d0_avl_write),                                 //                                              .write
-		.d0_avl_writedata                                    (d0_avl_writedata),                             //                                              .writedata
-		.if0_avl_address                                     (mm_interconnect_0_if0_avl_address),            //                                       if0_avl.address
-		.if0_avl_write                                       (mm_interconnect_0_if0_avl_write),              //                                              .write
-		.if0_avl_read                                        (mm_interconnect_0_if0_avl_read),               //                                              .read
-		.if0_avl_readdata                                    (mm_interconnect_0_if0_avl_readdata),           //                                              .readdata
-		.if0_avl_writedata                                   (mm_interconnect_0_if0_avl_writedata),          //                                              .writedata
-		.if0_avl_beginbursttransfer                          (mm_interconnect_0_if0_avl_beginbursttransfer), //                                              .beginbursttransfer
-		.if0_avl_burstcount                                  (mm_interconnect_0_if0_avl_burstcount),         //                                              .burstcount
-		.if0_avl_byteenable                                  (mm_interconnect_0_if0_avl_byteenable),         //                                              .byteenable
-		.if0_avl_readdatavalid                               (mm_interconnect_0_if0_avl_readdatavalid),      //                                              .readdatavalid
-		.if0_avl_waitrequest                                 (~mm_interconnect_0_if0_avl_waitrequest)        //                                              .waitrequest
-	);
+//	mem_if_ddr3_emif_0_example_design_example_d0 #(
+//		.DEVICE_FAMILY                          ("Stratix V"),
+//		.TG_AVL_DATA_WIDTH                      (512),
+//		.TG_AVL_ADDR_WIDTH                      (30),
+//		.TG_AVL_WORD_ADDR_WIDTH                 (24),
+//		.TG_AVL_SIZE_WIDTH                      (1),
+//		.TG_AVL_BE_WIDTH                        (64),
+//		.DRIVER_SIGNATURE                       (1431634060),
+//		.TG_GEN_BYTE_ADDR                       (1),
+//		.TG_NUM_DRIVER_LOOP                     (1),
+//		.TG_ENABLE_UNIX_ID                      (0),
+//		.TG_USE_UNIX_ID                         (0),
+//		.TG_RANDOM_BYTE_ENABLE                  (1),
+//		.TG_ENABLE_READ_COMPARE                 (1),
+//		.TG_POWER_OF_TWO_BURSTS_ONLY            (0),
+//		.TG_BURST_ON_BURST_BOUNDARY             (0),
+//		.TG_DO_NOT_CROSS_4KB_BOUNDARY           (0),
+//		.TG_TIMEOUT_COUNTER_WIDTH               (32),
+//		.TG_MAX_READ_LATENCY                    (20),
+//		.TG_SINGLE_RW_SEQ_ADDR_COUNT            (32),
+//		.TG_SINGLE_RW_RAND_ADDR_COUNT           (32),
+//		.TG_SINGLE_RW_RAND_SEQ_ADDR_COUNT       (32),
+//		.TG_BLOCK_RW_SEQ_ADDR_COUNT             (8),
+//		.TG_BLOCK_RW_RAND_ADDR_COUNT            (8),
+//		.TG_BLOCK_RW_RAND_SEQ_ADDR_COUNT        (8),
+//		.TG_BLOCK_RW_BLOCK_SIZE                 (8),
+//		.TG_TEMPLATE_STAGE_COUNT                (4),
+//		.TG_SEQ_ADDR_GEN_MIN_BURSTCOUNT         (1),
+//		.TG_SEQ_ADDR_GEN_MAX_BURSTCOUNT         (1),
+//		.TG_RAND_ADDR_GEN_MIN_BURSTCOUNT        (1),
+//		.TG_RAND_ADDR_GEN_MAX_BURSTCOUNT        (1),
+//		.TG_RAND_SEQ_ADDR_GEN_MIN_BURSTCOUNT    (1),
+//		.TG_RAND_SEQ_ADDR_GEN_MAX_BURSTCOUNT    (1),
+//		.TG_RAND_SEQ_ADDR_GEN_RAND_ADDR_PERCENT (50)
+//	) d0 (
+//		.clk             (if0_afi_clk_clk),           // avl_clock.clk
+//		.reset_n         (if0_afi_reset_reset),       // avl_reset.reset_n
+//		.pass            (drv_status_pass),           //    status.pass
+//		.fail            (drv_status_fail),           //          .fail
+//		.test_complete   (drv_status_test_complete),  //          .test_complete
+//		.avl_ready       (~d0_avl_waitrequest),       //       avl.waitrequest_n
+//		.avl_addr        (d0_avl_address),            //          .address
+//		.avl_size        (d0_avl_burstcount),         //          .burstcount
+//		.avl_wdata       (d0_avl_writedata),          //          .writedata
+//		.avl_rdata       (d0_avl_readdata),           //          .readdata
+//		.avl_write_req   (d0_avl_write),              //          .write
+//		.avl_read_req    (d0_avl_read),               //          .read
+//		.avl_rdata_valid (d0_avl_readdatavalid),      //          .readdatavalid
+//		.avl_be          (d0_avl_byteenable),         //          .byteenable
+//		.avl_burstbegin  (d0_avl_beginbursttransfer)  //          .beginbursttransfer
+//	);
+
+//	mem_if_ddr3_emif_0_example_design_example_mm_interconnect_0 mm_interconnect_0 (
+//		.if0_afi_clk_clk                                     (if0_afi_clk_clk),                              //                                   if0_afi_clk.clk
+//		.d0_avl_reset_reset_bridge_in_reset_reset            (rst_controller_reset_out_reset),               //            d0_avl_reset_reset_bridge_in_reset.reset
+//		.d0_avl_translator_reset_reset_bridge_in_reset_reset (rst_controller_reset_out_reset),               // d0_avl_translator_reset_reset_bridge_in_reset.reset
+//		.d0_avl_address                                      (d0_avl_address),                               //                                        d0_avl.address
+//		.d0_avl_waitrequest                                  (d0_avl_waitrequest),                           //                                              .waitrequest
+//		.d0_avl_burstcount                                   (d0_avl_burstcount),                            //                                              .burstcount
+//		.d0_avl_byteenable                                   (d0_avl_byteenable),                            //                                              .byteenable
+//		.d0_avl_beginbursttransfer                           (d0_avl_beginbursttransfer),                    //                                              .beginbursttransfer
+//		.d0_avl_read                                         (d0_avl_read),                                  //                                              .read
+//		.d0_avl_readdata                                     (d0_avl_readdata),                              //                                              .readdata
+//		.d0_avl_readdatavalid                                (d0_avl_readdatavalid),                         //                                              .readdatavalid
+//		.d0_avl_write                                        (d0_avl_write),                                 //                                              .write
+//		.d0_avl_writedata                                    (d0_avl_writedata),                             //                                              .writedata
+//		.if0_avl_address                                     (mm_interconnect_0_if0_avl_address),            //                                       if0_avl.address
+//		.if0_avl_write                                       (mm_interconnect_0_if0_avl_write),              //                                              .write
+//		.if0_avl_read                                        (mm_interconnect_0_if0_avl_read),               //                                              .read
+//		.if0_avl_readdata                                    (mm_interconnect_0_if0_avl_readdata),           //                                              .readdata
+//		.if0_avl_writedata                                   (mm_interconnect_0_if0_avl_writedata),          //                                              .writedata
+//		.if0_avl_beginbursttransfer                          (mm_interconnect_0_if0_avl_beginbursttransfer), //                                              .beginbursttransfer
+//		.if0_avl_burstcount                                  (mm_interconnect_0_if0_avl_burstcount),         //                                              .burstcount
+//		.if0_avl_byteenable                                  (mm_interconnect_0_if0_avl_byteenable),         //                                              .byteenable
+//		.if0_avl_readdatavalid                               (mm_interconnect_0_if0_avl_readdatavalid),      //                                              .readdatavalid
+//		.if0_avl_waitrequest                                 (~mm_interconnect_0_if0_avl_waitrequest)        //                                              .waitrequest
+//	);
 
 	altera_reset_controller #(
 		.NUM_RESET_INPUTS          (1),
@@ -252,6 +275,24 @@ module mem_if_ddr3_emif_0_example_design_example (
 		.reset_req_in14 (1'b0),                           // (terminated)
 		.reset_in15     (1'b0),                           // (terminated)
 		.reset_req_in15 (1'b0)                            // (terminated)
+	);
+	noc_wrapper noc (
+			.clk (if0_afi_clk_clk),
+			.rst_n (global_reset_n),
+			.avl_addr (avl_addr),
+			.avl_be (avl_be),
+			.avl_burstbegin (avl_burstbegin),
+			.avl_read_req (avl_read_req),
+			.avl_size (avl_size),
+			.avl_wdata (avl_wdata),
+			.avl_write_req (avl_write_req),
+			.avl_rdata (avl_rdata),
+			.avl_rdata_valid (avl_rdata_valid),
+			.avl_ready (avl_ready),
+			.cal_done (cal_done),
+			.cal_success (cal_success),
+			.ref (ref),
+			.ref_ack (ref_ack)
 	);
 
 endmodule
