@@ -92,7 +92,7 @@ begin
 				if ocp_s.SResp = OCP_RESP_DVA then
 					state_next <= read;
 					burst_count_next <= burst_count + to_unsigned(1,burst_count'length);
-					if std_logic_vector(addr_count) /= ocp_m.MData then
+					if std_logic_vector(addr_count) /= ocp_s.SData then
 						ok_next <= '0';
 					end if;
 				end if;
@@ -101,12 +101,12 @@ begin
 			if ocp_s.SResp = OCP_RESP_DVA then
 				state_next <= read;
 				burst_count_next <= burst_count + to_unsigned(1,burst_count'length);
-				if std_logic_vector(addr_count) /= ocp_m.MData then
+				if std_logic_vector(addr_count) /= ocp_s.SData then
 					ok_next <= '0';
 				end if;
 			end if;
 		when read =>
-			if std_logic_vector(addr_count) /= ocp_m.MData then
+			if std_logic_vector(addr_count) /= ocp_s.SData then
 				ok_next <= '0';
 			end if;
 			burst_count_next <= burst_count + to_unsigned(1,burst_count'length);

@@ -33,7 +33,7 @@ entity noc_wrapper is
 	cal_success : in std_logic;
  	ref	: out std_logic;
 	ref_ack : in std_logic;
-	ok : out std_logic;
+	ok : out std_logic
 );
 end entity noc_wrapper;
 
@@ -97,6 +97,6 @@ begin
 		port map(clk,reset, ocp_m(i), ocp_s(i),open);
 	end generate;
  	ocpburst : entity work.ocpburst_testbench
-	port map(clk,reset, ocp_m(i), ocp_s(i),ok);
+	port map(clk,reset, ocp_m(0), ocp_s(0),ok);
 
 end architecture rtl; -- of noc_wrapper
