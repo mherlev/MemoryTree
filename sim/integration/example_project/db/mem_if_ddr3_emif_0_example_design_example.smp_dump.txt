@@ -122,13 +122,6 @@ state.READ_DATA_WAIT 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 1
 state.READ_SEND_ISSUE 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
 state.READ_SEND_WAIT 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
 
-State Machine - |mem_if_ddr3_emif_0_example_design_example|noc_wrapper:noc|root:root_module|refresh_timer:ref_timer|state
-Name state.halt state.idle state.refresh2 state.refresh1 
-state.refresh1 0 0 0 0 
-state.refresh2 0 0 1 1 
-state.idle 0 1 0 1 
-state.halt 1 0 0 1 
-
 State Machine - |mem_if_ddr3_emif_0_example_design_example|noc_wrapper:noc|ocpburst_testbench:\burstmodule:3:ocpburst|state
 Name state.read state.read_await_resp state.read_await_accept state.write_response state.writing state.write 
 state.write 0 0 0 0 0 0 
@@ -163,7 +156,7 @@ state.writebyteen 0 0 1 0 1
 state.read_wait 0 1 0 0 1 
 state.read 1 0 0 0 1 
 
-State Machine - |mem_if_ddr3_emif_0_example_design_example|noc_wrapper:noc|ocpburst_testbench:\burstmodule:1:ocpburst|state
+State Machine - |mem_if_ddr3_emif_0_example_design_example|noc_wrapper:noc|ocpburst_testbench:ocpburst|state
 Name state.read state.read_await_resp state.read_await_accept state.write_response state.writing state.write 
 state.write 0 0 0 0 0 0 
 state.writing 0 0 0 0 1 1 
@@ -172,7 +165,7 @@ state.read_await_accept 0 0 1 0 0 1
 state.read_await_resp 0 1 0 0 0 1 
 state.read 1 0 0 0 0 1 
 
-State Machine - |mem_if_ddr3_emif_0_example_design_example|noc_wrapper:noc|ocpburst_testbench:\burstmodule:0:ocpburst|state
+State Machine - |mem_if_ddr3_emif_0_example_design_example|noc_wrapper:noc|ocpburst_testbench:\burstmodule:1:ocpburst|state
 Name state.read state.read_await_resp state.read_await_accept state.write_response state.writing state.write 
 state.write 0 0 0 0 0 0 
 state.writing 0 0 0 0 1 1 
@@ -196,3 +189,10 @@ state.writedata 0 0 0 1 1
 state.writebyteen 0 0 1 0 1 
 state.read_wait 0 1 0 0 1 
 state.read 1 0 0 0 1 
+
+State Machine - |mem_if_ddr3_emif_0_example_design_example|noc_wrapper:noc|root:root_module|refresh_timer:ref_timer|state
+Name state.halt state.idle state.refresh2 state.refresh1 
+state.refresh1 0 0 0 0 
+state.refresh2 0 0 1 1 
+state.idle 0 1 0 1 
+state.halt 1 0 0 1 

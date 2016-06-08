@@ -90,6 +90,7 @@ architecture rtl of root is
 	
 	signal r2l_next : phit_r := (others => (others => '0'));
 	alias r2l_route is r2l_next.payload(3 downto 0);
+	alias r2l_type is r2l_next.payload(payload_width-1);
 	signal read_counter, read_counter_next : unsigned(31 downto 0) := (others => '0');
 	
 	signal readbuffer_data : outbuffer_data_arr := (others => (others => '0'));
@@ -133,19 +134,19 @@ begin
 	port map(clk, reset, open, open, avl_mem_s.rdata,read_data_buffer,r2l_fifo_ren,r2l_fifo_wen,open);
 	
 	mem_core_fifo : entity work.fifo
-	generic map(2,4)
+	generic map(2,3)
 	port map(clk, reset, mem_raddr, mem_waddr, cmder_next,r2s_next,mem_fifo_ren,mem_fifo_wen,open);
 	mem_cmd_fifo : entity work.fifo
-	generic map(OCP_CMD_WIDTH,4)
+	generic map(OCP_CMD_WIDTH,3)
 	port map(clk, reset, open, open, cmd_next,mem_cmd,mem_fifo_ren,mem_fifo_wen,open);
 	mem_addr_fifo : entity work.fifo
-	generic map(OCP_BURST_ADDR_WIDTH,4)
+	generic map(OCP_BURST_ADDR_WIDTH,3)
 	port map(clk, reset, open, open, outbuffer_addr_next, avl_mem_m.addr, mem_fifo_ren,mem_fifo_wen,open);
 	mem_data_fifo : entity work.fifo
-	generic map(OCP_DATA_WIDTH*OCP_BURST_LENGTH,4)
+	generic map(OCP_DATA_WIDTH*OCP_BURST_LENGTH,3)
 	port map(clk, reset, open, open, write_dat, avl_mem_m.wdata, mem_fifo_ren,mem_fifo_wen,open);
 	mem_ben_fifo : entity work.fifo
-	generic map(OCP_BYTE_WIDTH*OCP_BURST_LENGTH,4)
+	generic map(OCP_BYTE_WIDTH*OCP_BURST_LENGTH,3)
 	port map(clk, reset, open, open, write_ben, avl_mem_m.be, mem_fifo_ren,mem_fifo_wen,open);
 	
 	r2l_fsm : process(state, ping_id, route, pinged,core_id, r2s, read_counter, readbuffer_data, r2s_waddr, r2s_raddr)
@@ -156,6 +157,7 @@ begin
 		core_id_next <= core_id;
 		read_counter_next <= read_counter;
 		r2l_fifo_ren <= '0';
+		r2l_type <= '0';
 		case state is
 		when idle =>
 			if ping_id /= pinged then
@@ -165,6 +167,7 @@ begin
 		when send_ping =>
 			r2l_next.tag <= header_tag;
 			r2l_route <= route;
+			r2l_type <= '1';
 			pinged_next <= core_id;
 			state_next <= idle;
 			if r2s_waddr /= r2s_raddr then

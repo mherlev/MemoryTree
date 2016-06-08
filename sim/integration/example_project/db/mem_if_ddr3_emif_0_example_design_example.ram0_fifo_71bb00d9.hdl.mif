@@ -1,0 +1,17 @@
+-- begin_signature
+-- fifo(data_width
+-- 24
+-- depth
+-- 3)
+-- end_signature
+WIDTH=24;
+DEPTH=4;
+
+ADDRESS_RADIX=UNS;
+DATA_RADIX=BIN;
+
+CONTENT BEGIN
+	2 :	000000000000000000000000;
+	1 :	000000000000000000000000;
+	0 :	000000000000000000000000;
+END;

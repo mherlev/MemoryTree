@@ -297,7 +297,7 @@ signal r2l_root_port : phit_r;
 	signal avl_mem_s : avl_s;
 signal clk, reset : std_logic;
 signal cal_done, cal_success : std_logic;
-signal ref, ref_ack : std_logic;
+signal ref, ref_ack,ok : std_logic;
 begin
 clk <= if0_afi_clk_clk;
 reset <= not global_reset_n;
@@ -533,13 +533,13 @@ r2lnoc : entity work.r2l_noc
 	port map(clk,reset,r2l_leaf_ports(i),l2r_leaf_ports(i),ocp_m(i),ocp_s(i));
   end generate;
   
-	burstmodule : for i in 0 to number_of_leafs-1 generate
+	burstmodule : for i in 1 to number_of_leafs-1-0 generate
 		ocpburst : entity work.ocpburst_testbench
-		port map(clk,reset, ocp_m(i), ocp_s(i));
+		port map(clk,reset, ocp_m(i), ocp_s(i),open);
 	end generate;
 --	burstmodule : for i in 0 to 1 generate
---		ocpburst : entity work.ocpburst_testbench
---		port map(clk,reset, ocp_m(i), ocp_s(i));
+		ocpburst : entity work.ocpburst_testbench
+		port map(clk,reset, ocp_m(0), ocp_s(0),ok);
 --	end generate;
 --	dram : entity work.dummy_dram_avalon
 --	port map(clk,reset,mem_m,mem_s,avl_mem_m,avl_mem_s);

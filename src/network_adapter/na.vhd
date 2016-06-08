@@ -108,7 +108,7 @@ begin
 
 		when read_wait =>
 			--TODO
-			if r2lnoc.tag = header_tag then
+			if r2lnoc.tag = header_tag AND r2lnoc.payload(payload_width-1) = '0' then
 				state_next <= read;
 				counter_next <= (others => '0');
 			end if;
