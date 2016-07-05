@@ -1,7 +1,0 @@
-
-State Machine - |root|refresh_timer:ref_timer|state
-Name state.halt state.idle state.refresh2 state.refresh1 
-state.refresh1 0 0 0 0 
-state.refresh2 0 0 1 1 
-state.idle 0 1 0 1 
-state.halt 1 0 0 1 

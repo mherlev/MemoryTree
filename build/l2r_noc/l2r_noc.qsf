@@ -42,7 +42,7 @@ set_global_assignment -name DEVICE 5CGXFC7C7F23C8
 set_global_assignment -name TOP_LEVEL_ENTITY l2r_noc
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 15.0.0
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "13:25:48  MAY 04, 2016"
-set_global_assignment -name LAST_QUARTUS_VERSION 15.0.0
+set_global_assignment -name LAST_QUARTUS_VERSION 14.0
 set_global_assignment -name VHDL_FILE ../../src/leaf2root_noc/noc.vhd
 set_global_assignment -name VHDL_FILE ../../src/leaf2root_noc/router/router.vhd
 set_global_assignment -name VHDL_FILE ../../src/leaf2root_noc/router/routerpart.vhd

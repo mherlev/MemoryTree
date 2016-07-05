@@ -32,10 +32,23 @@ if ![info exists TOP_LEVEL_NAME] {
 if ![info exists QSYS_SIMDIR] { 
   set QSYS_SIMDIR "./../"
 }
+if ![info exists HOME_DIR] { 
+  set HOME_DIR "/home/s103060"
+}
+
+
+if ![info exists TCREST_DIR] { 
+  set TCREST_DIR "$HOME_DIR/t-crest"
+}
 
 if ![info exists TREE_DIR] { 
-  set TREE_DIR "./../../../../../"
+  set TREE_DIR "$TCREST_DIR/MemoryTree"
 }
+
+if ![info exists ARGO_DIR] { 
+  set ARGO_DIR "$TCREST_DIR/argo"
+}
+
 
 if ![info exists QUARTUS_INSTALL_DIR] { 
   set QUARTUS_INSTALL_DIR "/data/local/altera/14.0/quartus/"
@@ -323,31 +336,35 @@ alias com {
   vlog -sv                                    "$QSYS_SIMDIR/submodules/mentor/alt_mem_if_ddr3_mem_model_top_ddr3_mem_if_dm_pins_en_mem_if_dqsn_en.sv"                                       
   vlog -sv                                    "$QSYS_SIMDIR/submodules/mentor/alt_mem_if_common_ddr_mem_model_ddr3_mem_if_dm_pins_en_mem_if_dqsn_en.sv"                                     
   vlog -sv                                    "$QSYS_SIMDIR/submodules/mentor/altera_mem_if_checker_no_ifdef_params.sv"                                                                     
-	vcom -quiet 																"$TREE_DIR/src/common/memorytree_package.vhd"
-	vcom -quiet 																"$TREE_DIR/src/common/fifo.vhd"
-	vcom -quiet 																"$TREE_DIR/src/ocp/ocp_config.vhd"
-    vcom -quiet 																"$TREE_DIR/src/ocp/ocp.vhd"
-	vcom -quiet 																"$TREE_DIR/src/avalon/avalon.vhd"
-#	#Leaf 2 Root																"TREE_DIR/
-	vcom -quiet 																"$TREE_DIR/src/leaf2root_noc/router/routerpart.vhd"
-	vcom -quiet 																"$TREE_DIR/src/leaf2root_noc/router/router.vhd"
-	vcom -quiet 																"$TREE_DIR/src/leaf2root_noc/noc.vhd"
-#	#Root 2 leaf																"
-	vcom -quiet 																"$TREE_DIR/src/root2leaf_noc/router/routerpart.vhd"
-	vcom -quiet 																"$TREE_DIR/src/root2leaf_noc/router/router.vhd"
-	vcom -quiet 																"$TREE_DIR/src/root2leaf_noc/noc.vhd"
+	vcom -quiet 					"$TREE_DIR/src/common/memorytree_package.vhd"
+	vcom -quiet 					"$TREE_DIR/src/common/fifo.vhd"
+	vcom -quiet 					"$TREE_DIR/src/ocp/ocp_config.vhd"
+    vcom -quiet     					"$TREE_DIR/src/ocp/ocp.vhd"
+    vcom -quiet     					"$ARGO_DIR/src/cdc/common/OCPBurstClockCrossingInterface_types.vhd"
+    vcom -quiet     					"$TREE_DIR/../argo/src/cdc/ocpburst/ocpburst_cdc_a.vhd"
+    vcom -quiet     					"$TREE_DIR/../argo/src/cdc/ocpburst/ocpburst_cdc_b.vhd"
+    vcom -quiet     					"$TREE_DIR/../argo/src/cdc/ocpburst/ocpburst_cdc.vhd"
+	vcom -quiet 					"$TREE_DIR/src/avalon/avalon.vhd"
+#	#Leaf 2 Root					"TREE_DIR/
+	vcom -quiet 					"$TREE_DIR/src/leaf2root_noc/router/routerpart.vhd"
+	vcom -quiet 					"$TREE_DIR/src/leaf2root_noc/router/router.vhd"
+	vcom -quiet 					"$TREE_DIR/src/leaf2root_noc/noc.vhd"
+#	#Root 2 leaf					"
+	vcom -quiet 					"$TREE_DIR/src/root2leaf_noc/router/routerpart.vhd"
+	vcom -quiet 					"$TREE_DIR/src/root2leaf_noc/router/router.vhd"
+	vcom -quiet 					"$TREE_DIR/src/root2leaf_noc/noc.vhd"
 #	#Root 
-	vcom -quiet 																"$TREE_DIR/src/root/root_package.vhd"
-	vcom -quiet 																"$TREE_DIR/src/root/refresh_timer.vhd"
-	vcom -quiet 																"$TREE_DIR/src/root/routing_table.vhd"
-	vcom -quiet 																"$TREE_DIR/src/root/schedule_table.vhd"
-	vcom -quiet 																"$TREE_DIR/src/root/ping_timer.vhd"
-	vcom -quiet 																"$TREE_DIR/src/root/root.vhd"
+	vcom -quiet 					"$TREE_DIR/src/root/root_package.vhd"
+	vcom -quiet 					"$TREE_DIR/src/root/refresh_timer.vhd"
+	vcom -quiet 					"$TREE_DIR/src/root/routing_table.vhd"
+	vcom -quiet 					"$TREE_DIR/src/root/schedule_table.vhd"
+	vcom -quiet 					"$TREE_DIR/src/root/ping_timer.vhd"
+	vcom -quiet 					"$TREE_DIR/src/root/root.vhd"
 #	#NA
-	vcom -quiet 																"$TREE_DIR/src/network_adapter/na.vhd"
+	vcom -quiet 					"$TREE_DIR/src/network_adapter/na.vhd"
 #	#Test 
-	vcom -quiet 																"$TREE_DIR/testunits/ocpburst.vhd"
-	vcom -quiet 																"$TREE_DIR/testunits/dummy_dram_avalon.vhd"
+	vcom -quiet 					"$TREE_DIR/testunits/ocpburst.vhd"
+	vcom -quiet 					"$TREE_DIR/testunits/dummy_dram_avalon.vhd"
 #	vcom -quiet 																"$TREE_DIR/build/avalon_conversion/top.vhd"
   vcom                                        "$QSYS_SIMDIR/submodules/mem_if_ddr3_emif_0_example_design_example_sim_e0.vhd"
   vcom                                        "$QSYS_SIMDIR/submodules/altera_avalon_reset_source.vhd"

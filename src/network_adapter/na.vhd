@@ -44,14 +44,12 @@ entity network_adapter is
 end network_adapter;
 
 architecture rtl of network_adapter is
-	type states is (idle, writedata,writebyteen,read_wait, read);
+	type states is (idle, writedata,writeresp,read_wait, read);
 	signal state, state_next : states := idle;
     signal counter, counter_next  : unsigned(31 downto 0) := (others => '0');
 
-	constant ShiftRegLength : integer := ocp_burst_length*OCP_BYTE_WIDTH;
-	signal ByteEnShiftReg,ByteEnShiftReg_next : std_logic_vector(ShiftRegLength-1 downto 0) := (others => '0');
 begin
-	process(state,ocp_m,r2lnoc,counter,ByteEnShiftReg)
+	process(state, ocp_m, r2lnoc, counter)
 	begin
 		l2rnoc.payload <= (others=>'0');
 		l2rnoc.tag <= empty_tag;
@@ -61,7 +59,6 @@ begin
 		ocp_s.SResp <= OCP_RESP_NULL;
 		ocp_s.SData <= (others => '0');
 		ocp_s.SDataAccept <= '0';
-		ByteEnShiftReg_next <= ByteEnShiftReg;
 		case state is
 		when idle =>
 			if r2lnoc.tag = header_tag then
@@ -86,35 +83,25 @@ begin
 	    	counter_next <= counter+1;
 			l2rnoc.payload <= ocp_m.MDataByteEn & ocp_m.MData;
 			l2rnoc.tag <= payload_tag;
---			ByteEnShiftReg_next <= ocp_m.MDataByteEn & ByteEnShiftReg(ShiftRegLength-1 downto OCP_BYTE_WIDTH);
+			ocp_s.SDataAccept <= '1';
 			if counter = 0 then
 				ocp_s.SCmdAccept <= '1';
 			elsif counter = ocp_burst_length-1 then
-		    	state_next <= writebyteen;
+		    	state_next <= writeresp;
 				counter_next <= (others => '0');
---				state_next <= idle;
-				end if;
-		when WriteByteEn =>
---	    	counter_next <= counter+1;
---			l2rnoc.payload <= ByteEnShiftReg(OCP_DATA_WIDTH-1 downto 0);
---			l2rnoc.tag <= payload_tag;
---			ByteEnShiftReg_next <= std_logic_vector(to_unsigned(0,OCP_DATA_WIDTH)) & ByteEnShiftReg(ShiftRegLength-1 downto OCP_DATA_WIDTH);
---			if counter = 0 then
-				ocp_s.SResp <= OCP_RESP_DVA;
---			elsif counter = ocp_burst_length/8-1 then
-		    	state_next <= idle;
-				counter_next <= (others => '0');
---			end if;
+			end if;
+		when WriteResp =>
+			ocp_s.SResp <= OCP_RESP_DVA;
+			state_next <= idle;
+			counter_next <= (others => '0');
 
 		when read_wait =>
-			--TODO
 			if r2lnoc.tag = header_tag AND r2lnoc.payload(payload_width-1) = '0' then
 				state_next <= read;
 				counter_next <= (others => '0');
 			end if;
 				
 		when read =>
-			--TODO Complete this
 			ocp_s.SResp <= OCP_RESP_DVA;
 			counter_next <= counter + to_unsigned(1, counter'length);
 			ocp_s.SData <= r2lnoc.payload(OCP_DATA_WIDTH-1 downto 0);
@@ -132,11 +119,9 @@ begin
 		if rst = '1' then
 			state <= idle;
 			counter <= (others => '0');
-			ByteEnShiftReg <= (others => '0');
 		elsif rising_edge(clk) then
 			state <= state_next;
 			counter <= counter_next;
-			ByteEnShiftReg <= ByteEnShiftReg_next;
 		end if;
 	end process;
 end rtl;

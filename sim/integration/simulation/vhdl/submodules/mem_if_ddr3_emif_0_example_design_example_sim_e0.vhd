@@ -9,11 +9,12 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 library work;
-library work;
 use work.MemoryTreePackage.all;
 use work.root_package.all;
 use work.ocp.all;
 use work.avalon.all;
+USE work.OCPBURSTCDC_types.all;
+
 
 entity mem_if_ddr3_emif_0_example_design_example_sim_e0 is
 	port (
@@ -52,6 +53,17 @@ entity mem_if_ddr3_emif_0_example_design_example_sim_e0 is
 end entity mem_if_ddr3_emif_0_example_design_example_sim_e0;
 
 architecture rtl of mem_if_ddr3_emif_0_example_design_example_sim_e0 is
+component OCPBurstCDC IS
+	PORT(   input   : IN	OCPBurstCDCIn_r;
+			output  : OUT   OCPBurstCDCOut_r
+	);
+END component OCPBurstCDC;
+
+	type burst_cdc_i_arr is array(0 to 3) of OCPBurstCDCIn_r;
+	signal burst_cdc_i : burst_cdc_i_arr;
+	type burst_cdc_o_arr is array(0 to 3) of OCPBurstCDCOut_r;
+	signal burst_cdc_o : burst_cdc_o_arr;
+
 	component mem_if_ddr3_emif_0_example_design_example_sim_e0_if0 is
 		port (
 			pll_ref_clk               : in    std_logic                      := 'X';             -- clk
@@ -106,88 +118,88 @@ architecture rtl of mem_if_ddr3_emif_0_example_design_example_sim_e0 is
 		);
 	end component mem_if_ddr3_emif_0_example_design_example_sim_e0_if0;
 
-	component mem_if_ddr3_emif_0_example_design_example_sim_e0_d0 is
-		generic (
-			DEVICE_FAMILY                          : string  := "";
-			TG_AVL_DATA_WIDTH                      : integer := 32;
-			TG_AVL_ADDR_WIDTH                      : integer := 25;
-			TG_AVL_WORD_ADDR_WIDTH                 : integer := 25;
-			TG_AVL_SIZE_WIDTH                      : integer := 2;
-			TG_AVL_BE_WIDTH                        : integer := 2;
-			DRIVER_SIGNATURE                       : integer := 0;
-			TG_GEN_BYTE_ADDR                       : boolean := true;
-			TG_NUM_DRIVER_LOOP                     : integer := 1000;
-			TG_ENABLE_UNIX_ID                      : boolean := false;
-			TG_USE_UNIX_ID                         : integer := 0;
-			TG_RANDOM_BYTE_ENABLE                  : boolean := false;
-			TG_ENABLE_READ_COMPARE                 : boolean := true;
-			TG_POWER_OF_TWO_BURSTS_ONLY            : boolean := false;
-			TG_BURST_ON_BURST_BOUNDARY             : boolean := false;
-			TG_DO_NOT_CROSS_4KB_BOUNDARY           : boolean := false;
-			TG_TIMEOUT_COUNTER_WIDTH               : integer := 32;
-			TG_MAX_READ_LATENCY                    : integer := 20;
-			TG_SINGLE_RW_SEQ_ADDR_COUNT            : integer := 32;
-			TG_SINGLE_RW_RAND_ADDR_COUNT           : integer := 32;
-			TG_SINGLE_RW_RAND_SEQ_ADDR_COUNT       : integer := 32;
-			TG_BLOCK_RW_SEQ_ADDR_COUNT             : integer := 8;
-			TG_BLOCK_RW_RAND_ADDR_COUNT            : integer := 8;
-			TG_BLOCK_RW_RAND_SEQ_ADDR_COUNT        : integer := 8;
-			TG_BLOCK_RW_BLOCK_SIZE                 : integer := 8;
-			TG_TEMPLATE_STAGE_COUNT                : integer := 4;
-			TG_SEQ_ADDR_GEN_MIN_BURSTCOUNT         : integer := 1;
-			TG_SEQ_ADDR_GEN_MAX_BURSTCOUNT         : integer := 2;
-			TG_RAND_ADDR_GEN_MIN_BURSTCOUNT        : integer := 1;
-			TG_RAND_ADDR_GEN_MAX_BURSTCOUNT        : integer := 2;
-			TG_RAND_SEQ_ADDR_GEN_MIN_BURSTCOUNT    : integer := 1;
-			TG_RAND_SEQ_ADDR_GEN_MAX_BURSTCOUNT    : integer := 2;
-			TG_RAND_SEQ_ADDR_GEN_RAND_ADDR_PERCENT : integer := 50
-		);
-		port (
-			clk             : in  std_logic                      := 'X';             -- clk
-			reset_n         : in  std_logic                      := 'X';             -- reset_n
-			pass            : out std_logic;                                         -- pass
-			fail            : out std_logic;                                         -- fail
-			test_complete   : out std_logic;                                         -- test_complete
-			avl_ready       : in  std_logic                      := 'X';             -- waitrequest_n
-			avl_addr        : out std_logic_vector(29 downto 0);                     -- address
-			avl_size        : out std_logic;                                         -- burstcount
-			avl_wdata       : out std_logic_vector(511 downto 0);                    -- writedata
-			avl_rdata       : in  std_logic_vector(511 downto 0) := (others => 'X'); -- readdata
-			avl_write_req   : out std_logic;                                         -- write
-			avl_read_req    : out std_logic;                                         -- read
-			avl_rdata_valid : in  std_logic                      := 'X';             -- readdatavalid
-			avl_be          : out std_logic_vector(63 downto 0);                     -- byteenable
-			avl_burstbegin  : out std_logic                                          -- beginbursttransfer
-		);
-	end component mem_if_ddr3_emif_0_example_design_example_sim_e0_d0;
+--	component mem_if_ddr3_emif_0_example_design_example_sim_e0_d0 is
+--		generic (
+--			DEVICE_FAMILY                          : string  := "";
+--			TG_AVL_DATA_WIDTH                      : integer := 32;
+--			TG_AVL_ADDR_WIDTH                      : integer := 25;
+--			TG_AVL_WORD_ADDR_WIDTH                 : integer := 25;
+--			TG_AVL_SIZE_WIDTH                      : integer := 2;
+--			TG_AVL_BE_WIDTH                        : integer := 2;
+--			DRIVER_SIGNATURE                       : integer := 0;
+--			TG_GEN_BYTE_ADDR                       : boolean := true;
+--			TG_NUM_DRIVER_LOOP                     : integer := 1000;
+--			TG_ENABLE_UNIX_ID                      : boolean := false;
+--			TG_USE_UNIX_ID                         : integer := 0;
+--			TG_RANDOM_BYTE_ENABLE                  : boolean := false;
+--			TG_ENABLE_READ_COMPARE                 : boolean := true;
+--			TG_POWER_OF_TWO_BURSTS_ONLY            : boolean := false;
+--			TG_BURST_ON_BURST_BOUNDARY             : boolean := false;
+--			TG_DO_NOT_CROSS_4KB_BOUNDARY           : boolean := false;
+--			TG_TIMEOUT_COUNTER_WIDTH               : integer := 32;
+--			TG_MAX_READ_LATENCY                    : integer := 20;
+--			TG_SINGLE_RW_SEQ_ADDR_COUNT            : integer := 32;
+--			TG_SINGLE_RW_RAND_ADDR_COUNT           : integer := 32;
+--			TG_SINGLE_RW_RAND_SEQ_ADDR_COUNT       : integer := 32;
+--			TG_BLOCK_RW_SEQ_ADDR_COUNT             : integer := 8;
+--			TG_BLOCK_RW_RAND_ADDR_COUNT            : integer := 8;
+--			TG_BLOCK_RW_RAND_SEQ_ADDR_COUNT        : integer := 8;
+--			TG_BLOCK_RW_BLOCK_SIZE                 : integer := 8;
+--			TG_TEMPLATE_STAGE_COUNT                : integer := 4;
+--			TG_SEQ_ADDR_GEN_MIN_BURSTCOUNT         : integer := 1;
+--			TG_SEQ_ADDR_GEN_MAX_BURSTCOUNT         : integer := 2;
+--			TG_RAND_ADDR_GEN_MIN_BURSTCOUNT        : integer := 1;
+--			TG_RAND_ADDR_GEN_MAX_BURSTCOUNT        : integer := 2;
+--			TG_RAND_SEQ_ADDR_GEN_MIN_BURSTCOUNT    : integer := 1;
+--			TG_RAND_SEQ_ADDR_GEN_MAX_BURSTCOUNT    : integer := 2;
+--			TG_RAND_SEQ_ADDR_GEN_RAND_ADDR_PERCENT : integer := 50
+--		);
+--		port (
+--			clk             : in  std_logic                      := 'X';             -- clk
+--			reset_n         : in  std_logic                      := 'X';             -- reset_n
+--			pass            : out std_logic;                                         -- pass
+--			fail            : out std_logic;                                         -- fail
+--			test_complete   : out std_logic;                                         -- test_complete
+--			avl_ready       : in  std_logic                      := 'X';             -- waitrequest_n
+--			avl_addr        : out std_logic_vector(29 downto 0);                     -- address
+--			avl_size        : out std_logic;                                         -- burstcount
+--			avl_wdata       : out std_logic_vector(511 downto 0);                    -- writedata
+--			avl_rdata       : in  std_logic_vector(511 downto 0) := (others => 'X'); -- readdata
+--			avl_write_req   : out std_logic;                                         -- write
+--			avl_read_req    : out std_logic;                                         -- read
+--			avl_rdata_valid : in  std_logic                      := 'X';             -- readdatavalid
+--			avl_be          : out std_logic_vector(63 downto 0);                     -- byteenable
+--			avl_burstbegin  : out std_logic                                          -- beginbursttransfer
+--		);
+--	end component mem_if_ddr3_emif_0_example_design_example_sim_e0_d0;
 
-	component mem_if_ddr3_emif_0_example_design_example_sim_e0_mm_interconnect_0 is
-		port (
-			if0_afi_clk_clk                                     : in  std_logic                      := 'X';             -- clk
-			d0_avl_reset_reset_bridge_in_reset_reset            : in  std_logic                      := 'X';             -- reset
-			d0_avl_translator_reset_reset_bridge_in_reset_reset : in  std_logic                      := 'X';             -- reset
-			d0_avl_address                                      : in  std_logic_vector(29 downto 0)  := (others => 'X'); -- address
-			d0_avl_waitrequest                                  : out std_logic;                                         -- waitrequest
-			d0_avl_burstcount                                   : in  std_logic_vector(0 downto 0)   := (others => 'X'); -- burstcount
-			d0_avl_byteenable                                   : in  std_logic_vector(63 downto 0)  := (others => 'X'); -- byteenable
-			d0_avl_beginbursttransfer                           : in  std_logic                      := 'X';             -- beginbursttransfer
-			d0_avl_read                                         : in  std_logic                      := 'X';             -- read
-			d0_avl_readdata                                     : out std_logic_vector(511 downto 0);                    -- readdata
-			d0_avl_readdatavalid                                : out std_logic;                                         -- readdatavalid
-			d0_avl_write                                        : in  std_logic                      := 'X';             -- write
-			d0_avl_writedata                                    : in  std_logic_vector(511 downto 0) := (others => 'X'); -- writedata
-			if0_avl_address                                     : out std_logic_vector(23 downto 0);                     -- address
-			if0_avl_write                                       : out std_logic;                                         -- write
-			if0_avl_read                                        : out std_logic;                                         -- read
-			if0_avl_readdata                                    : in  std_logic_vector(511 downto 0) := (others => 'X'); -- readdata
-			if0_avl_writedata                                   : out std_logic_vector(511 downto 0);                    -- writedata
-			if0_avl_beginbursttransfer                          : out std_logic;                                         -- beginbursttransfer
-			if0_avl_burstcount                                  : out std_logic_vector(0 downto 0);                      -- burstcount
-			if0_avl_byteenable                                  : out std_logic_vector(63 downto 0);                     -- byteenable
-			if0_avl_readdatavalid                               : in  std_logic                      := 'X';             -- readdatavalid
-			if0_avl_waitrequest                                 : in  std_logic                      := 'X'              -- waitrequest
-		);
-	end component mem_if_ddr3_emif_0_example_design_example_sim_e0_mm_interconnect_0;
+--	component mem_if_ddr3_emif_0_example_design_example_sim_e0_mm_interconnect_0 is
+--		port (
+--			if0_afi_clk_clk                                     : in  std_logic                      := 'X';             -- clk
+--			d0_avl_reset_reset_bridge_in_reset_reset            : in  std_logic                      := 'X';             -- reset
+--			d0_avl_translator_reset_reset_bridge_in_reset_reset : in  std_logic                      := 'X';             -- reset
+--			d0_avl_address                                      : in  std_logic_vector(29 downto 0)  := (others => 'X'); -- address
+--			d0_avl_waitrequest                                  : out std_logic;                                         -- waitrequest
+--			d0_avl_burstcount                                   : in  std_logic_vector(0 downto 0)   := (others => 'X'); -- burstcount
+--			d0_avl_byteenable                                   : in  std_logic_vector(63 downto 0)  := (others => 'X'); -- byteenable
+--			d0_avl_beginbursttransfer                           : in  std_logic                      := 'X';             -- beginbursttransfer
+--			d0_avl_read                                         : in  std_logic                      := 'X';             -- read
+--			d0_avl_readdata                                     : out std_logic_vector(511 downto 0);                    -- readdata
+--			d0_avl_readdatavalid                                : out std_logic;                                         -- readdatavalid
+--			d0_avl_write                                        : in  std_logic                      := 'X';             -- write
+--			d0_avl_writedata                                    : in  std_logic_vector(511 downto 0) := (others => 'X'); -- writedata
+--			if0_avl_address                                     : out std_logic_vector(23 downto 0);                     -- address
+--			if0_avl_write                                       : out std_logic;                                         -- write
+--			if0_avl_read                                        : out std_logic;                                         -- read
+--			if0_avl_readdata                                    : in  std_logic_vector(511 downto 0) := (others => 'X'); -- readdata
+--			if0_avl_writedata                                   : out std_logic_vector(511 downto 0);                    -- writedata
+--			if0_avl_beginbursttransfer                          : out std_logic;                                         -- beginbursttransfer
+--			if0_avl_burstcount                                  : out std_logic_vector(0 downto 0);                      -- burstcount
+--			if0_avl_byteenable                                  : out std_logic_vector(63 downto 0);                     -- byteenable
+--			if0_avl_readdatavalid                               : in  std_logic                      := 'X';             -- readdatavalid
+--			if0_avl_waitrequest                                 : in  std_logic                      := 'X'              -- waitrequest
+--		);
+--	end component mem_if_ddr3_emif_0_example_design_example_sim_e0_mm_interconnect_0;
 
 	component altera_reset_controller is
 		generic (
@@ -259,24 +271,24 @@ architecture rtl of mem_if_ddr3_emif_0_example_design_example_sim_e0 is
 	signal if0_afi_reset_reset                          : std_logic;                      -- if0:afi_reset_n -> [afi_reset_n, afi_reset_n:in, d0:reset_n]
 	signal d0_avl_burstcount                            : std_logic;                      -- d0:avl_size -> mm_interconnect_0:d0_avl_burstcount
 	signal mm_interconnect_0_d0_avl_waitrequest         : std_logic;                      -- mm_interconnect_0:d0_avl_waitrequest -> mm_interconnect_0_d0_avl_waitrequest:in
-	signal d0_avl_writedata                             : std_logic_vector(511 downto 0); -- d0:avl_wdata -> mm_interconnect_0:d0_avl_writedata
-	signal d0_avl_address                               : std_logic_vector(29 downto 0);  -- d0:avl_addr -> mm_interconnect_0:d0_avl_address
-	signal d0_avl_write                                 : std_logic;                      -- d0:avl_write_req -> mm_interconnect_0:d0_avl_write
-	signal d0_avl_beginbursttransfer                    : std_logic;                      -- d0:avl_burstbegin -> mm_interconnect_0:d0_avl_beginbursttransfer
-	signal d0_avl_read                                  : std_logic;                      -- d0:avl_read_req -> mm_interconnect_0:d0_avl_read
-	signal d0_avl_readdata                              : std_logic_vector(511 downto 0); -- mm_interconnect_0:d0_avl_readdata -> d0:avl_rdata
-	signal d0_avl_byteenable                            : std_logic_vector(63 downto 0);  -- d0:avl_be -> mm_interconnect_0:d0_avl_byteenable
-	signal d0_avl_readdatavalid                         : std_logic;                      -- mm_interconnect_0:d0_avl_readdatavalid -> d0:avl_rdata_valid
-	signal if0_avl_waitrequest                          : std_logic;                      -- if0:avl_ready -> if0_avl_waitrequest:in
-	signal mm_interconnect_0_if0_avl_burstcount         : std_logic_vector(0 downto 0);   -- mm_interconnect_0:if0_avl_burstcount -> if0:avl_size
-	signal mm_interconnect_0_if0_avl_writedata          : std_logic_vector(511 downto 0); -- mm_interconnect_0:if0_avl_writedata -> if0:avl_wdata
-	signal mm_interconnect_0_if0_avl_address            : std_logic_vector(23 downto 0);  -- mm_interconnect_0:if0_avl_address -> if0:avl_addr
-	signal mm_interconnect_0_if0_avl_write              : std_logic;                      -- mm_interconnect_0:if0_avl_write -> if0:avl_write_req
-	signal mm_interconnect_0_if0_avl_beginbursttransfer : std_logic;                      -- mm_interconnect_0:if0_avl_beginbursttransfer -> if0:avl_burstbegin
-	signal mm_interconnect_0_if0_avl_read               : std_logic;                      -- mm_interconnect_0:if0_avl_read -> if0:avl_read_req
-	signal mm_interconnect_0_if0_avl_readdata           : std_logic_vector(511 downto 0); -- if0:avl_rdata -> mm_interconnect_0:if0_avl_readdata
-	signal mm_interconnect_0_if0_avl_readdatavalid      : std_logic;                      -- if0:avl_rdata_valid -> mm_interconnect_0:if0_avl_readdatavalid
-	signal mm_interconnect_0_if0_avl_byteenable         : std_logic_vector(63 downto 0);  -- mm_interconnect_0:if0_avl_byteenable -> if0:avl_be
+--	signal d0_avl_writedata                             : std_logic_vector(511 downto 0); -- d0:avl_wdata -> mm_interconnect_0:d0_avl_writedata
+--	signal d0_avl_address                               : std_logic_vector(29 downto 0);  -- d0:avl_addr -> mm_interconnect_0:d0_avl_address
+--	signal d0_avl_write                                 : std_logic;                      -- d0:avl_write_req -> mm_interconnect_0:d0_avl_write
+--	signal d0_avl_beginbursttransfer                    : std_logic;                      -- d0:avl_burstbegin -> mm_interconnect_0:d0_avl_beginbursttransfer
+--	signal d0_avl_read                                  : std_logic;                      -- d0:avl_read_req -> mm_interconnect_0:d0_avl_read
+--	signal d0_avl_readdata                              : std_logic_vector(511 downto 0); -- mm_interconnect_0:d0_avl_readdata -> d0:avl_rdata
+--	signal d0_avl_byteenable                            : std_logic_vector(63 downto 0);  -- d0:avl_be -> mm_interconnect_0:d0_avl_byteenable
+--	signal d0_avl_readdatavalid                         : std_logic;                      -- mm_interconnect_0:d0_avl_readdatavalid -> d0:avl_rdata_valid
+--	signal if0_avl_waitrequest                          : std_logic;                      -- if0:avl_ready -> if0_avl_waitrequest:in
+--	signal mm_interconnect_0_if0_avl_burstcount         : std_logic_vector(0 downto 0);   -- mm_interconnect_0:if0_avl_burstcount -> if0:avl_size
+--	signal mm_interconnect_0_if0_avl_writedata          : std_logic_vector(511 downto 0); -- mm_interconnect_0:if0_avl_writedata -> if0:avl_wdata
+--	signal mm_interconnect_0_if0_avl_address            : std_logic_vector(23 downto 0);  -- mm_interconnect_0:if0_avl_address -> if0:avl_addr
+--	signal mm_interconnect_0_if0_avl_write              : std_logic;                      -- mm_interconnect_0:if0_avl_write -> if0:avl_write_req
+--	signal mm_interconnect_0_if0_avl_beginbursttransfer : std_logic;                      -- mm_interconnect_0:if0_avl_beginbursttransfer -> if0:avl_burstbegin
+--	signal mm_interconnect_0_if0_avl_read               : std_logic;                      -- mm_interconnect_0:if0_avl_read -> if0:avl_read_req
+--	signal mm_interconnect_0_if0_avl_readdata           : std_logic_vector(511 downto 0); -- if0:avl_rdata -> mm_interconnect_0:if0_avl_readdata
+--	signal mm_interconnect_0_if0_avl_readdatavalid      : std_logic;                      -- if0:avl_rdata_valid -> mm_interconnect_0:if0_avl_readdatavalid
+--	signal mm_interconnect_0_if0_avl_byteenable         : std_logic_vector(63 downto 0);  -- mm_interconnect_0:if0_avl_byteenable -> if0:avl_be
 	signal rst_controller_reset_out_reset               : std_logic;                      -- rst_controller:reset_out -> [mm_interconnect_0:d0_avl_reset_reset_bridge_in_reset_reset, mm_interconnect_0:d0_avl_translator_reset_reset_bridge_in_reset_reset]
 	signal afi_reset_n_ports_inv                        : std_logic;                      -- afi_reset_n:inv -> rst_controller:reset_in0
 	signal d0_avl_inv                                   : std_logic;                      -- mm_interconnect_0_d0_avl_waitrequest:inv -> d0:avl_ready
@@ -298,149 +310,179 @@ signal r2l_root_port : phit_r;
 signal clk, reset : std_logic;
 signal cal_done, cal_success : std_logic;
 signal ref, ref_ack,ok : std_logic;
+	signal clk80 : std_logic;
+	
+	signal int_res80 : std_logic := '1';
+	signal res80_reg1,res80_reg2 : std_logic := '1';
+	signal res80_cnt : unsigned(2 downto 0) := "000";
+	
+	signal int_res200 : std_logic;
+	signal res200_reg1,res200_reg2 : std_logic;
+	signal res200_cnt : unsigned(2 downto 0) := "000";
+
+
+
+	signal avl_ready       : std_logic;                      -- mem_if_ddr3_emif_0:avl_ready -> mem_if_ddr3_emif_0_avl_waitrequest:in
+	signal avl_size        : std_logic;   -- mm_interconnect_0:mem_if_ddr3_emif_0_avl_burstcount -> mem_if_ddr3_emif_0:avl_size
+	signal avl_wdata       : std_logic_vector(511 downto 0); -- mm_interconnect_0:mem_if_ddr3_emif_0_avl_writedata -> mem_if_ddr3_emif_0:avl_wdata
+	signal avl_addr        : std_logic_vector(23 downto 0);  -- mm_interconnect_0:mem_if_ddr3_emif_0_avl_address -> mem_if_ddr3_emif_0:avl_addr
+	signal avl_write_req   : std_logic;                      -- mm_interconnect_0:mem_if_ddr3_emif_0_avl_write -> mem_if_ddr3_emif_0:avl_write_req
+	signal avl_burstbegin  : std_logic;                      -- mm_interconnect_0:mem_if_ddr3_emif_0_avl_beginbursttransfer -> mem_if_ddr3_emif_0:avl_burstbegin
+	signal avl_read_req    : std_logic;                      -- mm_interconnect_0:mem_if_ddr3_emif_0_avl_read -> mem_if_ddr3_emif_0:avl_read_req
+	signal avl_rdata       : std_logic_vector(511 downto 0); -- mem_if_ddr3_emif_0:avl_rdata -> mm_interconnect_0:mem_if_ddr3_emif_0_avl_readdata
+	signal avl_rdata_valid : std_logic;                      -- mem_if_ddr3_emif_0:avl_rdata_valid -> mm_interconnect_0:mem_if_ddr3_emif_0_avl_readdatavalid
+	signal avl_be          : std_logic_vector(63 downto 0);  -- mm_interconnect_0:mem_if_ddr3_emif_0_avl_byteenable -> mem_if_ddr3_emif_0:avl_be
+--	signal rst_controller_reset_out_reset                              : std_logic;                      -- rst_controller:reset_out -> [mm_interconnect_0:mm_traffic_generator_0_avl_reset_reset_bridge_in_reset_reset, mm_interconnect_0:mm_traffic_generator_0_avl_translator_reset_reset_bridge_in_reset_reset]
+	signal mem_if_ddr3_emif_0_afi_reset_reset_ports_inv                : std_logic;                      -- mem_if_ddr3_emif_0_afi_reset_reset:inv -> rst_controller:reset_in0
+	signal mm_traffic_generator_0_avl_inv                              : std_logic;                      -- mm_interconnect_0_mm_traffic_generator_0_avl_waitrequest:inv -> mm_traffic_generator_0:avl_ready
+	signal mm_interconnect_0_mem_if_ddr3_emif_0_avl_inv                : std_logic;                      -- mem_if_ddr3_emif_0_avl_waitrequest:inv -> mm_interconnect_0:mem_if_ddr3_emif_0_avl_waitrequest
+--signal clk, rst, ref, ref_ack, cal_done, cal_success, ok_int : std_logic;
+
+
+signal txd0, rxd0 : std_logic;
+
 begin
 clk <= if0_afi_clk_clk;
 reset <= not global_reset_n;
 	if0 : component mem_if_ddr3_emif_0_example_design_example_sim_e0_if0
 		port map (
-			pll_ref_clk               => pll_ref_clk,                                  --      pll_ref_clk.clk
-			global_reset_n            => global_reset_n,                               --     global_reset.reset_n
-			soft_reset_n              => soft_reset_n,                                 --       soft_reset.reset_n
-			afi_clk                   => if0_afi_clk_clk,                              --          afi_clk.clk
-			afi_half_clk              => afi_half_clk,                                 --     afi_half_clk.clk
-			afi_reset_n               => if0_afi_reset_reset,                          --        afi_reset.reset_n
-			afi_reset_export_n        => open,                                         -- afi_reset_export.reset_n
-			mem_a                     => mem_a,                                        --           memory.mem_a
-			mem_ba                    => mem_ba,                                       --                 .mem_ba
-			mem_ck                    => mem_ck,                                       --                 .mem_ck
-			mem_ck_n                  => mem_ck_n,                                     --                 .mem_ck_n
-			mem_cke                   => mem_cke,                                      --                 .mem_cke
-			mem_cs_n                  => mem_cs_n,                                     --                 .mem_cs_n
-			mem_dm                    => mem_dm,                                       --                 .mem_dm
-			mem_ras_n                 => mem_ras_n,                                    --                 .mem_ras_n
-			mem_cas_n                 => mem_cas_n,                                    --                 .mem_cas_n
-			mem_we_n                  => mem_we_n,                                     --                 .mem_we_n
-			mem_reset_n               => mem_reset_n,                                  --                 .mem_reset_n
-			mem_dq                    => mem_dq,                                       --                 .mem_dq
-			mem_dqs                   => mem_dqs,                                      --                 .mem_dqs
-			mem_dqs_n                 => mem_dqs_n,                                    --                 .mem_dqs_n
-			mem_odt                   => mem_odt,                                      --                 .mem_odt
-			avl_ready                 => avl_mem_s.ready, --if0_avl_waitrequest,                          --              avl.waitrequest_n
-			avl_burstbegin            => avl_mem_m.burstbegin, --mm_interconnect_0_if0_avl_beginbursttransfer, --                 .beginbursttransfer
-			avl_addr                  => avl_mem_m.addr, --mm_interconnect_0_if0_avl_address,            --                 .address
-			avl_rdata_valid           => avl_mem_s.rdata_valid, --mm_interconnect_0_if0_avl_readdatavalid,      --                 .readdatavalid
-			avl_rdata                 => mm_interconnect_0_if0_avl_readdata,           --                 .readdata
-			avl_wdata                 => mm_interconnect_0_if0_avl_writedata,          --                 .writedata
-			avl_be                    => mm_interconnect_0_if0_avl_byteenable,         --                 .byteenable
-			avl_read_req              => avl_mem_m.read_req, --mm_interconnect_0_if0_avl_read,               --                 .read
-			avl_write_req             => avl_mem_m.write_req, --mm_interconnect_0_if0_avl_write,              --                 .write
-			avl_size                  => avl_mem_m.size, --;mm_interconnect_0_if0_avl_burstcount(0),      --                 .burstcount
-			local_init_done           => cal_done,                              --           status.local_init_done
-			local_cal_success         => cal_success,                            --                 .local_cal_success
-			local_cal_fail            => local_cal_fail,                               --                 .local_cal_fail
-			local_refresh_req         => ref, --local_refresh_req,                            --     user_refresh.local_refresh_req
-			local_refresh_chip        => local_refresh_chip,                           --                 .local_refresh_chip
-			local_refresh_ack         => ref_ack, --local_refresh_ack,                            --                 .local_refresh_ack
-			oct_rzqin                 => oct_rzqin,                                    --              oct.rzqin
-			pll_mem_clk               => open,                                         --      pll_sharing.pll_mem_clk
-			pll_write_clk             => open,                                         --                 .pll_write_clk
-			pll_locked                => open,                                         --                 .pll_locked
-			pll_write_clk_pre_phy_clk => open,                                         --                 .pll_write_clk_pre_phy_clk
-			pll_addr_cmd_clk          => open,                                         --                 .pll_addr_cmd_clk
-			pll_avl_clk               => open,                                         --                 .pll_avl_clk
-			pll_config_clk            => open,                                         --                 .pll_config_clk
-			pll_hr_clk                => open,                                         --                 .pll_hr_clk
-			pll_p2c_read_clk          => open,                                         --                 .pll_p2c_read_clk
-			pll_c2p_write_clk         => open                                          --                 .pll_c2p_write_clk
+			pll_ref_clk               => pll_ref_clk,                            -- pll_ref_clk.clk
+			global_reset_n            => global_reset_n,                         -- global_reset.reset_n
+			soft_reset_n              => soft_reset_n,                           -- soft_reset.reset_n
+			afi_clk                   => if0_afi_clk_clk,                        -- afi_clk.clk
+			afi_half_clk              => afi_half_clk,                           -- afi_half_clk.clk
+			afi_reset_n               => if0_afi_reset_reset,                    -- afi_reset.reset_n
+			afi_reset_export_n        => open,                                   -- afi_reset_export.reset_n
+			mem_a                     => mem_a,                                  -- memory.mem_a
+			mem_ba                    => mem_ba,                                 -- .mem_ba
+			mem_ck                    => mem_ck,                                 -- .mem_ck
+			mem_ck_n                  => mem_ck_n,                               -- .mem_ck_n
+			mem_cke                   => mem_cke,                                -- .mem_cke
+			mem_cs_n                  => mem_cs_n,                               -- .mem_cs_n
+			mem_dm                    => mem_dm,                                 -- .mem_dm
+			mem_ras_n                 => mem_ras_n,                              -- .mem_ras_n
+			mem_cas_n                 => mem_cas_n,                              -- .mem_cas_n
+			mem_we_n                  => mem_we_n,                               -- .mem_we_n
+			mem_reset_n               => mem_reset_n,                            -- .mem_reset_n
+			mem_dq                    => mem_dq,                                 -- .mem_dq
+			mem_dqs                   => mem_dqs,                                -- .mem_dqs
+			mem_dqs_n                 => mem_dqs_n,                              -- .mem_dqs_n
+			mem_odt                   => mem_odt,                                -- .mem_odt
+			avl_ready                 => avl_mem_s.ready, --if0_avl_waitrequest, -- avl.waitrequest_n
+			avl_burstbegin            => avl_mem_m.burstbegin, --mm_interconnect_0_if0_avl_beginbursttransfer, -- .beginbursttransfer
+			avl_addr                  => avl_mem_m.addr, --mm_interconnect_0_if0_avl_address,            -- .address
+			avl_rdata_valid           => avl_mem_s.rdata_valid, --mm_interconnect_0_if0_avl_readdatavalid,      -- .readdatavalid
+			avl_rdata                 => avl_rdata,     -- .readdata
+			avl_wdata                 => avl_wdata,    -- .writedata
+			avl_be                    => avl_be,   -- .byteenable
+			avl_read_req              => avl_mem_m.read_req, --mm_interconnect_0_if0_avl_read,       -- .read
+			avl_write_req             => avl_mem_m.write_req, --mm_interconnect_0_if0_avl_write,     -- .write
+			avl_size                  => avl_mem_m.size, --;mm_interconnect_0_if0_avl_burstcount(0), -- .burstcount
+			local_init_done           => cal_done,                               -- status.local_init_done
+			local_cal_success         => cal_success,                            -- .local_cal_success
+			local_cal_fail            => local_cal_fail,                         -- .local_cal_fail
+			local_refresh_req         => ref, --local_refresh_req,               -- user_refresh.local_refresh_req
+			local_refresh_chip        => local_refresh_chip,                     -- .local_refresh_chip
+			local_refresh_ack         => ref_ack, --local_refresh_ack,           -- .local_refresh_ack
+			oct_rzqin                 => oct_rzqin,                              -- oct.rzqin
+			pll_mem_clk               => open,                                   -- pll_sharing.pll_mem_clk
+			pll_write_clk             => open,                                   -- .pll_write_clk
+			pll_locked                => open,                                   -- .pll_locked
+			pll_write_clk_pre_phy_clk => open,                                   -- .pll_write_clk_pre_phy_clk
+			pll_addr_cmd_clk          => open,                                   -- .pll_addr_cmd_clk
+			pll_avl_clk               => open,                                   -- .pll_avl_clk
+			pll_config_clk            => open,                                   -- .pll_config_clk
+			pll_hr_clk                => open,                                   -- .pll_hr_clk
+			pll_p2c_read_clk          => open,                                   -- .pll_p2c_read_clk
+			pll_c2p_write_clk         => open                                    -- .pll_c2p_write_clk
 		);
 
-	mm_interconnect_0_if0_avl_byteenable(63 downto AVL_BYTE_WIDTH) <= (others => '0');
-	mm_interconnect_0_if0_avl_byteenable(AVL_BYTE_WIDTH-1 downto 0) <= avl_mem_m.be;
-	mm_interconnect_0_if0_avl_writedata(511 downto AVL_DATA_WIDTH) <= (others => '0');
-	mm_interconnect_0_if0_avl_writedata(AVL_DATA_WIDTH-1 downto 0) <= avl_mem_m.wdata; 
-	avl_mem_s.rdata <= mm_interconnect_0_if0_avl_readdata(AVL_DATA_WIDTH-1 downto 0);
+--	mm_interconnect_0_if0_avl_byteenable(63 downto AVL_BYTE_WIDTH) <= (others => '0');
+--	mm_interconnect_0_if0_avl_byteenable(AVL_BYTE_WIDTH-1 downto 0) <= avl_mem_m.be;
+--	mm_interconnect_0_if0_avl_writedata(511 downto AVL_DATA_WIDTH) <= (others => '0');
+--	mm_interconnect_0_if0_avl_writedata(AVL_DATA_WIDTH-1 downto 0) <= avl_mem_m.wdata; 
 
 
-	d0 : component mem_if_ddr3_emif_0_example_design_example_sim_e0_d0
-		generic map (
-			DEVICE_FAMILY                          => "Stratix V",
-			TG_AVL_DATA_WIDTH                      => 512,
-			TG_AVL_ADDR_WIDTH                      => 30,
-			TG_AVL_WORD_ADDR_WIDTH                 => 24,
-			TG_AVL_SIZE_WIDTH                      => 1,
-			TG_AVL_BE_WIDTH                        => 64,
-			DRIVER_SIGNATURE                       => 1431634060,
-			TG_GEN_BYTE_ADDR                       => true,
-			TG_NUM_DRIVER_LOOP                     => 1,
-			TG_ENABLE_UNIX_ID                      => false,
-			TG_USE_UNIX_ID                         => 0,
-			TG_RANDOM_BYTE_ENABLE                  => true,
-			TG_ENABLE_READ_COMPARE                 => true,
-			TG_POWER_OF_TWO_BURSTS_ONLY            => false,
-			TG_BURST_ON_BURST_BOUNDARY             => false,
-			TG_DO_NOT_CROSS_4KB_BOUNDARY           => false,
-			TG_TIMEOUT_COUNTER_WIDTH               => 32,
-			TG_MAX_READ_LATENCY                    => 20,
-			TG_SINGLE_RW_SEQ_ADDR_COUNT            => 32,
-			TG_SINGLE_RW_RAND_ADDR_COUNT           => 32,
-			TG_SINGLE_RW_RAND_SEQ_ADDR_COUNT       => 32,
-			TG_BLOCK_RW_SEQ_ADDR_COUNT             => 8,
-			TG_BLOCK_RW_RAND_ADDR_COUNT            => 8,
-			TG_BLOCK_RW_RAND_SEQ_ADDR_COUNT        => 8,
-			TG_BLOCK_RW_BLOCK_SIZE                 => 8,
-			TG_TEMPLATE_STAGE_COUNT                => 4,
-			TG_SEQ_ADDR_GEN_MIN_BURSTCOUNT         => 1,
-			TG_SEQ_ADDR_GEN_MAX_BURSTCOUNT         => 1,
-			TG_RAND_ADDR_GEN_MIN_BURSTCOUNT        => 1,
-			TG_RAND_ADDR_GEN_MAX_BURSTCOUNT        => 1,
-			TG_RAND_SEQ_ADDR_GEN_MIN_BURSTCOUNT    => 1,
-			TG_RAND_SEQ_ADDR_GEN_MAX_BURSTCOUNT    => 1,
-			TG_RAND_SEQ_ADDR_GEN_RAND_ADDR_PERCENT => 50
-		)
-		port map (
-			clk             => if0_afi_clk_clk,           -- avl_clock.clk
-			reset_n         => if0_afi_reset_reset,       -- avl_reset.reset_n
-			pass            => drv_status_pass,           --    status.pass
-			fail            => drv_status_fail,           --          .fail
-			test_complete   => drv_status_test_complete,  --          .test_complete
-			avl_ready       => d0_avl_inv,                --       avl.waitrequest_n
-			avl_addr        => d0_avl_address,            --          .address
-			avl_size        => d0_avl_burstcount,         --          .burstcount
-			avl_wdata       => d0_avl_writedata,          --          .writedata
-			avl_rdata       => d0_avl_readdata,           --          .readdata
-			avl_write_req   => d0_avl_write,              --          .write
-			avl_read_req    => d0_avl_read,               --          .read
-			avl_rdata_valid => d0_avl_readdatavalid,      --          .readdatavalid
-			avl_be          => d0_avl_byteenable,         --          .byteenable
-			avl_burstbegin  => d0_avl_beginbursttransfer  --          .beginbursttransfer
-		);
+--	d0 : component mem_if_ddr3_emif_0_example_design_example_sim_e0_d0
+--		generic map (
+--			DEVICE_FAMILY                          => "Stratix V",
+--			TG_AVL_DATA_WIDTH                      => 512,
+--			TG_AVL_ADDR_WIDTH                      => 30,
+--			TG_AVL_WORD_ADDR_WIDTH                 => 24,
+--			TG_AVL_SIZE_WIDTH                      => 1,
+--			TG_AVL_BE_WIDTH                        => 64,
+--			DRIVER_SIGNATURE                       => 1431634060,
+--			TG_GEN_BYTE_ADDR                       => true,
+--			TG_NUM_DRIVER_LOOP                     => 1,
+--			TG_ENABLE_UNIX_ID                      => false,
+--			TG_USE_UNIX_ID                         => 0,
+--			TG_RANDOM_BYTE_ENABLE                  => true,
+--			TG_ENABLE_READ_COMPARE                 => true,
+--			TG_POWER_OF_TWO_BURSTS_ONLY            => false,
+--			TG_BURST_ON_BURST_BOUNDARY             => false,
+--			TG_DO_NOT_CROSS_4KB_BOUNDARY           => false,
+--			TG_TIMEOUT_COUNTER_WIDTH               => 32,
+--			TG_MAX_READ_LATENCY                    => 20,
+--			TG_SINGLE_RW_SEQ_ADDR_COUNT            => 32,
+--			TG_SINGLE_RW_RAND_ADDR_COUNT           => 32,
+--			TG_SINGLE_RW_RAND_SEQ_ADDR_COUNT       => 32,
+--			TG_BLOCK_RW_SEQ_ADDR_COUNT             => 8,
+--			TG_BLOCK_RW_RAND_ADDR_COUNT            => 8,
+--			TG_BLOCK_RW_RAND_SEQ_ADDR_COUNT        => 8,
+--			TG_BLOCK_RW_BLOCK_SIZE                 => 8,
+--			TG_TEMPLATE_STAGE_COUNT                => 4,
+--			TG_SEQ_ADDR_GEN_MIN_BURSTCOUNT         => 1,
+--			TG_SEQ_ADDR_GEN_MAX_BURSTCOUNT         => 1,
+--			TG_RAND_ADDR_GEN_MIN_BURSTCOUNT        => 1,
+--			TG_RAND_ADDR_GEN_MAX_BURSTCOUNT        => 1,
+--			TG_RAND_SEQ_ADDR_GEN_MIN_BURSTCOUNT    => 1,
+--			TG_RAND_SEQ_ADDR_GEN_MAX_BURSTCOUNT    => 1,
+--			TG_RAND_SEQ_ADDR_GEN_RAND_ADDR_PERCENT => 50
+--		)
+--		port map (
+--			clk             => if0_afi_clk_clk,           -- avl_clock.clk
+--			reset_n         => if0_afi_reset_reset,       -- avl_reset.reset_n
+--			pass            => drv_status_pass,           -- status.pass
+--			fail            => drv_status_fail,           -- .fail
+--			test_complete   => drv_status_test_complete,  -- .test_complete
+--			avl_ready       => d0_avl_inv,                -- avl.waitrequest_n
+--			avl_addr        => d0_avl_address,            -- .address
+--			avl_size        => d0_avl_burstcount,         -- .burstcount
+--			avl_wdata       => d0_avl_writedata,          -- .writedata
+--			avl_rdata       => d0_avl_readdata,           -- .readdata
+--			avl_write_req   => d0_avl_write,              -- .write
+--			avl_read_req    => d0_avl_read,               -- .read
+--			avl_rdata_valid => d0_avl_readdatavalid,      -- .readdatavalid
+--			avl_be          => d0_avl_byteenable,         -- .byteenable
+--			avl_burstbegin  => d0_avl_beginbursttransfer  -- .beginbursttransfer
+--		);
 
-	mm_interconnect_0 : component mem_if_ddr3_emif_0_example_design_example_sim_e0_mm_interconnect_0
-		port map (
-			if0_afi_clk_clk                                     => if0_afi_clk_clk,                              --                                   if0_afi_clk.clk
-			d0_avl_reset_reset_bridge_in_reset_reset            => rst_controller_reset_out_reset,               --            d0_avl_reset_reset_bridge_in_reset.reset
-			d0_avl_translator_reset_reset_bridge_in_reset_reset => rst_controller_reset_out_reset,               -- d0_avl_translator_reset_reset_bridge_in_reset.reset
-			d0_avl_address                                      => d0_avl_address,                               --                                        d0_avl.address
-			d0_avl_waitrequest                                  => mm_interconnect_0_d0_avl_waitrequest,         --                                              .waitrequest
-			d0_avl_burstcount(0)                                => d0_avl_burstcount,                            --                                              .burstcount
-			d0_avl_byteenable                                   => d0_avl_byteenable,                            --                                              .byteenable
-			d0_avl_beginbursttransfer                           => d0_avl_beginbursttransfer,                    --                                              .beginbursttransfer
-			d0_avl_read                                         => d0_avl_read,                                  --                                              .read
-			d0_avl_readdata                                     => d0_avl_readdata,                              --                                              .readdata
-			d0_avl_readdatavalid                                => d0_avl_readdatavalid,                         --                                              .readdatavalid
-			d0_avl_write                                        => d0_avl_write,                                 --                                              .write
-			d0_avl_writedata                                    => d0_avl_writedata,                             --                                              .writedata
-			if0_avl_address                                     => mm_interconnect_0_if0_avl_address,            --                                       if0_avl.address
-			if0_avl_write                                       => mm_interconnect_0_if0_avl_write,              --                                              .write
-			if0_avl_read                                        => mm_interconnect_0_if0_avl_read,               --                                              .read
-			if0_avl_readdata                                    => mm_interconnect_0_if0_avl_readdata,           --                                              .readdata
-			if0_avl_writedata                                   => open, --mm_interconnect_0_if0_avl_writedata,          --                                              .writedata
-			if0_avl_beginbursttransfer                          => mm_interconnect_0_if0_avl_beginbursttransfer, --                                              .beginbursttransfer
-			if0_avl_burstcount                                  => mm_interconnect_0_if0_avl_burstcount,         --                                              .burstcount
-			if0_avl_byteenable                                  => open, --mm_interconnect_0_if0_avl_byteenable,         --                                              .byteenable
-			if0_avl_readdatavalid                               => mm_interconnect_0_if0_avl_readdatavalid,      --                                              .readdatavalid
-			if0_avl_waitrequest                                 => mm_interconnect_0_if0_avl_inv                 --                                              .waitrequest
-		);
+--	mm_interconnect_0 : component mem_if_ddr3_emif_0_example_design_example_sim_e0_mm_interconnect_0
+--		port map (
+--			if0_afi_clk_clk                                     => if0_afi_clk_clk,                              -- if0_afi_clk.clk
+--			d0_avl_reset_reset_bridge_in_reset_reset            => rst_controller_reset_out_reset,               -- d0_avl_reset_reset_bridge_in_reset.reset
+--			d0_avl_translator_reset_reset_bridge_in_reset_reset => rst_controller_reset_out_reset,               -- d0_avl_translator_reset_reset_bridge_in_reset.reset
+--			d0_avl_address                                      => d0_avl_address,                               -- d0_avl.address
+--			d0_avl_waitrequest                                  => mm_interconnect_0_d0_avl_waitrequest,         -- .waitrequest
+--			d0_avl_burstcount(0)                                => d0_avl_burstcount,                            -- .burstcount
+--			d0_avl_byteenable                                   => d0_avl_byteenable,                            -- .byteenable
+--			d0_avl_beginbursttransfer                           => d0_avl_beginbursttransfer,                    -- .beginbursttransfer
+--			d0_avl_read                                         => d0_avl_read,                                  -- .read
+--			d0_avl_readdata                                     => d0_avl_readdata,                              -- .readdata
+--			d0_avl_readdatavalid                                => d0_avl_readdatavalid,                         -- .readdatavalid
+--			d0_avl_write                                        => d0_avl_write,                                 -- .write
+--			d0_avl_writedata                                    => d0_avl_writedata,                             -- .writedata
+--			if0_avl_address                                     => mm_interconnect_0_if0_avl_address,            -- if0_avl.address
+--			if0_avl_write                                       => mm_interconnect_0_if0_avl_write,              -- .write
+--			if0_avl_read                                        => mm_interconnect_0_if0_avl_read,               -- .read
+--			if0_avl_readdata                                    => mm_interconnect_0_if0_avl_readdata,           -- .readdata
+--			if0_avl_writedata                                   => open, --mm_interconnect_0_if0_avl_writedata,  -- .writedata
+--			if0_avl_beginbursttransfer                          => mm_interconnect_0_if0_avl_beginbursttransfer, -- .beginbursttransfer
+--			if0_avl_burstcount                                  => mm_interconnect_0_if0_avl_burstcount,         -- .burstcount
+--			if0_avl_byteenable                                  => open, --mm_interconnect_0_if0_avl_byteenable, -- .byteenable
+--			if0_avl_readdatavalid                               => mm_interconnect_0_if0_avl_readdatavalid,      -- .readdatavalid
+--			if0_avl_waitrequest                                 => mm_interconnect_0_if0_avl_inv                 -- .waitrequest
+--		);
 
 	rst_controller : component altera_reset_controller
 		generic map (
@@ -511,7 +553,7 @@ reset <= not global_reset_n;
 
 	d0_avl_inv <= not mm_interconnect_0_d0_avl_waitrequest;
 
-	mm_interconnect_0_if0_avl_inv <= not if0_avl_waitrequest;
+--	mm_interconnect_0_if0_avl_inv <= not if0_avl_waitrequest;
 
 	afi_clk <= if0_afi_clk_clk;
 
@@ -519,29 +561,108 @@ reset <= not global_reset_n;
 
 	local_init_done <= cal_done;
 	local_cal_success <= cal_success;
-r2lnoc : entity work.r2l_noc
-  port map (clk,r2l_root_port,r2l_leaf_ports);
-  l2rnoc : entity work.l2r_noc
-  port map (clk,l2r_root_port,l2r_leaf_ports);
-  
-  root_module : entity work.root
-  port map (clk,reset,r2l_root_port,l2r_root_port,mem_m,mem_s,avl_mem_m,avl_mem_s,cal_done,cal_success, ref, ref_ack);
-  
-  leafs : for i in 0 to number_of_leafs-1 generate
-	leaf_node : entity work.network_adapter
-	generic map(i)
-	port map(clk,reset,r2l_leaf_ports(i),l2r_leaf_ports(i),ocp_m(i),ocp_s(i));
-  end generate;
-  
-	burstmodule : for i in 1 to number_of_leafs-1-0 generate
-		ocpburst : entity work.ocpburst_testbench
-		port map(clk,reset, ocp_m(i), ocp_s(i),open);
-	end generate;
---	burstmodule : for i in 0 to 1 generate
-		ocpburst : entity work.ocpburst_testbench
-		port map(clk,reset, ocp_m(0), ocp_s(0),ok);
+--	r2lnoc : entity work.r2l_noc
+--  port map (clk,r2l_root_port,r2l_leaf_ports);
+--  l2rnoc : entity work.l2r_noc
+--  port map (clk,l2r_root_port,l2r_leaf_ports);
+--  
+--  root_module : entity work.root
+--  port map (clk,reset,r2l_root_port,l2r_root_port,mem_m,mem_s,avl_mem_m,avl_mem_s,cal_done,cal_success, ref, ref_ack);
+--  
+--  leafs : for i in 0 to number_of_leafs-1 generate
+--	leaf_node : entity work.network_adapter
+--	generic map(i)
+--	port map(clk,reset,r2l_leaf_ports(i),l2r_leaf_ports(i),burst_cdc_o(i).OCPB_B, burst_cdc_i(i).OCPB_slave);
+--  end generate;
+--  
+----	burstmodule : for i in 1 to number_of_leafs-1-0 generate
+----		ocpburst : entity work.ocpburst_testbench
+----		port map(clk,reset, ocp_m(i), ocp_s(i),open);
+----	end generate;
+----	burstmodule : for i in 0 to 1 generate
+----		ocpburst : entity work.ocpburst_testbench
+----		port map(clk,reset, ocp_m(0), ocp_s(0),ok);
+----	end generate;
+----	dram : entity work.dummy_dram_avalon
+----	port map(clk,reset,mem_m,mem_s,avl_mem_m,avl_mem_s);
+-- 	
+--	cdcs : for i in 0 to number_of_leafs-1 generate
+--		cdc_node : entity work.OCPBurstCDC
+--		port map(burst_cdc_i(i),burst_cdc_o(i));
+--		burst_cdc_i(i).clk_A <= clk;--80;
+--		burst_cdc_i(i).clk_B <= clk;
+--		burst_cdc_i(i).rst_A <= reset;--int_res80;
+--		burst_cdc_i(i).rst_B <= reset;
+--		burst_cdc_i(i).OCPB_master <= ocp_m(i);
+--		ocp_s(i) <= burst_cdc_o(i).OCPB_A;
 --	end generate;
---	dram : entity work.dummy_dram_avalon
---	port map(clk,reset,mem_m,mem_s,avl_mem_m,avl_mem_s);
-  
+clk80 <= clk;
+process(clk80)
+    begin
+        if rising_edge(clk80) then
+            if (res80_cnt /= "111") then
+                res80_cnt <= res80_cnt + 1;
+            end if;
+            res80_reg1 <= not res80_cnt(0) or not res80_cnt(1) or not res80_cnt(2);
+            res80_reg2 <= res80_reg1;
+            int_res80  <= res80_reg2;
+        end if;
+    end process;
+process(clk)
+    begin
+        if rising_edge(clk) then
+            if (res200_cnt /= "111") then
+                res200_cnt <= res200_cnt + 1;
+            end if;
+            res200_reg1 <= not res200_cnt(0) or not res200_cnt(1) or not res200_cnt(2);
+            res200_reg2 <= res200_reg1;
+            int_res200  <= res200_reg2;
+        end if;
+    end process;
+
+
+
+	aegean : entity work.aegean
+	port map(clk,
+		clk80,
+		reset,
+		avl_mem_m,
+		avl_mem_s,
+    open,
+		txd0	,
+		rxd0,
+		open,
+		open,
+		open,
+		open,
+	cal_done,
+	cal_success,
+ 	ref,
+	ref_ack,
+	open);
+	
+--	clk <= mem_if_ddr3_emif_0_afi_clk_clk;
+--	rst <= not reset_reset_n;
+
+--	mem_if_ddr3_emif_0_status_local_init_done <= cal_done;
+--	mem_if_ddr3_emif_0_status_local_cal_success <= cal_success;
+--	mm_traffic_generator_0_status_test_complete <= ref_ack;
+--	mm_traffic_generator_0_status_pass <= ok_int;
+	
+	
+	avl_addr <= avl_mem_m.addr;
+	avl_be(63 downto AVL_BYTE_WIDTH) <= (others => '0');
+	avl_be(AVL_BYTE_WIDTH-1 downto 0) <= avl_mem_m.be;
+	avl_burstbegin <= avl_mem_m.burstbegin;
+	avl_read_req <= avl_mem_m.read_req;
+	avl_size <= avl_mem_m.size;
+	avl_wdata(511 downto AVL_DATA_WIDTH) <= (others => '0');
+	avl_wdata(AVL_DATA_WIDTH-1 downto 0) <= avl_mem_m.wdata; 
+	avl_write_req <= avl_mem_m.write_req;
+	
+	avl_mem_s.rdata <= avl_rdata(AVL_DATA_WIDTH-1 downto 0);
+--	avl_mem_s.rdata_valid <= avl_rdata_valid;
+--	avl_mem_s.ready <= avl_ready;
+
+	--avl_mem_s.rdata <= mm_interconnect_0_if0_avl_readdata(AVL_DATA_WIDTH-1 downto 0);
 end architecture rtl; -- of mem_if_ddr3_emif_0_example_design_example_sim_e0

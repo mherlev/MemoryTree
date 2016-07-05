@@ -42,7 +42,7 @@ ok : out std_logic);
 end ocpburst_testbench;
 
 architecture rtl of ocpburst_testbench is
-	type states is (write,writing,write_response,read_await_accept,read_await_resp,read);
+	type states is (write,writing,write_response,read_await_accept,read_await_resp,read,done_s);
 	signal state, state_next : states;
 	signal burst_count, burst_count_next : unsigned(OCP_DATA_WIDTH-1 downto 0) := (others => '0');
 	signal addr_count, addr_count_next : unsigned(OCP_DATA_WIDTH-1 downto 0) := (others => '0');
@@ -57,11 +57,12 @@ begin
 		ocp_m.mcmd <= ocp_cmd_idle;
 		ocp_m.maddr <= (others => '0');
 		ocp_m.mdata <= (others => '0');
-		ocp_m.mdatabyteen <= (others => '0');
+		ocp_m.mdatabyteen <= (others => '1');
 		ocp_m.mdatavalid <= '0';
 		ok_next <= ok_int;
 		case state is
 		when write =>
+--			ok_next <= '0';
 			ocp_m.mcmd <= ocp_cmd_wr;
 			ocp_m.maddr <= std_logic_vector(addr_count(ocp_m.maddr'length-1 downto 0));
 			ocp_m.mdata <= std_logic_vector(addr_count);
@@ -72,6 +73,7 @@ begin
 				burst_count_next <= burst_count + to_unsigned(1,burst_count'length);
 			end if;
 		when writing =>
+			--ok_next <= '0';
 			burst_count_next <= burst_count+to_unsigned(1,burst_count'length);
 			ocp_m.mdata <= std_logic_vector(addr_count);
 			ocp_m.mdatabyteen <= (others => '1');
@@ -114,6 +116,9 @@ begin
 				burst_count_next <= (others => '0');
 				addr_count_next <= addr_count + to_unsigned(OCP_burst_length,addr_count'length);
 				state_next <= write;
+--				if addr_count = to_unsigned(OCP_burst_length,addr_count'length) then
+--					state_next <= done_s;
+--				end if;
 			end if;
 		when others =>
 			state_next <= write;

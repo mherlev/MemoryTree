@@ -53,6 +53,8 @@ entity root is
 end root;
 
 architecture rtl of root is
+	constant fifo_depth : integer := 2;
+	constant fifo_addr_width : integer := 1;
 	type r2l_states is (idle, send_ping, send_package_header, send_package);
 	signal state, state_next : r2l_states := idle;
 
@@ -74,7 +76,7 @@ architecture rtl of root is
 	                 (number_of_levels*outputs_per_router-1 downto 0) := (others => '0');
 	
 	
-	type mem_states is (idle, read_s, write_s);
+	type mem_states is (idle, read_wait_s,read_s, write_s,write_wait_s);
 	signal mem_state, mem_state_next : mem_states := idle;
 	signal cmd, cmd_next : std_logic_vector(OCP_CMD_WIDTH-1 downto 0) := OCP_CMD_IDLE;
 	signal cmd_ack, cmd_ack_next : std_logic := '0';
@@ -97,12 +99,14 @@ architecture rtl of root is
 
 	signal r2l_fifo_wen : std_logic := '0';
 	signal r2l_fifo_ren : std_logic := '0';
-	signal r2s_waddr	  : unsigned(1 downto 0) := (others => '0');
-	signal r2s_raddr	  : unsigned(1 downto 0) := (others => '0');
+	signal r2l_fifo_data_en : std_logic_vector(OCP_BURST_LENGTH-1 downto 0) := (others => '0');
+
+	signal r2s_waddr	  : unsigned(fifo_addr_width-1 downto 0) := (others => '0');
+	signal r2s_raddr	  : unsigned(fifo_addr_width-1 downto 0) := (others => '0');
 	signal mem_fifo_wen : std_logic := '0';
 	signal mem_fifo_ren : std_logic := '0';	
-	signal mem_waddr	  : unsigned(1 downto 0) := (others => '0');
-	signal mem_raddr	  : unsigned(1 downto 0) := (others => '0');
+	signal mem_waddr	  : unsigned(fifo_addr_width-1 downto 0) := (others => '0');
+	signal mem_raddr	  : unsigned(fifo_addr_width-1 downto 0) := (others => '0');
 	signal mem_cmd 	  : std_logic_vector(OCP_CMD_WIDTH-1 downto 0) := (others => '0');	
 
 	signal write_dat : std_logic_vector(OCP_DATA_WIDTH*OCP_BURST_LENGTH-1 downto 0) := (others => '0');	
@@ -127,26 +131,26 @@ begin
 --	avl_mem_m.wdata <= (others => '0');
 
 	r2l_core_fifo : entity work.fifo
-	generic map(2,3)
+	generic map(2,fifo_depth)
 	port map(clk, reset, r2s_raddr, r2s_waddr, r2s_next, r2s, r2l_fifo_ren,r2l_fifo_wen,open);
 	r2l_data_fifo : entity work.fifo
-	generic map(AVL_DATA_WIDTH,3)
+	generic map(AVL_DATA_WIDTH,fifo_depth)
 	port map(clk, reset, open, open, avl_mem_s.rdata,read_data_buffer,r2l_fifo_ren,r2l_fifo_wen,open);
-	
 	mem_core_fifo : entity work.fifo
-	generic map(2,3)
+	generic map(2,fifo_depth)
 	port map(clk, reset, mem_raddr, mem_waddr, cmder_next,r2s_next,mem_fifo_ren,mem_fifo_wen,open);
 	mem_cmd_fifo : entity work.fifo
-	generic map(OCP_CMD_WIDTH,3)
+	generic map(OCP_CMD_WIDTH,fifo_depth)
 	port map(clk, reset, open, open, cmd_next,mem_cmd,mem_fifo_ren,mem_fifo_wen,open);
 	mem_addr_fifo : entity work.fifo
-	generic map(OCP_BURST_ADDR_WIDTH,3)
-	port map(clk, reset, open, open, outbuffer_addr_next, avl_mem_m.addr, mem_fifo_ren,mem_fifo_wen,open);
+	generic map(OCP_BURST_ADDR_WIDTH,fifo_depth)
+	port map(clk, reset, open, open, outbuffer_addr_next, avl_mem_m.addr(23 downto 3), mem_fifo_ren,mem_fifo_wen,open);
+	avl_mem_m.addr (2 downto 0) <= (others => '0');
 	mem_data_fifo : entity work.fifo
-	generic map(OCP_DATA_WIDTH*OCP_BURST_LENGTH,3)
+	generic map(OCP_DATA_WIDTH*OCP_BURST_LENGTH,fifo_depth)
 	port map(clk, reset, open, open, write_dat, avl_mem_m.wdata, mem_fifo_ren,mem_fifo_wen,open);
 	mem_ben_fifo : entity work.fifo
-	generic map(OCP_BYTE_WIDTH*OCP_BURST_LENGTH,3)
+	generic map(OCP_BYTE_WIDTH*OCP_BURST_LENGTH,fifo_depth)
 	port map(clk, reset, open, open, write_ben, avl_mem_m.be, mem_fifo_ren,mem_fifo_wen,open);
 	
 	r2l_fsm : process(state, ping_id, route, pinged,core_id, r2s, read_counter, readbuffer_data, r2s_waddr, r2s_raddr)
@@ -236,11 +240,11 @@ begin
 	end process;
 	
 
-	mem_fsm : process(mem_state, cmd, mem_s, avl_mem_s,outbuffer_data,outbuffer_en,outbuffer_addr, read_data_buffer, cmder,r2s,mem_waddr,mem_raddr,mem_cmd)
+	mem_fsm : process(mem_state, cmd, avl_mem_s,outbuffer_data,outbuffer_en,outbuffer_addr, read_data_buffer, cmder,r2s,mem_waddr,mem_raddr,mem_cmd)
 	begin
 		mem_state_next <= mem_state;
-		mem_m.MCmd <= OCP_CMD_IDLE;
-		mem_m.MRespAccept <= '0';
+--		mem_m.MCmd <= OCP_CMD_IDLE;
+--		mem_m.MRespAccept <= '0';
 		avl_mem_m.write_req <= '0';
 		avl_mem_m.read_req <= '0';
 		avl_mem_m.burstbegin <= '0';
@@ -252,30 +256,54 @@ begin
 		case mem_state is
 		when idle =>
 		if mem_waddr /= mem_raddr then
-			if mem_cmd = OCP_CMD_WR then
-				mem_state_next <= write_s;
-			elsif mem_cmd = OCP_CMD_RD then
-				mem_state_next <= read_s;
-			end if;
+			if avl_mem_s.ready = '1' then
+				if mem_cmd = OCP_CMD_WR then
+					avl_mem_m.write_req <= '1';
+					avl_mem_m.burstbegin <= '1';
+					mem_state_next <= write_s;
+				elsif mem_cmd = OCP_CMD_RD then
+					avl_mem_m.read_req <= '1';
+					avl_mem_m.burstbegin <= '1';
+					mem_state_next <= read_s;
+				end if;
+		end if;
 		end if;
 		when write_s =>
---			mem_m.MCmd <= OCP_CMD_WR;
-			avl_mem_m.write_req <= '1';
-			avl_mem_m.burstbegin <= '1';
---			if mem_s.SResp /= OCP_RESP_NULL then
---				mem_state_next <= idle;
---				mem_m.MRespAccept <= '1';
+			if avl_mem_s.ready = '0' then
+				mem_state_next <= write_wait_s;
 --				mem_fifo_ren <= '1';
---			els
-				if avl_mem_s.ready = '1' then
+			else
+--				avl_mem_m.write_req <= '1';
+--				avl_mem_m.burstbegin <= '1';
+			end if;
+		when write_wait_s =>
+--			avl_mem_m.write_req <= '1';
+--			avl_mem_m.burstbegin <= '1';
+			if avl_mem_s.ready = '1' then
 				mem_state_next <= idle;
---				mem_m.MRespAccept <= '1';
 				mem_fifo_ren <= '1';
 			end if;
 		when read_s =>
 --			mem_m.MCmd <= OCP_CMD_RD;
-			avl_mem_m.read_req <= '1';
-			avl_mem_m.burstbegin <= '1';
+--			avl_mem_m.read_req <= '1';
+--			avl_mem_m.burstbegin <= '1';
+
+--			if mem_s.SResp /= OCP_RESP_NULL then
+--				mem_state_next <= idle;
+--				mem_m.MRespAccept <= '1';
+--				r2l_fifo_wen <= '1';
+--				mem_fifo_ren <= '1';
+--			els
+			if avl_mem_s.ready = '1' then
+				mem_state_next <= read_wait_s;
+--				mem_m.MRespAccept <= '1';
+--				r2l_fifo_wen <= '1';
+--				mem_fifo_ren <= '1';
+			end if;
+		when read_wait_s =>
+--			mem_m.MCmd <= OCP_CMD_RD;
+--			avl_mem_m.read_req <= '1';
+--			avl_mem_m.burstbegin <= '1';
 
 --			if mem_s.SResp /= OCP_RESP_NULL then
 --				mem_state_next <= idle;
