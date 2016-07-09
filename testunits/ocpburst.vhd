@@ -34,6 +34,7 @@ use work.memorytreepackage.all;
 use work.ocp.all;
 
 entity ocpburst_testbench is
+generic (num : integer := 0);
 port(clk : in std_logic;
 reset : in std_logic;
 ocp_m : out ocp_burst_m;
@@ -130,7 +131,7 @@ begin
 		if reset = '1' then
 			state <= write;
 			burst_count <= (others => '0');
-			addr_count <= (others => '0');
+			addr_count <= to_unsigned(num,addr_count'length); --(others => '0');
 			ok_int <= '1';
 		elsif rising_edge(clk) then
 			state <= state_next;

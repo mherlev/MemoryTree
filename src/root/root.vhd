@@ -53,8 +53,8 @@ entity root is
 end root;
 
 architecture rtl of root is
-	constant fifo_depth : integer := 2;
-	constant fifo_addr_width : integer := 1;
+	constant fifo_depth : integer := 3;
+	constant fifo_addr_width : integer := 2;
 	type r2l_states is (idle, send_ping, send_package_header, send_package);
 	signal state, state_next : r2l_states := idle;
 
@@ -101,17 +101,20 @@ architecture rtl of root is
 	signal r2l_fifo_ren : std_logic := '0';
 	signal r2l_fifo_data_en : std_logic_vector(OCP_BURST_LENGTH-1 downto 0) := (others => '0');
 
-	signal r2s_waddr	  : unsigned(fifo_addr_width-1 downto 0) := (others => '0');
-	signal r2s_raddr	  : unsigned(fifo_addr_width-1 downto 0) := (others => '0');
+--	signal r2s_waddr	  : unsigned(fifo_addr_width-1 downto 0) := (others => '0');
+--	signal r2s_raddr	  : unsigned(fifo_addr_width-1 downto 0) := (others => '0');
 	signal mem_fifo_wen : std_logic := '0';
 	signal mem_fifo_ren : std_logic := '0';	
-	signal mem_waddr	  : unsigned(fifo_addr_width-1 downto 0) := (others => '0');
-	signal mem_raddr	  : unsigned(fifo_addr_width-1 downto 0) := (others => '0');
+--	signal mem_waddr	  : unsigned(fifo_addr_width-1 downto 0) := (others => '0');
+--	signal mem_raddr	  : unsigned(fifo_addr_width-1 downto 0) := (others => '0');
 	signal mem_cmd 	  : std_logic_vector(OCP_CMD_WIDTH-1 downto 0) := (others => '0');	
 
 	signal write_dat : std_logic_vector(OCP_DATA_WIDTH*OCP_BURST_LENGTH-1 downto 0) := (others => '0');	
 	signal write_ben : std_logic_vector(OCP_BYTE_WIDTH*OCP_BURST_LENGTH-1 downto 0) := (others => '0');
 	signal rst : std_logic;
+
+	signal mem_fifo_empty : std_logic;
+	signal r2s_fifo_empty : std_logic;
 begin
 	rst <= not calib_done;
 	ref_timer : entity work.refresh_timer
@@ -132,13 +135,13 @@ begin
 
 	r2l_core_fifo : entity work.fifo
 	generic map(2,fifo_depth)
-	port map(clk, reset, r2s_raddr, r2s_waddr, r2s_next, r2s, r2l_fifo_ren,r2l_fifo_wen,open);
+	port map(clk, reset, open, open, r2s_next, r2s, r2l_fifo_ren,r2l_fifo_wen,r2s_fifo_empty);
 	r2l_data_fifo : entity work.fifo
 	generic map(AVL_DATA_WIDTH,fifo_depth)
 	port map(clk, reset, open, open, avl_mem_s.rdata,read_data_buffer,r2l_fifo_ren,r2l_fifo_wen,open);
 	mem_core_fifo : entity work.fifo
 	generic map(2,fifo_depth)
-	port map(clk, reset, mem_raddr, mem_waddr, cmder_next,r2s_next,mem_fifo_ren,mem_fifo_wen,open);
+	port map(clk, reset, open, open, cmder_next,r2s_next,mem_fifo_ren,mem_fifo_wen,mem_fifo_empty);
 	mem_cmd_fifo : entity work.fifo
 	generic map(OCP_CMD_WIDTH,fifo_depth)
 	port map(clk, reset, open, open, cmd_next,mem_cmd,mem_fifo_ren,mem_fifo_wen,open);
@@ -153,7 +156,7 @@ begin
 	generic map(OCP_BYTE_WIDTH*OCP_BURST_LENGTH,fifo_depth)
 	port map(clk, reset, open, open, write_ben, avl_mem_m.be, mem_fifo_ren,mem_fifo_wen,open);
 	
-	r2l_fsm : process(state, ping_id, route, pinged,core_id, r2s, read_counter, readbuffer_data, r2s_waddr, r2s_raddr)
+	r2l_fsm : process(state, ping_id, route, pinged,core_id, r2s, read_counter, readbuffer_data, r2s_fifo_empty) --, r2s_waddr, r2s_raddr)
 	begin
 		state_next <= state;
 		r2l_next <= (others => (others => '0'));	
@@ -174,7 +177,8 @@ begin
 			r2l_type <= '1';
 			pinged_next <= core_id;
 			state_next <= idle;
-			if r2s_waddr /= r2s_raddr then
+--			if r2s_waddr /= r2s_raddr then
+			if r2s_fifo_empty = '0' then
 				state_next <= send_package_header;
 				core_id_next <= r2s;
 			end if;
@@ -240,7 +244,9 @@ begin
 	end process;
 	
 
-	mem_fsm : process(mem_state, cmd, avl_mem_s,outbuffer_data,outbuffer_en,outbuffer_addr, read_data_buffer, cmder,r2s,mem_waddr,mem_raddr,mem_cmd)
+	mem_fsm : process(mem_state, cmd, avl_mem_s,outbuffer_data,outbuffer_en,outbuffer_addr, read_data_buffer, cmder,r2s,
+			--mem_waddr,mem_raddr,
+			mem_cmd, mem_fifo_empty)
 	begin
 		mem_state_next <= mem_state;
 --		mem_m.MCmd <= OCP_CMD_IDLE;
@@ -255,16 +261,18 @@ begin
 
 		case mem_state is
 		when idle =>
-		if mem_waddr /= mem_raddr then
+--		if mem_waddr /= mem_raddr then
+		if mem_fifo_empty = '0' then
 			if avl_mem_s.ready = '1' then
 				if mem_cmd = OCP_CMD_WR then
 					avl_mem_m.write_req <= '1';
 					avl_mem_m.burstbegin <= '1';
-					mem_state_next <= write_s;
+--					mem_state_next <= write_s;
+					mem_state_next <= write_wait_s;
 				elsif mem_cmd = OCP_CMD_RD then
 					avl_mem_m.read_req <= '1';
 					avl_mem_m.burstbegin <= '1';
-					mem_state_next <= read_s;
+					mem_state_next <= read_wait_s;
 				end if;
 		end if;
 		end if;
