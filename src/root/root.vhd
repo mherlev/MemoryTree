@@ -61,10 +61,10 @@ architecture rtl of root is
 	type l2r_states is (idle,write_data,write_en, read_data);
 	signal l2r_state, l2r_state_next : l2r_states := idle;
 	type outbuffer_data_arr is array (ocp_burst_length-1 downto 0) of std_logic_vector(OCP_DATA_WIDTH-1 downto 0);	
-	signal outbuffer_data, outbuffer_data_next : outbuffer_data_arr := (others => (others => '0'));
-	type outbuffer_en_arr is array (ocp_burst_length-1 downto 0) of std_logic_vector(OCP_BYTE_WIDTH-1 downto 0);
-	signal outbuffer_en, outbuffer_en_next : outbuffer_en_arr := (others => (others => '0'));
-	signal outbuffer_addr, outbuffer_addr_next : std_logic_vector(OCP_BURST_ADDR_WIDTH-1 downto 0) := (others => '0');
+--	signal outbuffer_data, outbuffer_data_next : outbuffer_data_arr := (others => (others => '0'));
+--	type outbuffer_en_arr is array (ocp_burst_length-1 downto 0) of std_logic_vector(OCP_BYTE_WIDTH-1 downto 0);
+--	signal outbuffer_en, outbuffer_en_next : outbuffer_en_arr := (others => (others => '0'));
+--	signal outbuffer_addr, outbuffer_addr_next : std_logic_vector(OCP_BURST_ADDR_WIDTH-1 downto 0) := (others => '0');
 	signal write_counter, write_counter_next : unsigned(31 downto 0) := (others => '0');
 
 	signal ref : std_logic := '0';
@@ -101,12 +101,8 @@ architecture rtl of root is
 	signal r2l_fifo_ren : std_logic := '0';
 	signal r2l_fifo_data_en : std_logic_vector(OCP_BURST_LENGTH-1 downto 0) := (others => '0');
 
---	signal r2s_waddr	  : unsigned(fifo_addr_width-1 downto 0) := (others => '0');
---	signal r2s_raddr	  : unsigned(fifo_addr_width-1 downto 0) := (others => '0');
 	signal mem_fifo_wen : std_logic := '0';
 	signal mem_fifo_ren : std_logic := '0';	
---	signal mem_waddr	  : unsigned(fifo_addr_width-1 downto 0) := (others => '0');
---	signal mem_raddr	  : unsigned(fifo_addr_width-1 downto 0) := (others => '0');
 	signal mem_cmd 	  : std_logic_vector(OCP_CMD_WIDTH-1 downto 0) := (others => '0');	
 
 	signal write_dat : std_logic_vector(OCP_DATA_WIDTH*OCP_BURST_LENGTH-1 downto 0) := (others => '0');	
@@ -116,6 +112,10 @@ architecture rtl of root is
 	signal mem_fifo_empty : std_logic;
 	signal mem_fifo_data_enqueue : std_logic_vector(OCP_BURST_LENGTH-1 downto 0) := (others => '0');
 	signal mem_fifo_data_dequeue : std_logic := '0';
+	signal mem_fifo_cmd_enqueue  : std_logic := '0';
+	signal mem_fifo_addr_enqueue : std_logic := '0';
+	signal mem_fifo_id_enqueue   : std_logic := '0';
+
 	signal r2s_fifo_empty : std_logic;
 
 
@@ -139,20 +139,20 @@ begin
 
 	r2l_core_fifo : entity work.fifo
 	generic map(2,fifo_depth)
-	port map(clk, reset, open, open, r2s_next, r2s, r2l_fifo_ren,r2l_fifo_wen,r2s_fifo_empty);
+	port map(clk, reset, r2s_next, r2s, r2l_fifo_ren,r2l_fifo_wen,r2s_fifo_empty);
 	r2l_data_fifo : entity work.fifo
 	generic map(AVL_DATA_WIDTH,fifo_depth)
-	port map(clk, reset, open, open, avl_mem_s.rdata,read_data_buffer,r2l_fifo_ren,r2l_fifo_wen,open);
+	port map(clk, reset, avl_mem_s.rdata,read_data_buffer,r2l_fifo_ren,r2l_fifo_wen,open);
 
 	mem_core_fifo : entity work.fifo
 	generic map(2,fifo_depth)
-	port map(clk, reset, open, open, cmder_next,r2s_next,mem_fifo_ren,mem_fifo_wen,mem_fifo_empty);
+	port map(clk, reset, cmder_next, r2s_next, mem_fifo_data_dequeue, mem_fifo_id_enqueue, mem_fifo_empty);
 	mem_cmd_fifo : entity work.fifo
 	generic map(OCP_CMD_WIDTH,fifo_depth)
-	port map(clk, reset, open, open, cmd_next,mem_cmd,mem_fifo_ren,mem_fifo_wen,open);
+	port map(clk, reset, cmd_next, mem_cmd, mem_fifo_data_dequeue, mem_fifo_cmd_enqueue, open);
 	mem_addr_fifo : entity work.fifo
 	generic map(OCP_BURST_ADDR_WIDTH,fifo_depth)
-	port map(clk, reset, open, open, outbuffer_addr_next, avl_mem_m.addr(23 downto 3), mem_fifo_ren,mem_fifo_wen,open);
+	port map(clk, reset, l2r.payload(OCP_BURST_ADDR_WIDTH-1 downto 0), avl_mem_m.addr(23 downto 3), mem_fifo_data_dequeue, mem_fifo_addr_enqueue, open);
 	avl_mem_m.addr (2 downto 0) <= (others => '0');
 --	mem_data_fifo : entity work.fifo
 --	generic map(OCP_DATA_WIDTH*OCP_BURST_LENGTH,fifo_depth)
@@ -164,20 +164,21 @@ begin
 	mem_fifo : for i in 0 to OCP_BURST_LENGTH-1 generate
 		mem_fifo_data : entity work.fifo
 		generic map(OCP_DATA_WIDTH,fifo_depth)
-		port map(clk, reset, open, open,l2r.payload(OCP_DATA_WIDTH-1 downto 0), avl_mem_m.wdata(OCP_DATA_WIDTH*(i+1)-1 downto OCP_DATA_WIDTH*i), mem_fifo_data_dequeue,mem_fifo_data_enqueue(i),open);
+		port map(clk, reset, l2r.payload(OCP_DATA_WIDTH-1 downto 0), 
+		avl_mem_m.wdata(OCP_DATA_WIDTH*(i+1)-1 downto OCP_DATA_WIDTH*i), 
+		mem_fifo_data_dequeue,mem_fifo_data_enqueue(i),open);
 		mem_fifo_be : entity work.fifo
 		generic map(OCP_BYTE_WIDTH,fifo_depth)
-		port map(clk, reset, open, open,l2r.payload(payload_width-1 downto payload_width-OCP_BYTE_WIDTH), avl_mem_m.be(OCP_BYTE_WIDTH*(i+1)-1 downto OCP_BYTE_WIDTH*i), mem_fifo_data_dequeue,mem_fifo_data_enqueue(i),open);
-	
-end generate;
-
---	mem_fifo_be : for i in 0 to OCP_BURST_LENGTH-1 generate
---		generic map(OCP_BYTE_WIDTH,fifo_depth)
---		port map(clk, reset, open, open,l2r.payload(payload_width-1 downto payload_width-OCP_BYTE_WIDTH), avl_mem_m.be(OCP_BYTE_WIDTH*(i+1)-1 downto OCP_DATA_WIDTH*i), mem_fifo_data_dequeue,mem_fifo_data_enqueue(i),open);
---	end generate;
+		port map(clk, reset, 
+		l2r.payload(payload_width-1 downto payload_width-OCP_BYTE_WIDTH), 
+		avl_mem_m.be(OCP_BYTE_WIDTH*(i+1)-1 downto OCP_BYTE_WIDTH*i), 
+		mem_fifo_data_dequeue,mem_fifo_data_enqueue(i),open);
+	end generate;
 
 
-	r2l_fsm : process(state, ping_id, route, pinged,core_id, r2s, read_counter, readbuffer_data, r2s_fifo_empty) --, r2s_waddr, r2s_raddr)
+
+	r2l_fsm : process(state, ping_id, route, pinged,core_id, r2s, read_counter, 
+			readbuffer_data, r2s_fifo_empty) --, r2s_waddr, r2s_raddr)
 	begin
 		state_next <= state;
 		r2l_next <= (others => (others => '0'));	
@@ -221,11 +222,14 @@ end generate;
 		end case;
 	end process;
 
-	l2r_fsm : process(l2r_state,l2r,write_counter,outbuffer_addr,outbuffer_data,outbuffer_en,cmd_ack,cmd,cmder,pinged)
+	l2r_fsm : process(l2r_state,l2r,write_counter,
+			--outbuffer_addr,
+			--outbuffer_data,outbuffer_en,
+			cmd_ack,cmd,cmder,pinged)
 	begin
-		outbuffer_addr_next <= outbuffer_addr;
-		outbuffer_data_next <= outbuffer_data;
-		outbuffer_en_next <= outbuffer_en;
+--		outbuffer_addr_next <= outbuffer_addr;
+--		outbuffer_data_next <= outbuffer_data;
+--		outbuffer_en_next <= outbuffer_en;
 		write_counter_next <= write_counter;
 		l2r_state_next <= l2r_state;
 
@@ -233,19 +237,25 @@ end generate;
 		cmder_next <= cmder;
 		mem_fifo_wen <= '0';
 		mem_fifo_data_enqueue <= (others => '0');
+		mem_fifo_cmd_enqueue  <='0';
+    	mem_fifo_addr_enqueue <='0';
+    	mem_fifo_id_enqueue   <='0';
+
 
 		case l2r_state is
 			when idle =>
 				if l2r.tag = header_tag then
 					cmder_next <= l2r.payload(OCP_BURST_ADDR_WIDTH+OCP_CMD_WIDTH+2-1 downto OCP_BURST_ADDR_WIDTH+OCP_CMD_WIDTH);
-					outbuffer_addr_next <= l2r.payload(OCP_BURST_ADDR_WIDTH-1 downto 0);	
-					
+--					outbuffer_addr_next <= l2r.payload(OCP_BURST_ADDR_WIDTH-1 downto 0);	
+					mem_fifo_addr_enqueue <= '1';
+					mem_fifo_cmd_enqueue <= '1';
 					if l2r.payload(OCP_BURST_ADDR_WIDTH+OCP_CMD_WIDTH-1 downto OCP_BURST_ADDR_WIDTH) = OCP_CMD_WR then
 						l2r_state_next <= write_data;
 					elsif l2r.payload(OCP_BURST_ADDR_WIDTH+OCP_CMD_WIDTH-1 downto OCP_BURST_ADDR_WIDTH) = OCP_CMD_RD then
 						mem_fifo_wen <= '1';
 						l2r_state_next <= read_data;
 						cmd_next <= OCP_CMD_RD;
+						mem_fifo_id_enqueue <= '1';
 					end if;
 				end if;
 			when write_data =>
@@ -253,8 +263,8 @@ end generate;
 				
 				mem_fifo_data_enqueue(to_integer(write_counter)) <= '1';
 				
-				outbuffer_data_next(to_integer(write_counter)) <= l2r.payload(OCP_DATA_WIDTH-1 downto 0);
-				outbuffer_en_next(to_integer(write_counter)) <= l2r.payload(payload_width-1 downto payload_width-OCP_BYTE_WIDTH);
+--				outbuffer_data_next(to_integer(write_counter)) <= l2r.payload(OCP_DATA_WIDTH-1 downto 0);
+--				outbuffer_en_next(to_integer(write_counter)) <= l2r.payload(payload_width-1 downto payload_width-OCP_BYTE_WIDTH);
 				if write_counter = OCP_burst_length-1 then
 					l2r_state_next <= write_en;
 					write_counter_next <= (others => '0');
@@ -263,13 +273,16 @@ end generate;
 				l2r_state_next <= idle;
 				cmd_next <= OCP_CMD_WR;
 				mem_fifo_wen <= '1';
+				mem_fifo_id_enqueue <= '1';
 			when others =>
 				l2r_state_next <= idle;
 			end case;
 	end process;
 	
 
-	mem_fsm : process(mem_state, cmd, avl_mem_s,outbuffer_data,outbuffer_en,outbuffer_addr, read_data_buffer, cmder,r2s,
+	mem_fsm : process(mem_state, cmd, avl_mem_s,
+			--outbuffer_data,outbuffer_en,outbuffer_addr, 
+			read_data_buffer, cmder,r2s,
 			--mem_waddr,mem_raddr,
 			mem_cmd, mem_fifo_empty)
 	begin
@@ -282,7 +295,7 @@ end generate;
 
 		r2l_fifo_wen <= '0';
 
-		mem_fifo_ren <= '0';
+--		mem_fifo_ren <= '0';
 		mem_fifo_data_dequeue <= '0';
 		
 		case mem_state is
@@ -302,20 +315,20 @@ end generate;
 				end if;
 		end if;
 		end if;
-		when write_s =>
-			if avl_mem_s.ready = '0' then
-				mem_state_next <= write_wait_s;
---				mem_fifo_ren <= '1';
-			else
---				avl_mem_m.write_req <= '1';
---				avl_mem_m.burstbegin <= '1';
-			end if;
+--		when write_s =>
+--			if avl_mem_s.ready = '0' then
+--				mem_state_next <= write_wait_s;
+----				mem_fifo_ren <= '1';
+--			else
+----				avl_mem_m.write_req <= '1';
+----				avl_mem_m.burstbegin <= '1';
+--			end if;
 		when write_wait_s =>
 --			avl_mem_m.write_req <= '1';
 --			avl_mem_m.burstbegin <= '1';
 			if avl_mem_s.ready = '1' then
 				mem_state_next <= idle;
-				mem_fifo_ren <= '1';
+--				mem_fifo_ren <= '1';
 				mem_fifo_data_dequeue <= '1';
 			end if;
 		when read_s =>
@@ -350,7 +363,7 @@ end generate;
 				mem_state_next <= idle;
 --				mem_m.MRespAccept <= '1';
 				r2l_fifo_wen <= '1';
-				mem_fifo_ren <= '1';
+--				mem_fifo_ren <= '1';
 				mem_fifo_data_dequeue <= '1';
 			end if;
 		when others =>
@@ -374,9 +387,9 @@ end generate;
 			cmd <= OCP_CMD_IDLE;
 
 			
-			outbuffer_data <= (others => (others => '0'));
-			outbuffer_en <= (others => (others => '0'));
-			outbuffer_addr <= (others => '0');
+--			outbuffer_data <= (others => (others => '0'));
+--			outbuffer_en <= (others => (others => '0'));
+--			outbuffer_addr <= (others => '0');
 			
 			read_counter <= (others => '0');
 			
@@ -387,9 +400,9 @@ end generate;
 			state <= state_next;
 			l2r_state <= l2r_state_next;
 			write_counter <= write_counter_next;
-			outbuffer_data <= outbuffer_data_next;
-			outbuffer_en <= outbuffer_en_next;
-			outbuffer_addr <= outbuffer_addr_next;
+--			outbuffer_data <= outbuffer_data_next;
+--			outbuffer_en <= outbuffer_en_next;
+--			outbuffer_addr <= outbuffer_addr_next;
 			r2l <= r2l_next;
 			mem_state <= mem_state_next;
 			cmd <= cmd_next;
@@ -405,10 +418,10 @@ end generate;
 	end generate;
 	
 	outdatamap2 : for i in 0 to ocp_burst_length-1 generate
-		write_dat((i+1)*OCP_DATA_WIDTH-1 downto i*OCP_DATA_WIDTH) <= outbuffer_data(i);
+--		write_dat((i+1)*OCP_DATA_WIDTH-1 downto i*OCP_DATA_WIDTH) <= outbuffer_data(i);
 	end generate;
 	outenmap2 : for i in 0 to ocp_burst_length-1 generate
-		write_ben((i+1)*OCP_BYTE_WIDTH-1 downto i*OCP_BYTE_WIDTH) <= outbuffer_en(i);
+--		write_ben((i+1)*OCP_BYTE_WIDTH-1 downto i*OCP_BYTE_WIDTH) <= outbuffer_en(i);
 	end generate;
 
 end rtl;

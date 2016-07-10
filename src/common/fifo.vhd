@@ -23,8 +23,8 @@
 -- ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 -- POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
--- Title: Memory package
--- Description: Type definitions and constants for Memory Tree
+-- Title: FIFO
+-- Description: Ringbuffer FIFO without full signal
 --------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
@@ -36,8 +36,6 @@ entity fifo is
 		   depth : integer:=2);
 	port(clk : in std_logic;
 		rst : in std_logic;
-		read_addr : out unsigned(integer(ceil(log2(real(depth))))-1 downto 0);
-		write_addr : out unsigned(integer(ceil(log2(real(depth))))-1 downto 0);
 		data_i : in std_logic_vector(data_width-1 downto 0);
 		data_o : out std_logic_vector(data_width-1 downto 0);
 		dequeue : in std_logic;
@@ -52,10 +50,7 @@ architecture rtl of fifo is
 	signal write_addr_int : unsigned(integer(ceil(log2(real(depth))))-1 downto 0) := (others => '0');
 begin
 
-	read_addr <= read_addr_int;
-	write_addr <= write_addr_int;
-
-	process(clk,fifo,read_addr_int,write_addr_int)
+	process(clk, rst, fifo, read_addr_int, write_addr_int)
 	begin
 		if read_addr_int = write_addr_int then
 			empty <= '1';

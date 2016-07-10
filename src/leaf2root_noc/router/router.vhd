@@ -23,8 +23,9 @@
 -- ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 -- POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
--- Title: Router
+-- Title: L2R Router
 -- Description: Router for L2R NoC
+-- TODO: Tag size can be reduced
 --------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
@@ -44,12 +45,13 @@ architecture structural of l2r_router is
 	signal output_next : phit_r;
 	signal or_arr, o_arr : or_array;
 begin
+	--Instantiate input ports
 	ports : for i in 0 to outputs_per_router-1 generate
 		outport : entity work.l2r_routerport
 		generic map(routing_level*outputs_per_router+i)
 		port map(clk, input(i), or_arr(i));
 	end generate;
-
+	--Or together tags
 	o_arr(0) <= or_arr(0);
 	ors : for i in 1 to outputs_per_router-1 generate
 		o_arr(i).tag <= or_arr(i).tag or o_arr(i-1).tag;

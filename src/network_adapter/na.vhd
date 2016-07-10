@@ -24,7 +24,7 @@
 -- POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
 -- Title: Network Adapter
--- Description: Network adapater for memeory tree
+-- Description: Network adapater for memory tree
 --------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
@@ -47,7 +47,15 @@ architecture rtl of network_adapter is
 	type states is (idle, writedata,writeresp,read_wait, read);
 	signal state, state_next : states := idle;
     signal counter, counter_next  : unsigned(31 downto 0) := (others => '0');
-
+	
+	constant id_width : integer 
+					  := payload_width-(ocp_m.MAddr'length+OCP_CMD_WIDTH);
+	alias l2r_id is 
+		l2rnoc.payload(payload_width-1 downto ocp_m.MAddr'length+OCP_CMD_WIDTH);
+	alias l2r_cmd is 
+		l2rnoc.payload(ocp_m.MAddr'length+OCP_CMD_WIDTH-1 downto 
+		ocp_m.MAddr'length);
+	alias l2r_addr is l2rnoc.payload(ocp_m.MAddr'length-1 downto 0);
 begin
 	process(state, ocp_m, r2lnoc, counter)
 	begin
@@ -62,24 +70,30 @@ begin
 		case state is
 		when idle =>
 			if r2lnoc.tag = header_tag then
+				-- If pinged...
 				if ocp_m.mcmd = ocp_cmd_wr then
+					-- ..And hanging write command
+					-- Write packet header to noc, but dont accept transaction
 					state_next <= WriteData;
 					l2rnoc.tag <= header_tag;
 					l2rnoc.payload <= (others => '0');
-					l2rnoc.payload(payload_width-1 downto ocp_m.MAddr'length+OCP_CMD_WIDTH) <= std_logic_vector(to_unsigned(core_id,payload_width-(ocp_m.MAddr'length+OCP_CMD_WIDTH)));
-					l2rnoc.payload(ocp_m.MAddr'length+OCP_CMD_WIDTH-1 downto ocp_m.MAddr'length) <= ocp_m.MCmd;
-					l2rnoc.payload(ocp_m.MAddr'length-1 downto 0) <= ocp_m.MAddr;
+					l2r_id <= std_logic_vector(to_unsigned(core_id,id_width));
+					l2r_cmd <= ocp_m.MCmd;
+					l2r_addr <= ocp_m.MAddr;
 				elsif ocp_m.mcmd = ocp_cmd_rd then
+					-- ..And hanging read command
+					-- Write packet header to noc, and accept transaction
 					state_next <= read_wait;
 					ocp_s.SCmdAccept <= '1';
 					l2rnoc.tag <= header_tag;
 					l2rnoc.payload <= (others => '0');
-					l2rnoc.payload(payload_width-1 downto ocp_m.MAddr'length+OCP_CMD_WIDTH) <= std_logic_vector(to_unsigned(core_id,payload_width-(ocp_m.MAddr'length+OCP_CMD_WIDTH)));
-					l2rnoc.payload(ocp_m.MAddr'length+OCP_CMD_WIDTH-1 downto ocp_m.MAddr'length) <= ocp_m.MCmd;
-					l2rnoc.payload(ocp_m.MAddr'length-1 downto 0) <= ocp_m.MAddr;
+					l2r_id <= std_logic_vector(to_unsigned(core_id,id_width));
+					l2r_cmd <= ocp_m.MCmd;
+					l2r_addr <= ocp_m.MAddr;
 				end if;
 			end if;
 		when WriteData =>
+			-- write data to noc on consecutive cycles
 	    	counter_next <= counter+1;
 			l2rnoc.payload <= ocp_m.MDataByteEn & ocp_m.MData;
 			l2rnoc.tag <= payload_tag;
@@ -91,17 +105,19 @@ begin
 				counter_next <= (others => '0');
 			end if;
 		when WriteResp =>
+			-- And respond to OCP after last word, per specification.
 			ocp_s.SResp <= OCP_RESP_DVA;
 			state_next <= idle;
 			counter_next <= (others => '0');
-
 		when read_wait =>
+			-- Await response packet
 			if r2lnoc.tag = header_tag AND r2lnoc.payload(payload_width-1) = '0' then
 				state_next <= read;
 				counter_next <= (others => '0');
 			end if;
 				
 		when read =>
+			-- Send each word to OCP
 			ocp_s.SResp <= OCP_RESP_DVA;
 			counter_next <= counter + to_unsigned(1, counter'length);
 			ocp_s.SData <= r2lnoc.payload(OCP_DATA_WIDTH-1 downto 0);

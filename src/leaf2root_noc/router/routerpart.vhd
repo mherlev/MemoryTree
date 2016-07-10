@@ -23,7 +23,7 @@
 -- ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 -- POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
--- Title: Router
+-- Title: R2L Router
 -- Description: Router input port for Leaf 2 Root NoC
 --------------------------------------------------------------------------------
 library ieee;
@@ -39,18 +39,15 @@ entity l2r_routerport is
 end entity l2r_routerport;
 
 architecture rtl of l2r_routerport is
-	type states is (idle, active);
-	signal state, state_next : states := idle;
-
 	signal data, data_next : phit_r;
 	signal en : std_logic := '0';
 begin
-	fsm : process(state, input)
+	process(input)
 	begin
 		output <= (others => (others =>'0'));
 		if input.tag = header_tag or input.tag = payload_tag then
 			output <= input;
 		end if;
-	end process fsm;
+	end process;
 end rtl;
 

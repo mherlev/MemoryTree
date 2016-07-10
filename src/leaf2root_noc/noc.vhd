@@ -38,18 +38,23 @@ entity l2r_noc is
 end entity l2r_noc;
 
 architecture structural of l2r_noc is
-	constant number_of_links : integer := (1-(outputs_per_router**(number_of_levels+1)))/(1-outputs_per_router);
-	
+	--Calculate number of links needed
+	constant number_of_links : integer 
+							  := (1-(outputs_per_router**(number_of_levels+1)))
+							  	 /(1-outputs_per_router);
+	--Declare needed links
 	type link_arr is array (0 to number_of_links-1) of phit_r;
 	signal links : link_arr;
 
-	
+	--Calculate number of outputs from routers
 	constant nominator : integer := (1-(outputs_per_router**(number_of_levels)));
 	constant denominator : integer := (1-outputs_per_router);
 	constant number_of_out_links : integer := nominator/denominator;
+	--Declare output links
 	type out_link_arr is array(0 to number_of_out_links-1) of router_output;
 	signal outlinks : out_link_arr;
 begin
+	-- Instantiate routers
 	routers : for i in 0 to number_of_levels-1 generate
 		levels: for j in 0 to outputs_per_router**i-1 generate
 			router_inst : entity work.l2r_router
@@ -60,18 +65,23 @@ begin
 		end generate;
 	end generate;
 
+	--Map links onto routers using geometric sum
 	mappings : for i in 0 to number_of_levels-1 generate
 		maplevels: for j in 0 to outputs_per_router**i-1 generate
 			kit : for k in 0 to outputs_per_router-1 generate
-				outlinks((1-outputs_per_router**i)/(1-outputs_per_router)+j)(k) <= links((1-outputs_per_router**(i+1))/(1-outputs_per_router)+j*outputs_per_router+k);
+				outlinks((1-outputs_per_router**i)/(1-outputs_per_router)+j)(k) 
+				<= links((1-outputs_per_router**(i+1))
+				          /(1-outputs_per_router)+j*outputs_per_router+k);
 			end generate;
 		end generate;
 	end generate;
 
+	--Map root and leafs
 	root <= links(0);
 
 	leafmappings : for i in 1 to number_of_leafs generate
-		links((1-outputs_per_router**(number_of_levels+1))/(1-outputs_per_router)-i) <= leafs(number_of_leafs - i);
+		links((1-outputs_per_router**(number_of_levels+1))
+			   /(1-outputs_per_router)-i) <= leafs(number_of_leafs - i);
 	end generate;
 end structural;
 
