@@ -25,6 +25,7 @@
 --------------------------------------------------------------------------------
 -- Title: Ping timer
 -- Description: Timer responsible for periodically issuing pings
+-- TODO : make more generic
 --------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
@@ -36,29 +37,43 @@ entity ping_timer is
 	port(	clk	: in std_logic;
 			rst : in std_logic;
 			postpone_transaction : in std_logic;
+			ping : out std_logic;
+			ping_empty : out std_logic;
+			dequeue : in std_logic;
 			core_id : out std_logic_vector(1 downto 0)
 	);
 end ping_timer;
 
 architecture rtl of ping_timer is
 	signal counter, counter_next : signed(31 downto 0) := (others => '0');
-	signal idx, idx_next : unsigned(1 downto 0) := (others => '1');
+	signal read_addr, read_addr_next, 
+			idx, idx_next : unsigned(1 downto 0) := (others => '0');
 begin
 	sched_tab : entity work.schedule_table
-	port map (idx,core_id);
+	port map (read_addr,core_id);
 
-	process(idx,counter,postpone_transaction)
+	process(idx,counter,postpone_transaction,dequeue, read_addr)
 	begin
 		counter_next <= counter;
 		idx_next <= idx;
---		r2l_next <= (others => (others => '0'));	
---		pinged_next <= pinged;
-		if postpone_transaction	= '0' then
+		read_addr_next <= read_addr;
+		ping <= '0';
+		ping_empty <= '1';
+		if read_addr /= idx then
+			ping_empty <= '0';	
+		end if;
+		if counter = c_transaction-1 then
+			counter_next <= (others => '0');
+			ping <= '1';
+		else
+			counter_next <= counter + 1;
+		end if;
+		if dequeue = '1' then
+				read_addr_next <= read_addr+1;
+		end if;
+		if postpone_transaction	= '0' then	
 			if counter = c_transaction-1 then
 				idx_next <= idx+1;
-				counter_next <= (others => '0');
-			else
-				counter_next <= counter + 1;
 			end if;
 		end if;
 
@@ -69,9 +84,11 @@ begin
 		if rst = '1' then
 			counter <= (others => '0');
 			idx <= (others => '1');
+			read_addr <= (others => '0');
 		elsif rising_edge(clk) then
 			counter <= counter_next;
 			idx <= idx_next;
+			read_addr <= read_addr_next;
 		end if;
 	end process;
 
