@@ -114,7 +114,11 @@ architecture rtl of root is
 	signal rst : std_logic;
 
 	signal mem_fifo_empty : std_logic;
+	signal mem_fifo_data_enqueue : std_logic_vector(OCP_BURST_LENGTH-1 downto 0) := (others => '0');
+	signal mem_fifo_data_dequeue : std_logic := '0';
 	signal r2s_fifo_empty : std_logic;
+
+
 begin
 	rst <= not calib_done;
 	ref_timer : entity work.refresh_timer
@@ -139,6 +143,7 @@ begin
 	r2l_data_fifo : entity work.fifo
 	generic map(AVL_DATA_WIDTH,fifo_depth)
 	port map(clk, reset, open, open, avl_mem_s.rdata,read_data_buffer,r2l_fifo_ren,r2l_fifo_wen,open);
+
 	mem_core_fifo : entity work.fifo
 	generic map(2,fifo_depth)
 	port map(clk, reset, open, open, cmder_next,r2s_next,mem_fifo_ren,mem_fifo_wen,mem_fifo_empty);
@@ -149,13 +154,29 @@ begin
 	generic map(OCP_BURST_ADDR_WIDTH,fifo_depth)
 	port map(clk, reset, open, open, outbuffer_addr_next, avl_mem_m.addr(23 downto 3), mem_fifo_ren,mem_fifo_wen,open);
 	avl_mem_m.addr (2 downto 0) <= (others => '0');
-	mem_data_fifo : entity work.fifo
-	generic map(OCP_DATA_WIDTH*OCP_BURST_LENGTH,fifo_depth)
-	port map(clk, reset, open, open, write_dat, avl_mem_m.wdata, mem_fifo_ren,mem_fifo_wen,open);
-	mem_ben_fifo : entity work.fifo
-	generic map(OCP_BYTE_WIDTH*OCP_BURST_LENGTH,fifo_depth)
-	port map(clk, reset, open, open, write_ben, avl_mem_m.be, mem_fifo_ren,mem_fifo_wen,open);
+--	mem_data_fifo : entity work.fifo
+--	generic map(OCP_DATA_WIDTH*OCP_BURST_LENGTH,fifo_depth)
+--	port map(clk, reset, open, open, write_dat, avl_mem_m.wdata, mem_fifo_ren,mem_fifo_wen,open);
+--	mem_ben_fifo : entity work.fifo
+--	generic map(OCP_BYTE_WIDTH*OCP_BURST_LENGTH,fifo_depth)
+--	port map(clk, reset, open, open, write_ben, avl_mem_m.be, mem_fifo_ren,mem_fifo_wen,open);
 	
+	mem_fifo : for i in 0 to OCP_BURST_LENGTH-1 generate
+		mem_fifo_data : entity work.fifo
+		generic map(OCP_DATA_WIDTH,fifo_depth)
+		port map(clk, reset, open, open,l2r.payload(OCP_DATA_WIDTH-1 downto 0), avl_mem_m.wdata(OCP_DATA_WIDTH*(i+1)-1 downto OCP_DATA_WIDTH*i), mem_fifo_data_dequeue,mem_fifo_data_enqueue(i),open);
+		mem_fifo_be : entity work.fifo
+		generic map(OCP_BYTE_WIDTH,fifo_depth)
+		port map(clk, reset, open, open,l2r.payload(payload_width-1 downto payload_width-OCP_BYTE_WIDTH), avl_mem_m.be(OCP_BYTE_WIDTH*(i+1)-1 downto OCP_BYTE_WIDTH*i), mem_fifo_data_dequeue,mem_fifo_data_enqueue(i),open);
+	
+end generate;
+
+--	mem_fifo_be : for i in 0 to OCP_BURST_LENGTH-1 generate
+--		generic map(OCP_BYTE_WIDTH,fifo_depth)
+--		port map(clk, reset, open, open,l2r.payload(payload_width-1 downto payload_width-OCP_BYTE_WIDTH), avl_mem_m.be(OCP_BYTE_WIDTH*(i+1)-1 downto OCP_DATA_WIDTH*i), mem_fifo_data_dequeue,mem_fifo_data_enqueue(i),open);
+--	end generate;
+
+
 	r2l_fsm : process(state, ping_id, route, pinged,core_id, r2s, read_counter, readbuffer_data, r2s_fifo_empty) --, r2s_waddr, r2s_raddr)
 	begin
 		state_next <= state;
@@ -211,7 +232,8 @@ begin
 		cmd_next <= cmd;
 		cmder_next <= cmder;
 		mem_fifo_wen <= '0';
-		
+		mem_fifo_data_enqueue <= (others => '0');
+
 		case l2r_state is
 			when idle =>
 				if l2r.tag = header_tag then
@@ -228,6 +250,9 @@ begin
 				end if;
 			when write_data =>
 				write_counter_next <= write_counter + to_unsigned(1,write_counter'length);
+				
+				mem_fifo_data_enqueue(to_integer(write_counter)) <= '1';
+				
 				outbuffer_data_next(to_integer(write_counter)) <= l2r.payload(OCP_DATA_WIDTH-1 downto 0);
 				outbuffer_en_next(to_integer(write_counter)) <= l2r.payload(payload_width-1 downto payload_width-OCP_BYTE_WIDTH);
 				if write_counter = OCP_burst_length-1 then
@@ -258,7 +283,8 @@ begin
 		r2l_fifo_wen <= '0';
 
 		mem_fifo_ren <= '0';
-
+		mem_fifo_data_dequeue <= '0';
+		
 		case mem_state is
 		when idle =>
 --		if mem_waddr /= mem_raddr then
@@ -290,6 +316,7 @@ begin
 			if avl_mem_s.ready = '1' then
 				mem_state_next <= idle;
 				mem_fifo_ren <= '1';
+				mem_fifo_data_dequeue <= '1';
 			end if;
 		when read_s =>
 --			mem_m.MCmd <= OCP_CMD_RD;
@@ -324,6 +351,7 @@ begin
 --				mem_m.MRespAccept <= '1';
 				r2l_fifo_wen <= '1';
 				mem_fifo_ren <= '1';
+				mem_fifo_data_dequeue <= '1';
 			end if;
 		when others =>
 			mem_state_next <= idle;
