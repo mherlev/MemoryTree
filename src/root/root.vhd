@@ -254,6 +254,7 @@ begin
 					mem_fifo_cmd_enqueue <= '1';
 					if l2r_cmd = OCP_CMD_WR then
 						l2r_state_next <= write_data;
+						cmd_next <= OCP_CMD_WR;
 					elsif l2r_cmd = OCP_CMD_RD then
 						l2r_state_next <= read_data;
 						cmd_next <= OCP_CMD_RD;
@@ -265,13 +266,11 @@ begin
 									  + to_unsigned(1,write_counter'length);
 				mem_fifo_data_enqueue(to_integer(write_counter)) <= '1';
 				if write_counter = OCP_burst_length-1 then
-					l2r_state_next <= write_en;
 					write_counter_next <= (others => '0');
+					l2r_state_next <= idle;
+					mem_fifo_id_enqueue <= '1';
+					cmd_next <= OCP_CMD_WR;
 				end if;
-			when write_en =>
-				l2r_state_next <= idle;
-				cmd_next <= OCP_CMD_WR;
-				mem_fifo_id_enqueue <= '1';
 			when others =>
 				l2r_state_next <= idle;
 			end case;
@@ -307,10 +306,6 @@ begin
 			if avl_mem_s.ready = '1' then
 				mem_state_next <= idle;
 				mem_fifo_data_dequeue <= '1';
-			end if;
-		when read_s =>
-			if avl_mem_s.ready = '1' then
-				mem_state_next <= read_wait_s;
 			end if;
 		when read_wait_s =>
 			if avl_mem_s.rdata_valid = '1' then

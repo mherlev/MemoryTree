@@ -31,7 +31,7 @@ use ieee.std_logic_1164.all;
 
 package root_package is
 
-constant c_refi : integer := 1545;
+constant c_refi : integer := 105; --1545;
 constant c_rfc : integer := 45 ;
 constant noc_latency : integer := 2+4+5;--25;
 constant c_transaction : integer := 15;
