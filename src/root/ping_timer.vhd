@@ -83,7 +83,7 @@ begin
 	begin
 		if rst = '1' then
 			counter <= (others => '0');
-			idx <= (others => '1');
+			idx <= (others => '0');
 			read_addr <= (others => '0');
 		elsif rising_edge(clk) then
 			counter <= counter_next;
