@@ -52,28 +52,16 @@ begin
 
 	process(clk, rst, fifo, read_addr_int, write_addr_int)
 	begin
---		if read_addr_int = write_addr_int then
---			empty <= '1';
---		else
---			empty <= '0';
---		end if;
+		
 		if rst = '1' then 
 			write_addr_int <= (others => '0');
-			read_addr_int <= (others => '0');
+--			read_addr_int <= (others => '0');
 		elsif rising_edge(clk) then
-			data_o <= fifo(to_integer(read_addr_int));
-			if read_addr_int = write_addr_int then
-				empty <= '1';
-			else
-				empty <= '0';
-			end if;
-			if dequeue = '1' then
-				if read_addr_int = depth-1 then
-					read_addr_int <= (others => '0');
-				else
-					read_addr_int <= read_addr_int + 1;
-				end if;
-			end if;
+--			if read_addr_int = write_addr_int then
+--				empty <= '1';
+--			else
+--				empty <= '0';
+--			end if;
 			if enqueue = '1' then
 				fifo(to_integer(write_addr_int)) <= data_i;
 				if write_addr_int = depth-1 then
@@ -82,7 +70,28 @@ begin
 					write_addr_int <= write_addr_int + 1;
 				end if;
 			end if;
+--			data_o <= fifo(to_integer(read_addr_int));
+			
 		end if;
---		data_o <= fifo(to_integer(read_addr_int));
+		data_o <= fifo(to_integer(read_addr_int));
+		if read_addr_int = write_addr_int then
+			empty <= '1';
+		else
+			empty <= '0';
+		end if;
+	end process;
+	process(clk,rst)
+	begin
+			if rst = '1' then 
+					read_addr_int <= (others => '0'); 
+			elsif rising_edge(clk) then
+			if dequeue = '1' then
+				if read_addr_int = depth-1 then
+					read_addr_int <= (others => '0');
+				else
+					read_addr_int <= read_addr_int + 1;
+				end if;
+			end if;
+	end if;
 	end process;
 end rtl;

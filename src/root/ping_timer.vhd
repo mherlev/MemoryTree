@@ -31,6 +31,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 library work;
+use work.memorytreepackage.all;
 use work.root_package.all;
 
 entity ping_timer is
@@ -40,17 +41,19 @@ entity ping_timer is
 			ping : out std_logic;
 			ping_empty : out std_logic;
 			dequeue : in std_logic;
-			core_id : out std_logic_vector(1 downto 0)
+			core_id : out std_logic_vector(id_width-1 downto 0)
 	);
 end ping_timer;
 
 architecture rtl of ping_timer is
 	signal counter, counter_next : signed(31 downto 0) := (others => '0');
 	signal read_addr, read_addr_next, 
-			idx, idx_next : unsigned(1 downto 0) := (others => '0');
+			idx, idx_next : unsigned(id_width-1 downto 0) := (others => '0');
 begin
 	sched_tab : entity work.schedule_table
-	port map (read_addr,core_id);
+	port map (
+	read_addr,
+	core_id);
 
 	process(idx,counter,postpone_transaction,dequeue, read_addr)
 	begin

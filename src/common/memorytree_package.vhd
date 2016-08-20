@@ -28,6 +28,7 @@
 --------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.math_real.all;
 
 package MemoryTreePackage is
 	constant tag_width : natural := 2;
@@ -39,12 +40,14 @@ package MemoryTreePackage is
 	constant payload_width : natural := 32+4;
 	constant mem_index_top : natural := 31;
 
+	constant num_of_cores : integer := 8;
+	constant id_width : integer := integer(ceil(log2(real(num_of_cores))));
 	type phit_r is record
 		tag		: std_logic_vector(tag_width-1 downto 0);
 		payload	: std_logic_vector(payload_width-1 downto 0);
 	end record phit_r;
 
-	constant number_of_levels : natural := 2;
+	constant number_of_levels : natural := 3;
 	
 	constant outputs_per_router : integer := 2;
 	type router_output is array(0 to outputs_per_router-1) of phit_r;
@@ -54,4 +57,5 @@ package MemoryTreePackage is
 	constant number_of_leafs : integer := outputs_per_router**number_of_levels;
 	type phit_arr is array(0 to number_of_leafs-1) of phit_r;
 	
+	constant route_width : integer :=number_of_levels*outputs_per_router;
 end;

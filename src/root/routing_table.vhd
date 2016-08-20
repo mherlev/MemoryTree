@@ -34,17 +34,28 @@ use work.MemoryTreePackage.all;
 use work.root_package.all;
 
 entity routing_table is
-		port (core_id : in std_logic_vector(1 downto 0);
-		route : out std_logic_vector(3 downto 0));
+		port (core_id : in std_logic_vector(id_width-1 downto 0);
+		route : out std_logic_vector(route_width-1 downto 0));
 end routing_table;
 
 
 architecture list of routing_table is
-	type routingtable_arr is array(0 to schedule_table_size-1) of std_logic_vector(number_of_levels*outputs_per_router-1 downto 0);
-	signal routingtable : routingtable_arr := ("0101",
-	"1001",
-	"0110",
-	"1010");
+	type routingtable_arr is array(0 to num_of_cores-1) of std_logic_vector(route_width-1 downto 0);
+	signal routingtable : routingtable_arr := (--"0101",
+--	"1001",
+--	"0110",
+--	"1010"
+"010101",
+"100101",
+"011001",
+"101001",
+"010110",
+"100110",
+"011010",
+"101010"
+
+
+);
 begin
 	route <= routingtable(to_integer(unsigned(core_id)));
 end list;

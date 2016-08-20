@@ -30,15 +30,26 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 library work;
+use work.memorytreepackage.all;
 use work.root_package.all;
 entity schedule_table is 
-		port (index : in unsigned(1 downto 0);
-		core_id : out std_logic_vector(1 downto 0));
+		port (index : in unsigned(id_width-1 downto 0);
+		core_id : out std_logic_vector(id_width-1 downto 0));
 end schedule_table;
 
 architecture list of schedule_table is
-	type scheduletable_arr is array(0 to schedule_table_size-1) of std_logic_vector(1 downto 0);
-	signal scheduletable : scheduletable_arr := ("00","01","10","11");
+--	type scheduletable_arr is array(0 to schedule_table_size-1) of std_logic_vector(id_width-1 downto 0);
+	type scheduletable_arr is array(0 to num_of_cores-1) of std_logic_vector(id_width-1 downto 0);
+	signal scheduletable : scheduletable_arr := (
+	std_logic_vector(to_unsigned(0,id_width)), --"00",
+	std_logic_vector(to_unsigned(1,id_width)), --"01",
+	std_logic_vector(to_unsigned(2,id_width)), --"10",
+	std_logic_vector(to_unsigned(3,id_width)), --"11"
+	std_logic_vector(to_unsigned(4,id_width)), --"00",
+	std_logic_vector(to_unsigned(5,id_width)), --"01",
+	std_logic_vector(to_unsigned(6,id_width)), --"10",
+	std_logic_vector(to_unsigned(7,id_width)) --"11"
+		);
 begin
 	core_id <= scheduletable(to_integer(index));
 end list;

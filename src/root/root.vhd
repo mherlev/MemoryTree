@@ -33,6 +33,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use ieee.math_real.all;
 library work;
 use work.MemoryTreePackage.all;
 use work.root_package.all;
@@ -56,7 +57,8 @@ end root;
 architecture rtl of root is
 	constant fifo_depth : integer := 3;
 	constant fifo_addr_width : integer := 2;
-
+--	constant num_of_cores : integer := 4;
+--	constant id_width : integer := integer(ceil(log2(real(num_of_cores))));
 	signal rst : std_logic;
 
 	signal ref : std_logic := '0';
@@ -67,7 +69,7 @@ architecture rtl of root is
 	signal state, state_next : r2l_states := idle;
 	
 	signal r2l_next : phit_r := (others => (others => '0'));
-	alias r2l_route is r2l_next.payload(3 downto 0);
+	alias r2l_route is r2l_next.payload(route_width-1 downto 0);
 	alias r2l_type is r2l_next.payload(payload_width-1);
 	signal read_counter, read_counter_next : unsigned(31 downto 0) 
 										   := (others => '0');
@@ -80,12 +82,12 @@ architecture rtl of root is
 	signal r2s_fifo_empty : std_logic;
 	signal r2s_readdata : std_logic_vector(OCP_BURST_LENGTH*OCP_DATA_WIDTH-1 
 							downto 0);
-	signal core_id,core_id_next : std_logic_vector(1 downto 0) 
+	signal core_id,core_id_next : std_logic_vector(id_width-1 downto 0) 
 								:= (others => '0');
 	signal r2s_id : std_logic_vector(core_id'length-1 downto 0) 
 				  := (others => '0');
 
-	signal ping_id : std_logic_vector(1 downto 0) := (others => '0');
+	signal ping_id : std_logic_vector(id_width-1 downto 0) := (others => '0');
 	signal route   : std_logic_vector(number_of_levels*outputs_per_router-1 
 						downto 0) 
 				   		:= (others => '0');
@@ -99,7 +101,7 @@ architecture rtl of root is
 	type l2r_states is (idle,write_data,write_en, read_data);
 	signal l2r_state, l2r_state_next : l2r_states := idle;
 	signal write_counter, write_counter_next : unsigned(31 downto 0) := (others => '0');
-	alias l2r_id is l2r.payload(OCP_BURST_ADDR_WIDTH+OCP_CMD_WIDTH+2-1 
+	alias l2r_id is l2r.payload(OCP_BURST_ADDR_WIDTH+OCP_CMD_WIDTH+id_width-1 
 						downto OCP_BURST_ADDR_WIDTH+OCP_CMD_WIDTH);
 	alias l2r_cmd is l2r.payload(OCP_BURST_ADDR_WIDTH+OCP_CMD_WIDTH-1
 						downto OCP_BURST_ADDR_WIDTH);
@@ -135,7 +137,9 @@ begin
 	refresh <= ref;
 
 	route_tab : entity work.routing_table
-	port map(core_id, route);	
+	port map(
+	core_id, 
+	route);	
 
 	ping_time : entity work.ping_timer
 	port map(clk,rst,postpone_transaction,ping, ping_empty, ping_dequeue,
@@ -145,7 +149,7 @@ begin
 
 	-- R2S FIFO
 	r2s_core_fifo : entity work.fifo
-	generic map(2,fifo_depth)
+	generic map(id_width,fifo_depth)
 	port map(clk, reset, r2s_id_next, r2s_id, r2s_fifo_dequeue,r2s_fifo_enqueue,
 				r2s_fifo_empty);
 	r2s_data_fifo : entity work.fifo
@@ -154,7 +158,7 @@ begin
 				r2s_fifo_enqueue,open);
 	-- MEM FIFO
 	mem_core_fifo : entity work.fifo
-	generic map(2,fifo_depth)
+	generic map(id_width,fifo_depth)
 	port map(clk, reset, cmder_next, r2s_id_next, mem_fifo_data_dequeue,
 				mem_fifo_id_enqueue, mem_fifo_empty);
 	mem_cmd_fifo : entity work.fifo
@@ -259,6 +263,7 @@ begin
 						l2r_state_next <= read_data;
 						cmd_next <= OCP_CMD_RD;
 						mem_fifo_id_enqueue <= '1';
+						mem_fifo_data_enqueue <= (others => '1');
 					end if;
 				end if;
 			when write_data =>
